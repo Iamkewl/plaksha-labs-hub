@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Homepage Redesign Previews</title>
+  <style>
+    :root {
+      --bg: #f2f7fa;
+      --card: #ffffff;
+      --ink: #162735;
+      --muted: #4f6270;
+      --line: #cfe0e8;
+      --brand: #0f6f7a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 1.2rem;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    h1 {
+      margin: 0 0 0.4rem;
+      font-size: clamp(1.4rem, 3vw, 2rem);
+    }
+
+    p { margin: 0 0 1rem; color: var(--muted); }
+
+    .grid {
+      display: grid;
+      gap: 0.9rem;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 0.95rem;
+    }
+
+    .card h2 {
+      margin: 0 0 0.35rem;
+      font-size: 1.05rem;
+    }
+
+    .card a {
+      display: inline-block;
+      margin-top: 0.45rem;
+      color: var(--brand);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .card a:hover { text-decoration: underline; }
+
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Inventory Homepage Concepts</h1>
+  <p>Open any concept below. Each page is a standalone HTML prototype.</p>
+
+  <section class="grid" aria-label="Design previews">
+    <article class="card">
+      <h2>Concept 1: Foundry Executive</h2>
+      <p>Dashboard-first command view with KPI emphasis.</p>
+      <a href="01-foundry-executive.html">Open Concept 1</a>
+    </article>
+
+    <article class="card">
+      <h2>Concept 2: Parchment Ledger</h2>
+      <p>Editorial, archival aesthetic with a structured operations flow.</p>
+      <a href="02-parchment-ledger.html">Open Concept 2</a>
+    </article>
+
+    <article class="card">
+      <h2>Concept 3: Runway Ops</h2>
+      <p>High-tempo operations layout with strong visual hierarchy.</p>
+      <a href="03-runway-ops.html">Open Concept 3</a>
+    </article>
+  </section>
+</body>
+</html>

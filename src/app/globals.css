@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 7% 8%;
+    --foreground: 240 13% 90%;
+    --card: 240 7% 13%;
+    --card-foreground: 240 13% 90%;
+    --popover: 240 7% 14%;
+    --popover-foreground: 240 13% 90%;
+    --primary: 239 100% 88%;
+    --primary-foreground: 245 78% 24%;
+    --secondary: 240 6% 21%;
+    --secondary-foreground: 240 13% 90%;
+    --muted: 240 7% 11%;
+    --muted-foreground: 240 12% 73%;
+    --accent: 240 5% 22%;
+    --accent-foreground: 240 13% 90%;
+    --destructive: 0 74% 68%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 9% 30%;
+    --input: 240 9% 30%;
+    --ring: 239 100% 88%;
+    --radius: 0.9rem;
+  }
+
+  .light {
+    --background: 226 100% 98%;
+    --foreground: 214 62% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 214 62% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 214 62% 12%;
+    --primary: 204 100% 20%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 212 80% 95%;
+    --secondary-foreground: 216 32% 22%;
+    --muted: 212 80% 95%;
+    --muted-foreground: 215 16% 42%;
+    --accent: 212 80% 95%;
+    --accent-foreground: 216 32% 22%;
+    --destructive: 0 70% 44%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 31% 88%;
+    --input: 214 31% 88%;
+    --ring: 204 100% 20%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body), ui-sans-serif, system-ui, -apple-system, sans-serif;
+    background-image:
+      radial-gradient(circle at 8% -12%, rgba(128, 131, 255, 0.26), transparent 30%),
+      radial-gradient(circle at 92% 0%, rgba(217, 119, 33, 0.18), transparent 28%),
+      linear-gradient(180deg, #131316 0%, #121217 55%, #13151c 100%);
+    min-height: 100vh;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display), ui-sans-serif, system-ui, -apple-system, sans-serif;
+    letter-spacing: -0.01em;
+  }
+
+  ::selection {
+    background: rgba(128, 131, 255, 0.34);
+    color: #f7f7ff;
+  }
+}
+
+@layer utilities {
+  .app-canvas {
+    background:
+      radial-gradient(circle at 10% -10%, rgba(128, 131, 255, 0.2), transparent 30%),
+      radial-gradient(circle at 92% 6%, rgba(217, 119, 33, 0.14), transparent 30%),
+      linear-gradient(180deg, #14141a 0%, #131318 60%, #141822 100%);
+  }
+
+  .surface-panel {
+    @apply border border-white/10 bg-card/85 backdrop-blur-xl shadow-[0_18px_44px_-26px_rgba(0,0,0,0.72)];
+  }
+
+  .surface-panel-soft {
+    @apply border border-white/5 bg-card/70 backdrop-blur-md;
+  }
+
+  .section-kicker {
+    @apply text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-primary/80;
+  }
+}

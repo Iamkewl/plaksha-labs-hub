@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sample C - Bento Explorer</title>
+  <style>
+    :root {
+      --bg: #f3faf7;
+      --card: #ffffff;
+      --text: #113128;
+      --muted: #567167;
+      --brand: #007a5e;
+      --brand-soft: #d8f4eb;
+      --line: #cce5db;
+      --radius: 14px;
+      --max: 1220px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "DM Sans", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 14% 0%, #e1f8ef, transparent 40%),
+        radial-gradient(circle at 100% 100%, #dff4ed, transparent 38%),
+        var(--bg);
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      letter-spacing: -0.02em;
+      font-family: "Segoe UI", "DM Sans", sans-serif;
+    }
+
+    .shell {
+      width: min(100% - 2rem, var(--max));
+      margin-inline: auto;
+    }
+
+    .top {
+      padding: 0.9rem 0;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.8rem;
+      position: sticky;
+      top: 0;
+      background: rgba(243, 250, 247, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 10;
+    }
+
+    .brand {
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 900;
+    }
+
+    .actions {
+      display: flex;
+      gap: 0.55rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: 1px solid transparent;
+      padding: 0.56rem 0.92rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 180ms ease;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+    .btn-main { background: var(--brand); color: #fff; }
+    .btn-ghost { background: #fff; border-color: var(--line); color: var(--text); }
+
+    .hero {
+      padding: 1.3rem 0 0.9rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 4.6vw, 3.7rem);
+      line-height: 1.04;
+      max-width: 18ch;
+    }
+
+    .hero p {
+      margin-top: 0.78rem;
+      color: var(--muted);
+      max-width: 60ch;
+    }
+
+    .mosaic {
+      margin-top: 1.1rem;
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 0.68rem;
+    }
+
+    .tile {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 0.82rem;
+      min-height: 120px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tile h3 {
+      font-size: 1.03rem;
+      line-height: 1.18;
+      max-width: 24ch;
+    }
+
+    .tile p {
+      margin-top: 0.5rem;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .span-8 { grid-column: span 8; }
+    .span-4 { grid-column: span 4; }
+    .span-6 { grid-column: span 6; }
+    .span-3 { grid-column: span 3; }
+    .span-12 { grid-column: span 12; }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.45rem;
+      margin-top: 0.6rem;
+    }
+
+    .mini {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.4rem;
+      background: #fcfffe;
+    }
+
+    .mini small {
+      display: block;
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+
+    .mini strong {
+      display: block;
+      margin-top: 0.08rem;
+      font-size: 1.12rem;
+    }
+
+    .switch {
+      margin-top: 0.65rem;
+      display: inline-flex;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      padding: 0.2rem;
+      gap: 0.3rem;
+      flex-wrap: wrap;
+    }
+
+    .switch button {
+      border: 0;
+      border-radius: 999px;
+      padding: 0.36rem 0.66rem;
+      font-weight: 700;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .switch button.active {
+      background: var(--brand);
+      color: #fff;
+    }
+
+    .list {
+      margin-top: 0.6rem;
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .list li {
+      list-style: none;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.45rem 0.55rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 0.4rem;
+      align-items: center;
+      color: #3e6458;
+      background: #fbfffd;
+      font-size: 0.86rem;
+    }
+
+    .chip {
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 0.16rem 0.42rem;
+      background: var(--brand-soft);
+      color: #0b614b;
+      white-space: nowrap;
+    }
+
+    .big-cta {
+      margin-top: 0.9rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+    }
+
+    .cta {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.55rem 0.72rem;
+      background: #fff;
+      color: var(--text);
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 180ms ease;
+    }
+
+    .cta:hover { transform: translateY(-2px); }
+
+    .pulse {
+      position: absolute;
+      right: -18px;
+      bottom: -18px;
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,122,94,0.16), transparent 65%);
+      animation: pulse 2.7s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.84); opacity: 0.7; }
+      50% { transform: scale(1.06); opacity: 1; }
+      100% { transform: scale(0.84); opacity: 0.7; }
+    }
+
+    footer {
+      margin-top: 0.9rem;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.84rem;
+      text-align: center;
+      padding: 1.1rem 0 1.8rem;
+    }
+
+    button:focus-visible {
+      outline: 3px solid #8bd9c4;
+      outline-offset: 2px;
+    }
+
+    @media (max-width: 1024px) {
+      .span-8,
+      .span-6,
+      .span-4,
+      .span-3 {
+        grid-column: span 6;
+      }
+
+      .metrics {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 760px) {
+      .span-8,
+      .span-6,
+      .span-4,
+      .span-3,
+      .span-12 {
+        grid-column: span 12;
+      }
+
+      .metrics {
+        grid-template-columns: 1fr;
+      }
+
+      .pulse { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 1ms !important;
+        transition-duration: 1ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Once UI mapping: Bento Grid style with responsive Grid, Card and button primitives -->
+  <header class="shell top">
+    <a class="brand" href="#">Plaksha Makerspace</a>
+    <div class="actions">
+      <button class="btn btn-ghost" type="button">Public Projects</button>
+      <button class="btn btn-main" type="button">Sign In</button>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <h1>Choose your next move from a live bento command surface.</h1>
+      <p>
+        This concept treats the homepage as a modular explorer: discover machine status,
+        materials pressure, and project momentum in one glance.
+      </p>
+    </section>
+
+    <section class="mosaic" id="mosaic">
+      <article class="tile span-8">
+        <h3>Realtime operations snapshot</h3>
+        <p>Live counters update automatically while maintaining a clear, calm information rhythm.</p>
+        <div class="metrics">
+          <div class="mini"><small>Machines online</small><strong id="k1">23</strong></div>
+          <div class="mini"><small>Mentor slots</small><strong id="k2">8</strong></div>
+          <div class="mini"><small>BOM in review</small><strong id="k3">11</strong></div>
+          <div class="mini"><small>Public projects</small><strong id="k4">14</strong></div>
+        </div>
+      </article>
+
+      <article class="tile span-4">
+        <h3>Fast actions</h3>
+        <p>Skip navigation and jump directly into the most-used workflows.</p>
+        <div class="big-cta">
+          <button class="cta" type="button">Book Machine</button>
+          <button class="cta" type="button">Start Project</button>
+          <button class="cta" type="button">Create BOM</button>
+        </div>
+      </article>
+
+      <article class="tile span-6">
+        <h3>Machine pulse</h3>
+        <div class="switch" role="tablist" aria-label="Machine views">
+          <button class="active" data-m="all" type="button">All</button>
+          <button data-m="available" type="button">Available</button>
+          <button data-m="busy" type="button">Busy</button>
+        </div>
+        <ul class="list" id="machineList">
+          <li data-g="available"><span>CNC-02 ready for booking</span><span class="chip">Available</span></li>
+          <li data-g="busy"><span>Laser-A queue: 2 teams</span><span class="chip">Busy</span></li>
+          <li data-g="available"><span>Electronics Bench-4 open</span><span class="chip">Available</span></li>
+          <li data-g="busy"><span>FDM-12 occupied till 16:10</span><span class="chip">Busy</span></li>
+        </ul>
+      </article>
+
+      <article class="tile span-6">
+        <h3>Public project strip</h3>
+        <p>Highlight visibility-enabled projects and current milestone confidence.</p>
+        <ul class="list" id="projectList">
+          <li><span>Weather Station - field test prep</span><span class="chip">Public</span></li>
+          <li><span>Agri Rover - controls integration</span><span class="chip">Public</span></li>
+          <li><span>Micro Grid - BOM revision pending</span><span class="chip">Public</span></li>
+        </ul>
+        <span class="pulse" aria-hidden="true"></span>
+      </article>
+
+      <article class="tile span-3">
+        <h3>Queue health</h3>
+        <p>Current queue pressure: low, no SLA breach risk.</p>
+      </article>
+
+      <article class="tile span-3">
+        <h3>Material alert</h3>
+        <p>2 mm aluminum sheet stock below threshold.</p>
+      </article>
+
+      <article class="tile span-3">
+        <h3>Mentor board</h3>
+        <p>Thursday desk expanded by 2 open slots.</p>
+      </article>
+
+      <article class="tile span-3">
+        <h3>Workshop lane</h3>
+        <p>Laser safety sprint opens at 15:00 tomorrow.</p>
+      </article>
+    </section>
+
+    <footer>Sample C V2: Bento Explorer layout with modular decision tiles.</footer>
+  </main>
+
+  <script>
+    const machineButtons = document.querySelectorAll('.switch button');
+    const machineItems = document.querySelectorAll('#machineList li');
+
+    machineButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        machineButtons.forEach((node) => node.classList.remove('active'));
+        button.classList.add('active');
+        const mode = button.dataset.m;
+
+        machineItems.forEach((item) => {
+          const show = mode === 'all' || item.dataset.g === mode;
+          item.style.display = show ? 'flex' : 'none';
+        });
+      });
+    });
+
+    const range = {
+      k1: [18, 24],
+      k2: [6, 10],
+      k3: [8, 15],
+      k4: [10, 18]
+    };
+
+    setInterval(() => {
+      Object.entries(range).forEach(([id, limits]) => {
+        const [min, max] = limits;
+        document.getElementById(id).textContent = String(Math.floor(Math.random() * (max - min + 1)) + min);
+      });
+    }, 3600);
+  </script>
+</body>
+</html>

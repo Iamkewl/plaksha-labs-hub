@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Makerspace Sample 3 - Live Operations Canvas</title>
+  <style>
+    :root {
+      --bg: #f4fbf8;
+      --surface: #ffffff;
+      --text: #102922;
+      --muted: #527267;
+      --brand: #007a5e;
+      --brand-soft: #d5f5eb;
+      --line: #cde4dc;
+      --radius: 12px;
+      --max: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "DM Sans", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 100% 0%, #ddf4ec, transparent 38%),
+        radial-gradient(circle at 0% 100%, #e9fff6, transparent 48%),
+        #f4fbf8;
+    }
+
+    h1, h2, h3 { margin: 0; font-family: "Segoe UI", "DM Sans", sans-serif; letter-spacing: -0.02em; }
+
+    .shell {
+      width: min(100% - 2rem, var(--max));
+      margin-inline: auto;
+    }
+
+    header {
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .top {
+      min-height: 72px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .brand {
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .brand-badge {
+      font-size: 0.72rem;
+      background: var(--brand-soft);
+      color: #085e49;
+      border: 1px solid #99d8c7;
+      border-radius: 999px;
+      padding: 0.2rem 0.5rem;
+      font-weight: 700;
+    }
+
+    .button {
+      border: 0;
+      border-radius: 999px;
+      padding: 0.7rem 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--brand);
+      color: #fff;
+      transition: transform 180ms ease;
+    }
+
+    .button:hover { transform: translateY(-2px); }
+    .button:focus-visible,
+    .tab:focus-visible,
+    .ghost:focus-visible {
+      outline: 3px solid #78d4bc;
+      outline-offset: 2px;
+    }
+
+    .hero {
+      padding: 3.8rem 0 2.2rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      line-height: 1.05;
+    }
+
+    .hero p { color: var(--muted); margin-top: 0.95rem; max-width: 50ch; }
+
+    .actions {
+      margin-top: 1.2rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+    }
+
+    .ghost {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--text);
+      padding: 0.64rem 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 180ms ease;
+    }
+
+    .ghost:hover { transform: translateY(-2px); }
+
+    .board {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 0.9rem;
+      box-shadow: 0 15px 30px rgba(5, 68, 53, 0.1);
+    }
+
+    .board-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.65rem;
+    }
+
+    .tile {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.75rem;
+      background: #fcfffe;
+    }
+
+    .tile span { color: var(--muted); font-size: 0.84rem; display: block; }
+    .tile strong { font-size: 1.3rem; display: block; margin-top: 0.1rem; }
+
+    .section { padding: 1.5rem 0 4rem; }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .section-head p { margin: 0.45rem 0 0; color: var(--muted); }
+
+    .tabs {
+      display: inline-flex;
+      gap: 0.45rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.22rem;
+      background: #fff;
+    }
+
+    .tab {
+      border: 0;
+      background: transparent;
+      border-radius: 999px;
+      padding: 0.45rem 0.8rem;
+      font-weight: 700;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .tab.active {
+      color: #fff;
+      background: var(--brand);
+    }
+
+    .cards {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.8rem;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 0.95rem;
+    }
+
+    .card h3 { font-size: 1rem; }
+    .card p { color: var(--muted); margin-top: 0.5rem; font-size: 0.93rem; }
+
+    .flag {
+      margin-top: 0.5rem;
+      display: inline-block;
+      font-size: 0.74rem;
+      font-weight: 800;
+      border-radius: 999px;
+      padding: 0.2rem 0.55rem;
+      background: var(--brand-soft);
+      color: #075a46;
+    }
+
+    footer {
+      border-top: 1px solid var(--line);
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.86rem;
+      padding: 1.9rem 0;
+    }
+
+    @media (max-width: 1024px) {
+      .hero { grid-template-columns: 1fr; }
+      .cards { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .cards { grid-template-columns: 1fr; }
+      .board-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 1ms !important;
+        transition-duration: 1ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Once UI mapping: Grid, Row, Card, Badge, Button primitives -->
+  <header>
+    <div class="shell top">
+      <a href="#" class="brand">Plaksha Makerspace <span class="brand-badge">Live</span></a>
+      <button class="button" type="button">Sign In</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="shell hero">
+      <div>
+        <h1>Operate fabrication, mentoring, and projects from one live canvas.</h1>
+        <p>
+          This direction is tuned for active operations. It puts throughput, queue pressure,
+          and public build momentum in a single adaptive homepage.
+        </p>
+        <div class="actions">
+          <button class="button" type="button">Open Dashboard</button>
+          <button class="ghost" type="button">View Public Projects</button>
+        </div>
+      </div>
+
+      <aside class="board" aria-label="Live board">
+        <div class="board-grid">
+          <div class="tile"><span>Machines online</span><strong id="metricMachines">21</strong></div>
+          <div class="tile"><span>Mentor slots open</span><strong id="metricMentors">7</strong></div>
+          <div class="tile"><span>BOMs in review</span><strong id="metricBoms">14</strong></div>
+          <div class="tile"><span>Requests queued</span><strong id="metricRequests">9</strong></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="shell section">
+      <div class="section-head">
+        <div>
+          <h2>Operations feed</h2>
+          <p>Switch contexts between machine utilization, materials, and project pace.</p>
+        </div>
+        <div class="tabs" role="tablist" aria-label="Feed tabs">
+          <button class="tab active" type="button" data-tab="machines">Machines</button>
+          <button class="tab" type="button" data-tab="materials">Materials</button>
+          <button class="tab" type="button" data-tab="projects">Projects</button>
+        </div>
+      </div>
+
+      <div class="cards" id="feedCards">
+        <article class="card" data-group="machines">
+          <h3>CNC Cluster</h3>
+          <p>82 percent utilization, next free slot at 17:10.</p>
+          <span class="flag">High Load</span>
+        </article>
+        <article class="card" data-group="machines">
+          <h3>Laser Bay</h3>
+          <p>1 unit in maintenance, 2 units available.</p>
+          <span class="flag">Partial Availability</span>
+        </article>
+        <article class="card" data-group="machines">
+          <h3>Electronics Lab</h3>
+          <p>All benches free for walk-in debugging.</p>
+          <span class="flag">Open</span>
+        </article>
+
+        <article class="card" data-group="materials" style="display:none">
+          <h3>PLA Filament</h3>
+          <p>Healthy stock across all colors, 18 spools ready.</p>
+          <span class="flag">Stable</span>
+        </article>
+        <article class="card" data-group="materials" style="display:none">
+          <h3>Aluminum Sheets</h3>
+          <p>Low stock threshold reached for 2 mm sheets.</p>
+          <span class="flag">Restock Soon</span>
+        </article>
+        <article class="card" data-group="materials" style="display:none">
+          <h3>PCB Consumables</h3>
+          <p>Flux and solder reels replenished this morning.</p>
+          <span class="flag">Updated</span>
+        </article>
+
+        <article class="card" data-group="projects" style="display:none">
+          <h3>Weather Station</h3>
+          <p>Public project moved to validation phase, sensor tuning underway.</p>
+          <span class="flag">On Track</span>
+        </article>
+        <article class="card" data-group="projects" style="display:none">
+          <h3>Agri-Rover</h3>
+          <p>Mechanical assembly done, controls sprint starts tomorrow.</p>
+          <span class="flag">Milestone Reached</span>
+        </article>
+        <article class="card" data-group="projects" style="display:none">
+          <h3>Micro Grid Monitor</h3>
+          <p>Mentor review pending for BOM revision 4.</p>
+          <span class="flag">Review Pending</span>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer>Sample 3: Live Operations Canvas direction with reactive feed tabs and live metric updates.</footer>
+
+  <script>
+    const tabs = document.querySelectorAll('.tab');
+    const cards = document.querySelectorAll('#feedCards .card');
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        tabs.forEach((node) => node.classList.remove('active'));
+        tab.classList.add('active');
+        const active = tab.dataset.tab;
+        cards.forEach((card) => {
+          card.style.display = card.dataset.group === active ? 'block' : 'none';
+        });
+      });
+    });
+
+    const ids = ['metricMachines', 'metricMentors', 'metricBoms', 'metricRequests'];
+    const limits = [[18, 24], [5, 10], [8, 17], [4, 12]];
+
+    setInterval(() => {
+      ids.forEach((id, index) => {
+        const [min, max] = limits[index];
+        const value = Math.floor(Math.random() * (max - min + 1)) + min;
+        const node = document.getElementById(id);
+        node.textContent = String(value);
+      });
+    }, 4500);
+  </script>
+</body>
+</html>

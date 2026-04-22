@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Makerspace Sample 2 - Build Story</title>
+  <style>
+    :root {
+      --bg: #fff8f1;
+      --surface: #ffffff;
+      --text: #242026;
+      --muted: #6e6472;
+      --brand: #c15a1b;
+      --brand-soft: #ffe4d1;
+      --line: #eadbcb;
+      --radius: 18px;
+      --max: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: "Nunito Sans", "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #fff8f1 0%, #ffffff 48%);
+    }
+
+    h1, h2, h3 { margin: 0; font-family: "Inter", "Segoe UI", sans-serif; letter-spacing: -0.02em; }
+
+    .shell {
+      width: min(100% - 2rem, var(--max));
+      margin-inline: auto;
+    }
+
+    header {
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.84);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .top {
+      min-height: 72px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo {
+      font-weight: 800;
+      text-decoration: none;
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    .cta {
+      border: 0;
+      border-radius: 999px;
+      padding: 0.7rem 1.15rem;
+      background: var(--brand);
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 180ms ease;
+    }
+
+    .cta:hover { transform: translateY(-2px); }
+    .cta:focus-visible, .segment button:focus-visible, .ghost:focus-visible {
+      outline: 3px solid #f5a873;
+      outline-offset: 2px;
+    }
+
+    .hero {
+      padding: 4.2rem 0 2.2rem;
+      display: grid;
+      gap: 1.2rem;
+      grid-template-columns: 1.2fr 0.8fr;
+      align-items: stretch;
+    }
+
+    .hero h1 { font-size: clamp(2rem, 4vw, 3.45rem); line-height: 1.08; }
+    .hero p { color: var(--muted); margin-top: 0.9rem; max-width: 54ch; }
+
+    .hero-actions {
+      margin-top: 1.2rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+    }
+
+    .ghost {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--text);
+      padding: 0.64rem 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 180ms ease;
+    }
+
+    .ghost:hover { transform: translateY(-2px); }
+
+    .quote {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      padding: 1.2rem;
+      box-shadow: 0 18px 34px rgba(108, 65, 25, 0.09);
+      display: grid;
+      align-content: space-between;
+      gap: 0.8rem;
+    }
+
+    .quote p { margin: 0; font-size: 1rem; color: #3b3440; }
+    .quote small { color: var(--muted); }
+
+    .section { padding: 1.5rem 0 4rem; }
+    .section h2 { font-size: clamp(1.45rem, 2.7vw, 2.1rem); }
+    .section-sub { color: var(--muted); margin-top: 0.55rem; }
+
+    .segment {
+      margin-top: 1rem;
+      display: inline-flex;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.25rem;
+      background: #fff;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+
+    .segment button {
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+      padding: 0.46rem 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 180ms ease;
+    }
+
+    .segment button.active {
+      color: #fff;
+      background: var(--brand);
+    }
+
+    .panel-grid {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.85rem;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1rem;
+      background: #fff;
+      min-height: 170px;
+    }
+
+    .panel h3 { font-size: 1.05rem; }
+    .panel p { color: var(--muted); margin-top: 0.55rem; font-size: 0.95rem; }
+
+    .timeline {
+      margin-top: 1.2rem;
+      border-left: 2px dashed #dfbf9f;
+      padding-left: 1rem;
+      display: grid;
+      gap: 0.95rem;
+    }
+
+    .step {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 0.85rem;
+    }
+
+    .step strong { display: block; margin-bottom: 0.25rem; }
+    .step small { color: var(--muted); }
+
+    footer {
+      border-top: 1px solid var(--line);
+      text-align: center;
+      color: var(--muted);
+      padding: 1.8rem 0;
+      font-size: 0.86rem;
+    }
+
+    @media (max-width: 1024px) {
+      .hero { grid-template-columns: 1fr; }
+      .panel-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .panel-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 1ms !important;
+        transition-duration: 1ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Once UI mapping: Heading, Text, Button, Card, Row, Column -->
+  <header>
+    <div class="shell top">
+      <a class="logo" href="#">Plaksha Makerspace</a>
+      <button class="cta" type="button">Sign In</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="shell hero">
+      <div>
+        <h1>From idea sketch to physical prototype, one guided path.</h1>
+        <p>
+          This direction highlights stories over dashboards. It focuses on project journeys,
+          mentor relationships, and transparent progress checkpoints.
+        </p>
+        <div class="hero-actions">
+          <button class="cta" type="button">Start a Project</button>
+          <button class="ghost" type="button">View Public Builds</button>
+        </div>
+      </div>
+      <aside class="quote" aria-label="Student highlight">
+        <p>
+          We went from BOM draft to first hardware test in 9 days because booking,
+          mentor slots, and materials all lived in one flow.
+        </p>
+        <small>Team AeroGrid, Mobility Lab</small>
+      </aside>
+    </section>
+
+    <section class="shell section">
+      <h2>Explore by narrative lens</h2>
+      <p class="section-sub">Switch between active stories from projects, mentors, and workshops.</p>
+
+      <div class="segment" role="tablist" aria-label="Narrative views">
+        <button class="active" type="button" data-view="projects">Projects</button>
+        <button type="button" data-view="mentors">Mentors</button>
+        <button type="button" data-view="events">Workshops</button>
+      </div>
+
+      <div class="panel-grid" id="storyPanels">
+        <article class="panel" data-group="projects">
+          <h3>Smart Campus Weather Station</h3>
+          <p>Public project with v3 BOM approved and weekly mentor review.</p>
+        </article>
+        <article class="panel" data-group="projects">
+          <h3>Low-Cost Soil Sensor</h3>
+          <p>Fabrication in progress, electronics integration this week.</p>
+        </article>
+        <article class="panel" data-group="projects">
+          <h3>Autonomous Rover Arm</h3>
+          <p>Mechanical assembly complete, control testing pending.</p>
+        </article>
+
+        <article class="panel" data-group="mentors" style="display:none">
+          <h3>Mentor Slot: CAD Studio</h3>
+          <p>Open mentor windows on Tue and Thu, 14:00 to 17:00.</p>
+        </article>
+        <article class="panel" data-group="mentors" style="display:none">
+          <h3>Mentor Slot: Electronics Bench</h3>
+          <p>Guided debug clinics for first-time PCB teams.</p>
+        </article>
+        <article class="panel" data-group="mentors" style="display:none">
+          <h3>Mentor Slot: CAM Pipeline</h3>
+          <p>One-on-one support for CNC setup and simulation checks.</p>
+        </article>
+
+        <article class="panel" data-group="events" style="display:none">
+          <h3>Workshop: Laser Safety Fast Track</h3>
+          <p>Thursday 11:30, includes certification quiz.</p>
+        </article>
+        <article class="panel" data-group="events" style="display:none">
+          <h3>Workshop: BOM Cost Planning</h3>
+          <p>Friday 16:00, practical review on request optimization.</p>
+        </article>
+        <article class="panel" data-group="events" style="display:none">
+          <h3>Workshop: Design for Assembly</h3>
+          <p>Saturday sprint for rapid prototype teams.</p>
+        </article>
+      </div>
+
+      <div class="timeline" aria-label="Build flow">
+        <div class="step"><strong>1. Define Project Scope</strong><small>Create a project, set mentor, choose private or public visibility.</small></div>
+        <div class="step"><strong>2. Build and Submit BOM</strong><small>Track revisions, request materials, and keep costs visible.</small></div>
+        <div class="step"><strong>3. Book and Fabricate</strong><small>Reserve machines with training and mentor constraints automatically enforced.</small></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>Sample 2: Build Story direction with Once UI-style modular sections.</footer>
+
+  <script>
+    const switches = document.querySelectorAll('.segment button');
+    const panels = document.querySelectorAll('#storyPanels .panel');
+
+    switches.forEach((button) => {
+      button.addEventListener('click', () => {
+        switches.forEach((node) => node.classList.remove('active'));
+        button.classList.add('active');
+        const group = button.dataset.view;
+
+        panels.forEach((panel) => {
+          panel.style.display = panel.dataset.group === group ? 'block' : 'none';
+        });
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,366 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ──────────────────────────────────────────────
+
+enum Role {
+  STUDENT
+  MENTOR
+  ADMIN
+}
+
+enum MachineStatus {
+  AVAILABLE
+  IN_USE
+  MAINTENANCE
+  RETIRED
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum BomStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+}
+
+enum MaterialRequestStatus {
+  PENDING
+  PENDING_BOM_APPROVAL
+  PENDING_ADMIN_APPROVAL
+  BOM_REJECTED
+  APPROVED
+  PARTIALLY_ISSUED
+  ISSUED
+  REJECTED
+}
+
+enum ProjectMemberRole {
+  LEAD
+  MEMBER
+}
+
+enum NotificationType {
+  BOOKING_CONFIRMED
+  BOOKING_CANCELLED
+  BOM_SUBMITTED
+  BOM_APPROVED
+  BOM_REJECTED
+  MATERIAL_REQUEST_SUBMITTED
+  MATERIAL_REQUEST_APPROVED
+  MATERIAL_REQUEST_REJECTED
+  MATERIAL_ISSUED
+  LOW_STOCK_ALERT
+  TRAINING_COMPLETED
+}
+
+// ─── Models ─────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  role          Role      @default(STUDENT)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Auth relations
+  accounts Account[]
+  sessions Session[]
+
+  // Domain relations
+  trainings           Training[]
+  bookings            Booking[]
+  projectMemberships  ProjectMember[]
+  mentorAvailability  MentorAvailability[]
+  mentorBookings      Booking[]          @relation("MentorBookings")
+  mentoredProjects    Project[]          @relation("ProjectMentor")
+  bomApprovals        Bom[]              @relation("BomApprover")
+  materialRequests    MaterialRequest[]  @relation("MaterialRequester")
+  bomMaterialApprovals MaterialRequest[] @relation("MaterialBomApprover")
+  materialApprovals   MaterialRequest[]  @relation("MaterialApprover")
+  materialIssuances   MaterialRequest[]  @relation("MaterialIssuer")
+  notifications       Notification[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ─── Machine ────────────────────────────────────────────
+
+model Machine {
+  id                String        @id @default(cuid())
+  name              String
+  description       String?       @db.Text
+  category          String
+  location          String
+  status            MachineStatus @default(AVAILABLE)
+  costPerHour       Float         @default(0)
+  imageUrl          String?
+  specifications    Json?
+  safetyRequirements String?      @db.Text
+  requiresTraining  Boolean       @default(true)
+  requiresMentorSupport Boolean   @default(false)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  trainings Training[]
+  bookings  Booking[]
+
+  @@map("machines")
+}
+
+// ─── Material ───────────────────────────────────────────
+
+model Material {
+  id            String   @id @default(cuid())
+  name          String
+  description   String?  @db.Text
+  category      String
+  unit          String
+  costPerUnit   Float    @default(0)
+  currentStock  Float    @default(0)
+  lowStockThreshold Float @default(10)
+  imageUrl      String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  bomItems         BomItem[]
+  materialRequests MaterialRequest[]
+
+  @@map("materials")
+}
+
+// ─── Training (gate table) ──────────────────────────────
+
+model Training {
+  id          String   @id @default(cuid())
+  userId      String
+  machineId   String
+  trainedAt   DateTime @default(now())
+  trainedBy   String?
+  certificate String?
+  notes       String?  @db.Text
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  machine Machine @relation(fields: [machineId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, machineId])
+  @@index([machineId])
+  @@map("trainings")
+}
+
+// ─── Project ────────────────────────────────────────────
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String?  @db.Text
+  isPublic    Boolean  @default(false)
+  mentorId    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  mentor  User?           @relation("ProjectMentor", fields: [mentorId], references: [id])
+  members ProjectMember[]
+  boms    Bom[]
+
+  @@map("projects")
+}
+
+model ProjectMember {
+  id        String            @id @default(cuid())
+  projectId String
+  userId    String
+  role      ProjectMemberRole @default(MEMBER)
+  joinedAt  DateTime          @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@map("project_members")
+}
+
+// ─── BOM (Bill of Materials) ────────────────────────────
+
+model Bom {
+  id         String    @id @default(cuid())
+  projectId  String
+  version    Int       @default(1)
+  status     BomStatus @default(DRAFT)
+  totalCost  Float     @default(0)
+  notes      String?   @db.Text
+  submittedAt DateTime?
+  approvedAt  DateTime?
+  approvedBy  String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  project  Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  approver User?     @relation("BomApprover", fields: [approvedBy], references: [id])
+  items    BomItem[]
+  materialRequests MaterialRequest[]
+
+  @@unique([projectId, version])
+  @@map("boms")
+}
+
+model BomItem {
+  id             String @id @default(cuid())
+  bomId          String
+  materialId     String
+  quantity       Float
+  costSnapshot   Float
+  notes          String? @db.Text
+
+  bom      Bom      @relation(fields: [bomId], references: [id], onDelete: Cascade)
+  material Material @relation(fields: [materialId], references: [id])
+
+  @@map("bom_items")
+}
+
+// ─── Booking ────────────────────────────────────────────
+
+model Booking {
+  id        String        @id @default(cuid())
+  userId    String
+  machineId String?
+  mentorId  String?
+  startTime DateTime
+  endTime   DateTime
+  status    BookingStatus @default(PENDING)
+  purpose   String?       @db.Text
+  notes     String?       @db.Text
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  machine Machine? @relation(fields: [machineId], references: [id])
+  mentor  User?    @relation("MentorBookings", fields: [mentorId], references: [id])
+
+  @@index([userId, startTime])
+  @@index([machineId, status])
+  @@index([mentorId, status])
+  @@map("bookings")
+}
+
+// ─── Mentor Availability ────────────────────────────────
+
+model MentorAvailability {
+  id        String   @id @default(cuid())
+  userId    String
+  dayOfWeek Int?     // 0=Sun, 6=Sat — for recurring
+  date      DateTime? // For one-off slots
+  startTime String   // "09:00" format
+  endTime   String   // "17:00" format
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("mentor_availability")
+}
+
+// ─── Material Request ───────────────────────────────────
+
+model MaterialRequest {
+  id              String                @id @default(cuid())
+  bomId           String?
+  materialId      String
+  requestedBy     String
+  quantity        Float
+  approvedQty     Float?
+  issuedQty       Float?
+  status          MaterialRequestStatus @default(PENDING)
+  bomApprovedBy   String?
+  approvedBy      String?
+  issuedBy        String?
+  notes           String?               @db.Text
+  requestedAt     DateTime              @default(now())
+  bomApprovedAt   DateTime?
+  approvedAt      DateTime?
+  issuedAt        DateTime?
+
+  bom       Bom?     @relation(fields: [bomId], references: [id])
+  material  Material @relation(fields: [materialId], references: [id])
+  requester User     @relation("MaterialRequester", fields: [requestedBy], references: [id])
+  bomApprover User?  @relation("MaterialBomApprover", fields: [bomApprovedBy], references: [id])
+  approver  User?    @relation("MaterialApprover", fields: [approvedBy], references: [id])
+  issuer    User?    @relation("MaterialIssuer", fields: [issuedBy], references: [id])
+
+  @@map("material_requests")
+}
+
+// ─── Notification ───────────────────────────────────────
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String           @db.Text
+  read      Boolean          @default(false)
+  link      String?
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+  @@index([createdAt])
+  @@map("notifications")
+}

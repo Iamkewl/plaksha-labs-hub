@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parchment Ledger - Homepage Concept</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --paper: #f9f4ea;
+      --card: #fffdf8;
+      --ink: #1f2a34;
+      --muted: #5d6771;
+      --line: #dccdb2;
+      --brand: #8a5a1f;
+      --brand-soft: #efe3cf;
+      --ok: #2c7b52;
+      --warn: #936200;
+      --pending: #5f4494;
+      --danger: #993638;
+      --radius: 14px;
+      --shadow: 0 12px 28px rgba(71, 50, 24, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Work Sans", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        linear-gradient(135deg, rgba(138, 90, 31, 0.09), transparent 45%),
+        radial-gradient(circle at 85% 0%, rgba(152, 97, 30, 0.12), transparent 36%),
+        var(--paper);
+      line-height: 1.45;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; color: inherit; }
+
+    :focus-visible {
+      outline: 3px solid #8a5a1f;
+      outline-offset: 2px;
+      border-radius: 8px;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: -10000px;
+      top: 0;
+      background: #fff;
+      color: #000;
+      padding: 0.7rem 0.9rem;
+      z-index: 999;
+    }
+    .skip-link:focus { left: 0.5rem; top: 0.5rem; }
+
+    .shell {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 1.1rem 1rem 3rem;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .seal {
+      width: 2.1rem;
+      height: 2.1rem;
+      border-radius: 50%;
+      border: 2px solid rgba(138, 90, 31, 0.6);
+      background: radial-gradient(circle at 30% 30%, #fff3df, #d9ba8a);
+      box-shadow: 0 4px 12px rgba(138, 90, 31, 0.24);
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.55rem 0.9rem;
+      cursor: pointer;
+      background: #fff;
+      font-weight: 700;
+    }
+
+    .btn-primary {
+      border-color: transparent;
+      color: #fff;
+      background: linear-gradient(130deg, #9a6630, #7e4f1a);
+      box-shadow: 0 8px 18px rgba(138, 90, 31, 0.28);
+    }
+
+    .hero {
+      margin-top: 0.85rem;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(255, 253, 248, 0.98)),
+        repeating-linear-gradient(0deg, transparent 0 31px, rgba(138, 90, 31, 0.06) 31px 32px);
+      box-shadow: var(--shadow);
+      padding: 2rem;
+      display: grid;
+      gap: 0.85rem;
+    }
+
+    .eyebrow {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #7a4f1f;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 18ch;
+      font-family: "Libre Caslon Text", Georgia, serif;
+      font-size: clamp(2rem, 4.1vw, 3.15rem);
+      line-height: 1.08;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 66ch;
+      font-size: 1.02rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+    }
+
+    .section-title {
+      margin: 1.5rem 0 0.75rem;
+      font-family: "Libre Caslon Text", Georgia, serif;
+      font-size: 1.2rem;
+      letter-spacing: 0.01em;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+
+    .kpi {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--card);
+      padding: 0.82rem;
+    }
+
+    .kpi .label {
+      color: var(--muted);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-weight: 700;
+    }
+
+    .kpi .value {
+      margin-top: 0.22rem;
+      font-family: "Libre Caslon Text", Georgia, serif;
+      font-size: 1.42rem;
+      font-weight: 700;
+    }
+
+    .kpi .sub {
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-top: 0.22rem;
+    }
+
+    .layout {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 0.95rem;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      padding: 0.95rem;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 0.62rem;
+      align-items: end;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .field input, .field select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      padding: 0.52rem 0.6rem;
+    }
+
+    .chips {
+      margin-top: 0.6rem;
+      display: flex;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      border: 1px solid var(--line);
+      background: var(--brand-soft);
+      color: #64411b;
+      border-radius: 999px;
+      padding: 0.2rem 0.58rem;
+      font-size: 0.76rem;
+      font-weight: 600;
+    }
+
+    .quick-actions {
+      display: grid;
+      gap: 0.55rem;
+    }
+
+    .quick-link {
+      border: 1px dashed #d5c09b;
+      border-radius: 10px;
+      background: #fff8ec;
+      color: #563812;
+      padding: 0.62rem 0.7rem;
+      font-weight: 700;
+    }
+
+    .table-wrap {
+      margin-top: 0.8rem;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow-x: auto;
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 0.66rem 0.72rem;
+      border-bottom: 1px solid #eee2cf;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background: #fff4e3;
+      font-size: 0.78rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #6e4c25;
+      font-weight: 700;
+    }
+
+    .status {
+      font-size: 0.74rem;
+      font-weight: 700;
+      border-radius: 999px;
+      padding: 0.2rem 0.52rem;
+      display: inline-block;
+    }
+
+    .st-ok { background: #dff4e8; color: #1f6f49; }
+    .st-low { background: #ffefce; color: #855500; }
+    .st-pending { background: #ede5ff; color: #4f327e; }
+
+    .bottom {
+      margin-top: 0.9rem;
+      display: grid;
+      gap: 0.9rem;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 0.55rem;
+    }
+
+    .list li {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.62rem 0.7rem;
+      background: #fff;
+    }
+
+    .list time {
+      display: block;
+      color: var(--muted);
+      font-size: 0.74rem;
+      margin-top: 0.18rem;
+    }
+
+    .critical strong { color: var(--danger); }
+
+    .cta {
+      margin-top: 1rem;
+      border: 1px solid #ceb88e;
+      border-radius: 15px;
+      padding: 1rem;
+      background: linear-gradient(145deg, #f6e8cf, #fff8ea);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.7rem;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 1000px) {
+      .kpi-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .layout, .bottom { grid-template-columns: 1fr; }
+      .filters { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .filters { grid-template-columns: 1fr; }
+      .hero { padding: 1.2rem; }
+      .topbar { flex-direction: column; align-items: flex-start; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <div class="shell">
+    <header class="topbar" aria-label="Top navigation">
+      <div class="brand">
+        <span class="seal" aria-hidden="true"></span>
+        <span>Plaksha Makerspace Logbook</span>
+      </div>
+      <button class="btn btn-primary">Sign In</button>
+    </header>
+
+    <main id="main">
+      <section class="hero" aria-labelledby="hero-title">
+        <p class="eyebrow">Daily Operations Ledger</p>
+        <h1 id="hero-title">A makerspace homepage that reads like a clear operations record, not a cluttered portal.</h1>
+        <p>
+          Students track machine access, mentors approve guided sessions, and admins govern BOM + material workflows with
+          transparent stock visibility and high-confidence status updates.
+        </p>
+        <div class="hero-actions">
+          <button class="btn btn-primary">Get Started</button>
+          <button class="btn">Browse Public Projects</button>
+        </div>
+      </section>
+
+      <h2 class="section-title">KPI Summary</h2>
+      <section class="kpi-grid" aria-label="KPI summary cards">
+        <article class="kpi"><div class="label">Total Users</div><div class="value">1,240</div><div class="sub">Students, mentors, admins</div></article>
+        <article class="kpi"><div class="label">Active Machines</div><div class="value">42</div><div class="sub">CNC, laser, additive</div></article>
+        <article class="kpi"><div class="label">Bookings Today</div><div class="value">18</div><div class="sub">Mentor-backed sessions</div></article>
+        <article class="kpi"><div class="label">Pending Requests</div><div class="value">12</div><div class="sub">BOM and material</div></article>
+        <article class="kpi"><div class="label">Low Stock Items</div><div class="value">5</div><div class="sub">Reorder needed</div></article>
+      </section>
+
+      <section class="layout" aria-label="Controls and actions">
+        <div class="panel">
+          <h3 class="section-title" style="margin-top:0">Filter Inventory</h3>
+          <form class="filters" aria-label="Filter form">
+            <div class="field">
+              <label for="q">Search</label>
+              <input id="q" type="search" placeholder="PLA, Acrylic, CNC" />
+            </div>
+            <div class="field">
+              <label for="status">Status</label>
+              <select id="status">
+                <option value="ALL">All</option>
+                <option value="AVAILABLE">AVAILABLE</option>
+                <option value="LOW_STOCK">LOW_STOCK</option>
+                <option value="PENDING_ADMIN_APPROVAL">PENDING_ADMIN_APPROVAL</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="category">Category</label>
+              <select id="category">
+                <option>All Categories</option>
+                <option>3D Printing</option>
+                <option>Electronics</option>
+                <option>Composites</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="location">Location</label>
+              <select id="location">
+                <option>All Labs</option>
+                <option>Fab Lab A</option>
+                <option>Electronics Lab</option>
+              </select>
+            </div>
+          </form>
+          <div class="chips" aria-label="Applied filters">
+            <span class="chip">Role: Admin</span>
+            <span class="chip">Visibility: Public + Internal</span>
+            <span class="chip">Threshold Alerts: Active</span>
+          </div>
+
+          <div class="table-wrap">
+            <table id="inventory-table">
+              <thead>
+                <tr>
+                  <th>Material</th>
+                  <th>Category</th>
+                  <th>Stock</th>
+                  <th>Threshold</th>
+                  <th>Status</th>
+                  <th>Last Update</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-status="AVAILABLE"><td>PLA Filament (White)</td><td>3D Printing</td><td>26</td><td>8</td><td><span class="status st-ok">AVAILABLE</span></td><td>10 min ago</td></tr>
+                <tr data-status="LOW_STOCK"><td>Acrylic Sheet 5mm</td><td>Composites</td><td>6</td><td>10</td><td><span class="status st-low">LOW_STOCK</span></td><td>31 min ago</td></tr>
+                <tr data-status="PENDING_ADMIN_APPROVAL"><td>Solder Wire Sn60/Pb40</td><td>Electronics</td><td>13</td><td>10</td><td><span class="status st-pending">PENDING_ADMIN_APPROVAL</span></td><td>Today</td></tr>
+                <tr data-status="AVAILABLE"><td>Birch Ply 12mm</td><td>Wood Shop</td><td>21</td><td>8</td><td><span class="status st-ok">AVAILABLE</span></td><td>Yesterday</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <aside class="panel" aria-label="Quick actions">
+          <h3 class="section-title" style="margin-top:0">Quick Actions</h3>
+          <div class="quick-actions">
+            <a class="quick-link" href="#">Add Machine</a>
+            <a class="quick-link" href="#">Add Material</a>
+            <a class="quick-link" href="#">Review Requests</a>
+            <a class="quick-link" href="#">View Analytics</a>
+          </div>
+        </aside>
+      </section>
+
+      <section class="bottom" aria-label="Alerts and activity">
+        <article class="panel">
+          <h3 class="section-title" style="margin-top:0">Critical Alerts</h3>
+          <ul class="list critical">
+            <li><strong>Low Stock:</strong> Acrylic Sheet 5mm below threshold in Fab Lab A.</li>
+            <li><strong>Pending BOM:</strong> Team Hurricane BOM v4 awaiting mentor sign-off.</li>
+            <li><strong>Machine Notice:</strong> Laser Cutter LC-02 requires lens cleaning.</li>
+          </ul>
+        </article>
+
+        <article class="panel">
+          <h3 class="section-title" style="margin-top:0">Recent Activity</h3>
+          <ul class="list">
+            <li>Rahul booked CNC Router 01<time>5 min ago</time></li>
+            <li>Mentor A. approved support request for Team Proto<time>14 min ago</time></li>
+            <li>Admin updated PLA reorder threshold<time>39 min ago</time></li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="cta" aria-labelledby="cta-heading">
+        <div>
+          <h3 id="cta-heading" style="margin:0">Turn your makerspace into a predictable, auditable operation.</h3>
+          <p style="margin:0.22rem 0 0;color:#5f6771">Sign in to coordinate machines, materials, mentor workflows, and approvals.</p>
+        </div>
+        <button class="btn btn-primary">Open Workspace</button>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const q = document.getElementById("q");
+    const status = document.getElementById("status");
+    const rows = Array.from(document.querySelectorAll("#inventory-table tbody tr"));
+
+    function applyFilters() {
+      const textQuery = q.value.trim().toLowerCase();
+      const statusValue = status.value;
+
+      rows.forEach((row) => {
+        const haystack = row.textContent.toLowerCase();
+        const queryMatch = !textQuery || haystack.includes(textQuery);
+        const statusMatch = statusValue === "ALL" || row.dataset.status === statusValue;
+        row.style.display = queryMatch && statusMatch ? "" : "none";
+      });
+    }
+
+    q.addEventListener("input", applyFilters);
+    status.addEventListener("change", applyFilters);
+  </script>
+</body>
+</html>
