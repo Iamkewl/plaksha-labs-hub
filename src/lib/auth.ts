@@ -24,6 +24,7 @@ declare module "next-auth" {
 
 const devAuthEnabled = process.env.AUTH_DEV_BYPASS === "true";
 const credentialsEnabled = process.env.AUTH_CREDENTIALS_ENABLED !== "false";
+const authSecret = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
 const hasMicrosoftEntraConfig = Boolean(
   process.env.AUTH_MICROSOFT_ENTRA_ID_ID &&
     process.env.AUTH_MICROSOFT_ENTRA_ID_SECRET &&
@@ -128,6 +129,7 @@ if (hasMicrosoftEntraConfig) {
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
+  secret: authSecret,
   session: { strategy: "jwt" },
   pages: {
     signIn: "/auth/signin",
