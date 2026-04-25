@@ -12,7 +12,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 import { UserRoleSelect } from "./user-role-select";
-import { CreateUserDialog } from "./create-user-dialog";
 import { ReactiveMetric, ReactiveReveal } from "@/components/once-ui/reactive-elements";
 
 export default async function UsersPage() {
@@ -28,15 +27,10 @@ export default async function UsersPage() {
   return (
     <div>
       <ReactiveReveal className="space-y-1" translateY={0.35}>
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">User Management</h1>
-            <p className="text-muted-foreground">
-              View all users and manage their roles
-            </p>
-          </div>
-          <CreateUserDialog />
-        </div>
+        <h1 className="text-3xl font-bold">User Management</h1>
+        <p className="text-muted-foreground">
+          View all users and manage their roles
+        </p>
       </ReactiveReveal>
 
       <ReactiveReveal delay={0.06} translateY={0.45}>
