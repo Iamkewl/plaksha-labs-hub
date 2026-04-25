@@ -1,78 +1,117 @@
 import { PrismaClient, Role, MachineStatus } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log("🌱 Seeding database...");
 
+  const alphaPassword = process.env.SEED_ALPHA_PASSWORD ?? "AlphaTest@123";
+  const hashedPassword = await bcrypt.hash(alphaPassword, 12);
+
   // ─── Users ──────────────────────────────────────────
   const admin = await prisma.user.upsert({
     where: { email: "admin@plaksha.edu.in" },
-    update: {},
+    update: {
+      name: "Lab Manager",
+      role: Role.ADMIN,
+      hashedPassword,
+    },
     create: {
       name: "Lab Manager",
       email: "admin@plaksha.edu.in",
       role: Role.ADMIN,
+      hashedPassword,
     },
   });
 
   const mentor1 = await prisma.user.upsert({
     where: { email: "rajesh.kumar@plaksha.edu.in" },
-    update: {},
+    update: {
+      name: "Rajesh Kumar",
+      role: Role.MENTOR,
+      hashedPassword,
+    },
     create: {
       name: "Rajesh Kumar",
       email: "rajesh.kumar@plaksha.edu.in",
       role: Role.MENTOR,
+      hashedPassword,
     },
   });
 
   const mentor2 = await prisma.user.upsert({
     where: { email: "priya.sharma@plaksha.edu.in" },
-    update: {},
+    update: {
+      name: "Priya Sharma",
+      role: Role.MENTOR,
+      hashedPassword,
+    },
     create: {
       name: "Priya Sharma",
       email: "priya.sharma@plaksha.edu.in",
       role: Role.MENTOR,
+      hashedPassword,
     },
   });
 
   const student1 = await prisma.user.upsert({
     where: { email: "arjun.patel@plaksha.edu.in" },
-    update: {},
+    update: {
+      name: "Arjun Patel",
+      role: Role.STUDENT,
+      hashedPassword,
+    },
     create: {
       name: "Arjun Patel",
       email: "arjun.patel@plaksha.edu.in",
       role: Role.STUDENT,
+      hashedPassword,
     },
   });
 
   const student2 = await prisma.user.upsert({
     where: { email: "sneha.reddy@plaksha.edu.in" },
-    update: {},
+    update: {
+      name: "Sneha Reddy",
+      role: Role.STUDENT,
+      hashedPassword,
+    },
     create: {
       name: "Sneha Reddy",
       email: "sneha.reddy@plaksha.edu.in",
       role: Role.STUDENT,
+      hashedPassword,
     },
   });
 
   const student3 = await prisma.user.upsert({
     where: { email: "vikram.singh@plaksha.edu.in" },
-    update: {},
+    update: {
+      name: "Vikram Singh",
+      role: Role.STUDENT,
+      hashedPassword,
+    },
     create: {
       name: "Vikram Singh",
       email: "vikram.singh@plaksha.edu.in",
       role: Role.STUDENT,
+      hashedPassword,
     },
   });
 
   const student4 = await prisma.user.upsert({
     where: { email: "ananya.gupta@plaksha.edu.in" },
-    update: {},
+    update: {
+      name: "Ananya Gupta",
+      role: Role.STUDENT,
+      hashedPassword,
+    },
     create: {
       name: "Ananya Gupta",
       email: "ananya.gupta@plaksha.edu.in",
       role: Role.STUDENT,
+      hashedPassword,
     },
   });
 
