@@ -43,7 +43,12 @@ export default async function middleware(req: NextRequest) {
   }
 
   const authSecret = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
-  const token = await getToken({ req, secret: authSecret });
+  const token =
+    (await getToken({ req, secret: authSecret, cookieName: "__Secure-authjs.session-token" })) ||
+    (await getToken({ req, secret: authSecret, cookieName: "authjs.session-token" })) ||
+    (await getToken({ req, secret: authSecret, cookieName: "__Secure-next-auth.session-token" })) ||
+    (await getToken({ req, secret: authSecret, cookieName: "next-auth.session-token" })) ||
+    (await getToken({ req, secret: authSecret }));
 
   // Redirect unauthenticated users to sign-in
   if (!token) {
