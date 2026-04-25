@@ -4,6 +4,7 @@ import MicrosoftEntraID from "next-auth/providers/microsoft-entra-id";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import type { Role } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 declare module "next-auth" {
   interface Session {
@@ -22,6 +23,7 @@ declare module "next-auth" {
 }
 
 const devAuthEnabled = process.env.AUTH_DEV_BYPASS === "true";
+const credentialsEnabled = process.env.AUTH_CREDENTIALS_ENABLED === "true" || devAuthEnabled;
 const hasMicrosoftEntraConfig = Boolean(
   process.env.AUTH_MICROSOFT_ENTRA_ID_ID &&
     process.env.AUTH_MICROSOFT_ENTRA_ID_SECRET &&
@@ -36,6 +38,42 @@ const providers = [];
 const isEdgeRuntime =
   process.env.NEXT_RUNTIME === "edge" ||
   typeof (globalThis as { EdgeRuntime?: unknown }).EdgeRuntime !== "undefined";
+
+if (credentialsEnabled) {
+  providers.push(
+    Credentials({
+      id: "credentials",
+      name: "Email & Password",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        const rawEmail = credentials?.email;
+        const rawPassword = credentials?.password;
+
+        if (typeof rawEmail !== "string" || typeof rawPassword !== "string") {
+          return null;
+        }
+
+        const email = rawEmail.trim().toLowerCase();
+        if (!email || !rawPassword) return null;
+
+        const user = await prisma.user.findUnique({
+          where: { email },
+          select: { id: true, name: true, email: true, role: true, hashedPassword: true },
+        });
+
+        if (!user || !user.hashedPassword) return null;
+
+        const valid = await bcrypt.compare(rawPassword, user.hashedPassword);
+        if (!valid) return null;
+
+        return { id: user.id, name: user.name, email: user.email, role: user.role };
+      },
+    })
+  );
+}
 
 if (devAuthEnabled) {
   providers.push(
@@ -123,10 +161,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       session.user.role = token.role as Role;
       return session;
     },
-    async signIn({ user }) {
-      // Only allow @plaksha.edu.in emails
-      if (user.email && !user.email.endsWith("@plaksha.edu.in")) {
-        return false;
+    async signIn({ user, account }) {
+      // For credentials providers, the authorize() function already validated the user.
+      // For Microsoft Entra (OAuth), restrict to @plaksha.edu.in emails.
+      if (account?.provider === "microsoft-entra-id") {
+        if (!user.email || !user.email.endsWith("@plaksha.edu.in")) {
+          return false;
+        }
       }
       return true;
     },
