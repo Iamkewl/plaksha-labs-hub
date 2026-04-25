@@ -23,7 +23,7 @@ declare module "next-auth" {
 }
 
 const devAuthEnabled = process.env.AUTH_DEV_BYPASS === "true";
-const credentialsEnabled = process.env.AUTH_CREDENTIALS_ENABLED === "true" || devAuthEnabled;
+const credentialsEnabled = process.env.AUTH_CREDENTIALS_ENABLED !== "false";
 const hasMicrosoftEntraConfig = Boolean(
   process.env.AUTH_MICROSOFT_ENTRA_ID_ID &&
     process.env.AUTH_MICROSOFT_ENTRA_ID_SECRET &&

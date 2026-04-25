@@ -8,8 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const credentialsEnabled =
-  process.env.NEXT_PUBLIC_AUTH_CREDENTIALS_ENABLED === "true" ||
-  process.env.NEXT_PUBLIC_AUTH_DEV_BYPASS === "true";
+  process.env.NEXT_PUBLIC_AUTH_CREDENTIALS_ENABLED !== "false";
 const devAuthEnabled = process.env.NEXT_PUBLIC_AUTH_DEV_BYPASS === "true";
 const demoAccounts = [
   { label: "Admin", email: "admin@plaksha.edu.in" },
