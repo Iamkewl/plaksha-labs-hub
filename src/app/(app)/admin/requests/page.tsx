@@ -1,5 +1,4 @@
-"use client";
-
+import { requireRole } from "@/lib/auth-guard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -10,15 +9,60 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
 import { QueueRow } from "@/components/admin/QueueRow";
 import { formatDateShort } from "@/lib/utils";
-import { PLACEHOLDER_MATERIAL_REQUESTS_ADMIN, PLACEHOLDER_PROCUREMENT_ADMIN } from "@/lib/placeholder/admin";
+import {
+  PLACEHOLDER_MATERIAL_REQUESTS_ADMIN,
+  PLACEHOLDER_PROCUREMENT_ADMIN,
+} from "@/lib/placeholder/admin";
+import { getProcurementRequests } from "@/app/actions/procurement";
 import { Package, ShoppingCart } from "lucide-react";
 
-export default function RequestsPage() {
+export const dynamic = "force-dynamic";
+
+export default async function RequestsPage() {
+  await requireRole("ADMIN");
+
+  // Material requests: kept as placeholder (existing MaterialRequest table — not in scope)
   const materialRequests = PLACEHOLDER_MATERIAL_REQUESTS_ADMIN;
-  const procurementRequests = PLACEHOLDER_PROCUREMENT_ADMIN;
+
+  // Procurement requests: wired to DB
+  type ProcRow = {
+    id: string;
+    itemName: string;
+    vendor?: string;
+    quantity: number;
+    estimatedCost?: number;
+    requestedAt: Date;
+    status: string;
+  };
+
+  let procurementRequests: ProcRow[] = PLACEHOLDER_PROCUREMENT_ADMIN.map((p) => ({
+    id: p.id,
+    itemName: p.itemName,
+    vendor: p.vendor,
+    quantity: p.quantity,
+    estimatedCost: p.estimatedCost,
+    requestedAt: p.requestedAt,
+    status: p.status,
+  }));
+
+  try {
+    const fromDb = await getProcurementRequests();
+    if (fromDb.length) {
+      procurementRequests = fromDb.map((r) => ({
+        id: r.id,
+        itemName: r.itemName,
+        vendor: r.vendor ?? undefined,
+        quantity: r.quantity,
+        estimatedCost: undefined,
+        requestedAt: r.createdAt,
+        status: r.status.toLowerCase(),
+      }));
+    }
+  } catch {
+    // DB unavailable — keep placeholder
+  }
 
   return (
     <div className="space-y-6">

@@ -14,16 +14,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import {
-  PLACEHOLDER_INVENTORY,
-  PLACEHOLDER_PROCUREMENT,
-} from "@/lib/placeholder/robotics";
 import { ProcurementRow } from "@/components/robotics/ProcurementRow";
-
-// All unique categories derived from inventory
-const ALL_CATEGORIES = Array.from(
-  new Set(PLACEHOLDER_INVENTORY.map((i) => i.category))
-).sort();
+import type { RoboticsAsset, RoboticsInventoryItem, RoboticsProcurement } from "@/lib/placeholder/robotics";
 
 function SectionEmptyState({ message }: { message: string }) {
   return (
@@ -34,12 +26,27 @@ function SectionEmptyState({ message }: { message: string }) {
   );
 }
 
-export function ElectronicsInventoryClient() {
+interface ElectronicsInventoryClientProps {
+  assets: RoboticsAsset[];
+  inventory: RoboticsInventoryItem[];
+  procurement: RoboticsProcurement[];
+}
+
+export function ElectronicsInventoryClient({
+  assets: _assets,
+  inventory,
+  procurement,
+}: ElectronicsInventoryClientProps) {
+  const ALL_CATEGORIES = useMemo(
+    () => Array.from(new Set(inventory.map((i) => i.category))).sort(),
+    [inventory]
+  );
+
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
-    return PLACEHOLDER_INVENTORY.filter((item) => {
+    return inventory.filter((item) => {
       const matchesQuery =
         query.trim() === "" ||
         item.name.toLowerCase().includes(query.toLowerCase()) ||
@@ -48,7 +55,7 @@ export function ElectronicsInventoryClient() {
         activeCategory === null || item.category === activeCategory;
       return matchesQuery && matchesCategory;
     });
-  }, [query, activeCategory]);
+  }, [inventory, query, activeCategory]);
 
   return (
     <div className="space-y-8">
@@ -185,11 +192,11 @@ export function ElectronicsInventoryClient() {
             </span>
           </h3>
 
-          {PLACEHOLDER_PROCUREMENT.length === 0 ? (
+          {procurement.length === 0 ? (
             <SectionEmptyState message="No procurement requests." />
           ) : (
             <div className="space-y-2">
-              {PLACEHOLDER_PROCUREMENT.map((item) => (
+              {procurement.map((item) => (
                 <ProcurementRow key={item.id} item={item} />
               ))}
             </div>

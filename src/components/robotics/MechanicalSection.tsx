@@ -1,19 +1,15 @@
-// Server component — no "use client" needed here.
+// Async server component — fetches mechanical assets from DB with placeholder fallback.
 import type { ElementType } from "react";
 import { Wrench, Users } from "lucide-react";
 import { AssetCard } from "@/components/robotics/AssetCard";
+import { CheckoutAssetButton } from "@/components/robotics/CheckoutAssetButton";
 import { NameTagChip } from "@/components/robotics/NameTagChip";
 import {
   PLACEHOLDER_ASSETS,
   PLACEHOLDER_ACTIVE_USERS,
+  type RoboticsAsset,
 } from "@/lib/placeholder/robotics";
-
-const mechanicalAssets = PLACEHOLDER_ASSETS.filter(
-  (a) => a.division === "mechanical"
-);
-const mechanicalUsers = PLACEHOLDER_ACTIVE_USERS.filter(
-  (u) => u.division === "mechanical"
-);
+import { getAssets } from "@/app/actions/assets";
 
 function SectionEmptyState({
   icon: Icon,
@@ -30,7 +26,49 @@ function SectionEmptyState({
   );
 }
 
-export function MechanicalSection() {
+/**
+ * Map a Prisma Asset to RoboticsAsset shape expected by AssetCard.
+ */
+function dbAssetToRobotics(
+  a: Awaited<ReturnType<typeof getAssets>>["assets"][number]
+): RoboticsAsset {
+  const status =
+    a.status === "AVAILABLE"
+      ? "AVAILABLE"
+      : a.status === "CHECKED_OUT" || a.status === "IN_USE"
+        ? "CHECKED_OUT"
+        : "MAINTENANCE";
+
+  return {
+    id: a.id,
+    name: a.name,
+    division: "mechanical",
+    category: a.kind.charAt(0) + a.kind.slice(1).toLowerCase(),
+    status,
+    serial: a.serialNo ?? undefined,
+  };
+}
+
+export async function MechanicalSection() {
+  let mechanicalAssets: RoboticsAsset[];
+
+  try {
+    const { assets: fromDb } = await getAssets({
+      labSlug: "robotics",
+      divisionSlug: "mechanical",
+    });
+    mechanicalAssets = fromDb.length
+      ? fromDb.map(dbAssetToRobotics)
+      : PLACEHOLDER_ASSETS.filter((a) => a.division === "mechanical");
+  } catch {
+    mechanicalAssets = PLACEHOLDER_ASSETS.filter((a) => a.division === "mechanical");
+  }
+
+  // Active users still from placeholder — requires Checkout → User join (Agent G scope)
+  const mechanicalUsers = PLACEHOLDER_ACTIVE_USERS.filter(
+    (u) => u.division === "mechanical"
+  );
+
   return (
     <section aria-labelledby="mechanical-heading" className="space-y-8">
       {/* ── Tool Checkout List ─────────────────────────── */}
@@ -57,7 +95,18 @@ export function MechanicalSection() {
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {mechanicalAssets.map((asset) => (
-              <AssetCard key={asset.id} asset={asset} />
+              <AssetCard
+                key={asset.id}
+                asset={asset}
+                action={
+                  asset.status === "AVAILABLE" ? (
+                    <CheckoutAssetButton
+                      assetId={asset.id}
+                      assetName={asset.name}
+                    />
+                  ) : undefined
+                }
+              />
             ))}
           </div>
         )}

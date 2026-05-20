@@ -1,30 +1,90 @@
 import { Mail, MapPin } from "lucide-react";
-import { PLACEHOLDER_LABS } from "@/lib/placeholder/labs";
+import { PLACEHOLDER_LABS, type PlaceholderLab } from "@/lib/placeholder/labs";
 import { LabHeader } from "@/components/labs/LabHeader";
 import { LabTabs } from "@/components/labs/LabTabs";
 import { LabSection } from "@/components/labs/LabSection";
 import { DivisionToggle } from "@/components/labs/DivisionToggle";
 import { SectionEmptyState } from "@/components/labs/SectionEmptyState";
+import { getLabs, getLabBySlug } from "@/app/actions/labs";
 
 interface PageProps {
   params: { slug: string };
 }
 
-export function generateStaticParams() {
-  return PLACEHOLDER_LABS.map((lab) => ({ slug: lab.slug }));
-}
-
-export function generateMetadata({ params }: PageProps) {
-  const lab = PLACEHOLDER_LABS.find((l) => l.slug === params.slug);
-  if (!lab) return { title: "Lab not found — Plaksha Labs Hub" };
+/**
+ * Map a Prisma Lab row to the PlaceholderLab shape.
+ * Merges rich placeholder data (tagline, hours, highlights) with live DB fields.
+ */
+function dbLabToPlaceholder(
+  dbLab: Awaited<ReturnType<typeof getLabBySlug>>,
+  ph?: PlaceholderLab
+): PlaceholderLab | null {
+  if (!dbLab) return null;
   return {
-    title: `${lab.name} — Plaksha Labs Hub`,
-    description: lab.tagline,
+    slug: dbLab.slug as PlaceholderLab["slug"],
+    name: dbLab.name,
+    tagline: ph?.tagline ?? dbLab.description ?? "",
+    description: dbLab.description ?? ph?.description ?? "",
+    location: dbLab.location ?? ph?.location ?? "",
+    contactEmail: dbLab.contactEmail ?? ph?.contactEmail ?? "",
+    hours: ph?.hours ?? [],
+    divisions: dbLab.divisions.map((d) => ({
+      slug: d.slug,
+      name: d.name,
+      description: d.description ?? "",
+    })),
+    highlights: ph?.highlights ?? [],
   };
 }
 
-export default function LabDetailPage({ params }: PageProps) {
-  const lab = PLACEHOLDER_LABS.find((l) => l.slug === params.slug);
+export async function generateStaticParams() {
+  // Seed with placeholder slugs so the page builds even without a DB connection
+  try {
+    const fromDb = await getLabs();
+    if (fromDb.length) {
+      return fromDb.map((lab) => ({ slug: lab.slug }));
+    }
+  } catch {
+    // DB not available at build time — fall back to placeholder slugs
+  }
+  return PLACEHOLDER_LABS.map((lab) => ({ slug: lab.slug }));
+}
+
+export async function generateMetadata({ params }: PageProps) {
+  const ph = PLACEHOLDER_LABS.find((l) => l.slug === params.slug);
+  try {
+    const dbLab = await getLabBySlug(params.slug);
+    if (dbLab) {
+      return {
+        title: `${dbLab.name} — Plaksha Labs Hub`,
+        description: dbLab.description ?? ph?.tagline ?? "",
+      };
+    }
+  } catch {
+    // fall through to placeholder
+  }
+  if (!ph) return { title: "Lab not found — Plaksha Labs Hub" };
+  return {
+    title: `${ph.name} — Plaksha Labs Hub`,
+    description: ph.tagline,
+  };
+}
+
+export default async function LabDetailPage({ params }: PageProps) {
+  const ph = PLACEHOLDER_LABS.find((l) => l.slug === params.slug);
+
+  let lab: PlaceholderLab | null = null;
+  try {
+    const dbLab = await getLabBySlug(params.slug);
+    lab = dbLabToPlaceholder(dbLab, ph);
+  } catch {
+    lab = ph ?? null;
+  }
+
+  // Final fallback to placeholder if DB returned nothing
+  if (!lab && ph) {
+    lab = ph;
+  }
 
   if (!lab) {
     return (
@@ -42,9 +102,12 @@ export default function LabDetailPage({ params }: PageProps) {
       {lab.highlights.length > 0 ? (
         <ul className="space-y-3" aria-label="Lab highlights">
           {lab.highlights.map((highlight) => (
-            <li key={highlight} className="flex items-start gap-3 text-sm leading-relaxed text-muted-foreground">
+            <li
+              key={highlight}
+              className="flex items-start gap-3 text-sm leading-relaxed text-muted-foreground"
+            >
               <span
-                className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-primary"
+                className="mt-[6px] h-1.5 w-1.5 shrink-0 rounded-full bg-primary/70"
                 aria-hidden="true"
               />
               {highlight}
@@ -70,48 +133,52 @@ export default function LabDetailPage({ params }: PageProps) {
     );
 
   const hoursContent = (
-    <LabSection id="hours" heading="Opening hours">
+    <LabSection
+      id="hours"
+      heading="Opening hours"
+      description="Times are local to Plaksha University campus."
+    >
       {lab.hours.length > 0 ? (
-        <div className="overflow-x-auto rounded-xl border border-border/60">
+        <div className="overflow-hidden rounded-xl border border-border/50">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-border/60 bg-muted/40">
+              <tr className="border-b border-border/50 bg-muted/30">
                 <th
                   scope="col"
-                  className="px-4 py-3 text-left font-medium text-foreground"
+                  className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground"
                 >
                   Day
                 </th>
                 <th
                   scope="col"
-                  className="px-4 py-3 text-left font-medium text-foreground"
+                  className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground"
                 >
                   Opens
                 </th>
                 <th
                   scope="col"
-                  className="px-4 py-3 text-left font-medium text-foreground"
+                  className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground"
                 >
                   Closes
                 </th>
               </tr>
             </thead>
-            <tbody>
-              {lab.hours.map((row, i) => {
+            <tbody className="divide-y divide-border/30">
+              {lab.hours.map((row) => {
                 const isClosed = row.open === "Closed";
                 return (
                   <tr
                     key={row.day}
-                    className={i % 2 === 0 ? "bg-card/40" : "bg-transparent"}
+                    className="transition-colors hover:bg-muted/20"
                   >
-                    <td className="px-4 py-3 font-medium text-foreground">
+                    <td className="px-5 py-3.5 font-medium text-foreground">
                       {row.day}
                     </td>
                     <td
                       className={
                         isClosed
-                          ? "px-4 py-3 text-muted-foreground/60"
-                          : "px-4 py-3 text-muted-foreground"
+                          ? "px-5 py-3.5 text-muted-foreground/50"
+                          : "px-5 py-3.5 tabular-nums text-muted-foreground"
                       }
                     >
                       {isClosed ? "—" : row.open}
@@ -119,8 +186,8 @@ export default function LabDetailPage({ params }: PageProps) {
                     <td
                       className={
                         isClosed
-                          ? "px-4 py-3 text-muted-foreground/60"
-                          : "px-4 py-3 text-muted-foreground"
+                          ? "px-5 py-3.5 text-muted-foreground/50"
+                          : "px-5 py-3.5 tabular-nums text-muted-foreground"
                       }
                     >
                       {isClosed ? "Closed" : row.close}
@@ -139,14 +206,19 @@ export default function LabDetailPage({ params }: PageProps) {
 
   const contactContent = (
     <LabSection id="contact" heading="Contact & location">
-      <dl className="space-y-4">
+      <dl className="space-y-5">
         <div className="flex items-start gap-3">
           <dt className="sr-only">Email</dt>
-          <Mail className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-          <dd>
+          <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50">
+            <Mail className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+          </span>
+          <dd className="flex flex-col gap-0.5">
+            <span className="text-xs text-muted-foreground/60 uppercase tracking-widest">
+              Email
+            </span>
             <a
               href={`mailto:${lab.contactEmail}`}
-              className="text-sm text-foreground hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              className="text-sm text-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
             >
               {lab.contactEmail}
             </a>
@@ -154,8 +226,15 @@ export default function LabDetailPage({ params }: PageProps) {
         </div>
         <div className="flex items-start gap-3">
           <dt className="sr-only">Location</dt>
-          <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-          <dd className="text-sm text-muted-foreground">{lab.location}</dd>
+          <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50">
+            <MapPin className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+          </span>
+          <dd className="flex flex-col gap-0.5">
+            <span className="text-xs text-muted-foreground/60 uppercase tracking-widest">
+              Location
+            </span>
+            <span className="text-sm text-muted-foreground">{lab.location}</span>
+          </dd>
         </div>
       </dl>
     </LabSection>

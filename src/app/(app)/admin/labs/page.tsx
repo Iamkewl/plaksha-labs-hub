@@ -12,11 +12,35 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Plus, Edit, Eye } from "lucide-react";
 import { PLACEHOLDER_LABS_ADMIN } from "@/lib/placeholder/admin";
+import { getLabs } from "@/app/actions/labs";
 
 export default async function LabsPage() {
   await requireRole("ADMIN");
 
-  const labs = PLACEHOLDER_LABS_ADMIN;
+  let labs: Array<{
+    id: string;
+    name: string;
+    slug: string;
+    location: string | null;
+    divisionsCount: number;
+    status: string;
+  }> = PLACEHOLDER_LABS_ADMIN;
+
+  try {
+    const fromDb = await getLabs();
+    if (fromDb.length) {
+      labs = fromDb.map((lab) => ({
+        id: lab.id,
+        name: lab.name,
+        slug: lab.slug,
+        location: lab.location ?? null,
+        divisionsCount: lab._count.assets > 0 ? lab.divisions.length : lab.divisions.length,
+        status: lab.isPublic ? "active" : "inactive",
+      }));
+    }
+  } catch {
+    // DB unavailable — keep placeholder
+  }
 
   return (
     <div className="space-y-6">

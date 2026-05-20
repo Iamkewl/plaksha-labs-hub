@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { StatusBadge } from "./StatusBadge";
+import { RequestActions } from "./RequestActions";
 import { formatDateShort } from "@/lib/utils";
 
 interface QueueRowProps {
@@ -16,6 +16,7 @@ interface QueueRowProps {
 }
 
 export function QueueRow({
+  id,
   title,
   requestedBy,
   vendor,
@@ -33,22 +34,13 @@ export function QueueRow({
       <TableCell className="text-right">
         {quantity} {unit}
       </TableCell>
-      {cost && <TableCell className="text-right font-mono">₹{cost.toLocaleString()}</TableCell>}
+      {cost && <TableCell className="text-right font-mono">&#8377;{cost.toLocaleString()}</TableCell>}
       <TableCell>{formatDateShort(requestedAt)}</TableCell>
       <TableCell>
         <StatusBadge status={status} />
       </TableCell>
-      <TableCell className="text-right space-x-2">
-        {status === "pending" && (
-          <>
-            <Button size="sm" variant="outline" className="text-xs">
-              Approve
-            </Button>
-            <Button size="sm" variant="ghost" className="text-xs">
-              Reject
-            </Button>
-          </>
-        )}
+      <TableCell className="text-right">
+        <RequestActions requestId={id} status={status} />
       </TableCell>
     </TableRow>
   );

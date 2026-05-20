@@ -1,13 +1,53 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { CheckoutRow } from "@/components/dashboard/CheckoutRow";
 import { EmptyState } from "@/components/dashboard/EmptyState";
-import { PLACEHOLDER_CHECKOUTS } from "@/lib/placeholder/dashboard";
+import { PLACEHOLDER_CHECKOUTS, type PlaceholderCheckout } from "@/lib/placeholder/dashboard";
 import { Package } from "lucide-react";
+import { getMyCheckouts } from "@/app/actions/checkouts";
 
-export default function DashboardCheckoutsPage() {
-  const checkedOut = PLACEHOLDER_CHECKOUTS.filter((c) => c.returnedAt === null);
-  const returned = PLACEHOLDER_CHECKOUTS.filter((c) => c.returnedAt !== null);
+export const dynamic = "force-dynamic";
+
+/**
+ * Map a Prisma Checkout row to the PlaceholderCheckout shape expected by CheckoutRow.
+ */
+function dbCheckoutToPlaceholder(
+  c: Awaited<ReturnType<typeof getMyCheckouts>>[number]
+): PlaceholderCheckout {
+  const itemName =
+    c.asset?.name ?? c.inventoryItem?.name ?? "Unknown item";
+  const division =
+    c.asset?.division?.name ??
+    c.inventoryItem?.division?.name ??
+    c.asset?.lab?.name ??
+    c.inventoryItem?.lab?.name ??
+    "Lab";
+
+  return {
+    id: c.id,
+    assetId: c.assetId ?? c.inventoryItemId ?? c.id,
+    assetName: itemName,
+    labDivision: division,
+    checkedOutAt: c.checkedOutAt,
+    dueDate: c.dueAt ?? new Date(c.checkedOutAt.getTime() + 7 * 24 * 60 * 60 * 1000),
+    returnedAt: c.returnedAt,
+  };
+}
+
+export default async function DashboardCheckoutsPage() {
+  let checkouts: PlaceholderCheckout[];
+
+  try {
+    const fromDb = await getMyCheckouts();
+    checkouts = fromDb.length
+      ? fromDb.map(dbCheckoutToPlaceholder)
+      : PLACEHOLDER_CHECKOUTS;
+  } catch {
+    checkouts = PLACEHOLDER_CHECKOUTS;
+  }
+
+  const checkedOut = checkouts.filter((c) => c.returnedAt === null);
+  const returned = checkouts.filter((c) => c.returnedAt !== null);
 
   return (
     <div className="space-y-6">

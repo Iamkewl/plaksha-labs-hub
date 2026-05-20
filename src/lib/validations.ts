@@ -1,4 +1,4 @@
-import { z } from "zod";
+﻿import { z } from "zod";
 
 // Allowed hostnames for user-supplied image URLs
 const ALLOWED_IMAGE_HOSTS = [
@@ -27,7 +27,7 @@ const imageUrlSchema = z
   .optional()
   .or(z.literal(""));
 
-// ─── Machine Schemas ────────────────────────────────────
+// --- Machine Schemas ---
 
 export const createMachineSchema = z.object({
   name: z.string().min(1, "Name is required").max(200),
@@ -44,7 +44,7 @@ export const createMachineSchema = z.object({
 
 export const updateMachineSchema = createMachineSchema.partial();
 
-// ─── Material Schemas ───────────────────────────────────
+// --- Material Schemas ---
 
 export const createMaterialSchema = z.object({
   name: z.string().min(1, "Name is required").max(200),
@@ -59,7 +59,7 @@ export const createMaterialSchema = z.object({
 
 export const updateMaterialSchema = createMaterialSchema.partial();
 
-// ─── Training Schemas ───────────────────────────────────
+// --- Training Schemas ---
 
 export const createTrainingSchema = z.object({
   userId: z.string().min(1, "User is required"),
@@ -69,7 +69,7 @@ export const createTrainingSchema = z.object({
   notes: z.string().optional(),
 });
 
-// ─── Booking Schemas ────────────────────────────────────
+// --- Booking Schemas ---
 
 export const createBookingSchema = z.object({
   machineId: z.string().optional(),
@@ -105,7 +105,7 @@ export const updateBookingStatusSchema = z.object({
   status: z.enum(["CONFIRMED", "CANCELLED"]),
 });
 
-// ─── Mentor Availability Schemas ────────────────────────
+// --- Mentor Availability Schemas ---
 
 export const createAvailabilitySchema = z.object({
   dayOfWeek: z.coerce.number().min(0).max(6).optional(),
@@ -120,7 +120,7 @@ export const createAvailabilitySchema = z.object({
   { message: "End time must be after start time", path: ["endTime"] }
 );
 
-// ─── Project Schemas ────────────────────────────────────
+// --- Project Schemas ---
 
 export const createProjectSchema = z.object({
   name: z.string().min(1, "Name is required").max(200),
@@ -134,7 +134,7 @@ export const updateProjectVisibilitySchema = z.object({
   isPublic: z.coerce.boolean(),
 });
 
-// ─── BOM Schemas ───────────────────────────────────────
+// --- BOM Schemas ---
 
 export const createBomSchema = z.object({
   notes: z.string().max(2000).optional(),
@@ -152,7 +152,7 @@ export const updateBomStatusSchema = z.object({
   notes: z.string().max(2000).optional(),
 });
 
-// ─── Material Request Schemas ────────────────────────────
+// --- Material Request Schemas ---
 
 export const createMaterialAllocationRequestSchema = z.object({
   bomId: z.string().min(1, "BOM is required"),
@@ -177,12 +177,76 @@ export const issueMaterialRequestSchema = z.object({
   issuedQty: z.coerce.number().min(0.001, "Issued quantity must be positive"),
 });
 
-// ─── User Role Update ───────────────────────────────────
+// --- User Role Update ---
 
 export const updateUserRoleSchema = z.object({
   userId: z.string().min(1),
   role: z.enum(["STUDENT", "MENTOR", "ADMIN"]),
 });
+
+// --- Asset Schemas (multi-lab extension) ---
+
+export const createAssetSchema = z.object({
+  labId: z.string().min(1, "Lab is required"),
+  divisionId: z.string().optional(),
+  name: z.string().min(1, "Name is required").max(200),
+  kind: z.enum(["MACHINE", "TOOL", "EQUIPMENT"]),
+  status: z.enum(["AVAILABLE", "IN_USE", "CHECKED_OUT", "MAINTENANCE", "RETIRED"]).default("AVAILABLE"),
+  serialNo: z.string().max(100).optional(),
+  location: z.string().max(200).optional(),
+  machineId: z.string().optional(),
+});
+
+export const updateAssetSchema = createAssetSchema.partial().extend({
+  id: z.string().min(1, "Asset ID is required"),
+});
+
+// --- Inventory Item Schemas ---
+
+export const upsertInventoryItemSchema = z.object({
+  id: z.string().optional(), // omit for create
+  labId: z.string().min(1, "Lab is required"),
+  divisionId: z.string().optional(),
+  name: z.string().min(1, "Name is required").max(200),
+  sku: z.string().max(100).optional(),
+  qtyOnHand: z.coerce.number().int().min(0, "Quantity must be non-negative"),
+  reorderLevel: z.coerce.number().int().min(0, "Reorder level must be non-negative"),
+  location: z.string().max(200).optional(),
+  materialId: z.string().optional(),
+});
+
+export const adjustStockSchema = z.object({
+  id: z.string().min(1, "Inventory item ID is required"),
+  delta: z.coerce.number().int().refine((n) => n !== 0, { message: "Delta must be non-zero" }),
+});
+
+// --- Checkout Schema ---
+
+export const createCheckoutSchema = z.object({
+  assetId: z.string().min(1, "Asset is required"),
+  dueAt: z.coerce.date().optional(),
+  notes: z.string().max(500).optional(),
+});
+
+// --- Procurement Request Schemas ---
+
+export const createProcurementRequestSchema = z.object({
+  title: z.string().min(1, "Title is required").max(300),
+  vendor: z.string().max(200).optional(),
+  quantity: z.coerce.number().int().min(1, "Quantity must be at least 1"),
+  unit: z.string().min(1, "Unit is required").max(50),
+  cost: z.coerce.number().min(0).optional(),
+  labId: z.string().min(1, "Lab ID is required"),
+  notes: z.string().max(2000).optional(),
+  expectedArrival: z.coerce.date().optional(),
+});
+
+export const rejectProcurementRequestSchema = z.object({
+  id: z.string().min(1, "Request ID is required"),
+  reason: z.string().max(1000).optional(),
+});
+
+// --- Type exports ---
 
 export type CreateMachineInput = z.infer<typeof createMachineSchema>;
 export type UpdateMachineInput = z.infer<typeof updateMachineSchema>;
@@ -197,3 +261,10 @@ export type UpdateProjectVisibilityInput = z.infer<typeof updateProjectVisibilit
 export type CreateMaterialAllocationRequestInput = z.infer<typeof createMaterialAllocationRequestSchema>;
 export type ReviewBomMaterialRequestInput = z.infer<typeof reviewBomMaterialRequestSchema>;
 export type UpdateUserRoleInput = z.infer<typeof updateUserRoleSchema>;
+export type CreateAssetInput = z.infer<typeof createAssetSchema>;
+export type UpdateAssetInput = z.infer<typeof updateAssetSchema>;
+export type UpsertInventoryItemInput = z.infer<typeof upsertInventoryItemSchema>;
+export type AdjustStockInput = z.infer<typeof adjustStockSchema>;
+export type CreateCheckoutInput = z.infer<typeof createCheckoutSchema>;
+export type CreateProcurementRequestInput = z.infer<typeof createProcurementRequestSchema>;
+export type RejectProcurementRequestInput = z.infer<typeof rejectProcurementRequestSchema>;

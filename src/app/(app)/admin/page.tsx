@@ -5,10 +5,25 @@ import { Button } from "@/components/ui/button";
 import { Package, ShoppingCart, Wrench, AlertTriangle, Users, BookOpen, ArrowRight, Settings, ClipboardList } from "lucide-react";
 import Link from "next/link";
 import { PLACEHOLDER_ADMIN_STATS } from "@/lib/placeholder/admin";
+import { getAdminOverviewStats } from "@/app/actions/dashboard";
 
 export default async function AdminOverviewPage() {
   await requireRole("ADMIN");
-  const stats = PLACEHOLDER_ADMIN_STATS;
+
+  let stats = PLACEHOLDER_ADMIN_STATS;
+  try {
+    const fromDb = await getAdminOverviewStats();
+    stats = {
+      openMaterialRequests: fromDb.pendingProcurements,
+      pendingProcurements: fromDb.pendingProcurements,
+      activeCheckouts: fromDb.openCheckouts,
+      machinesInMaintenance: fromDb.maintenanceAssets,
+      newUsersThisWeek: fromDb.newUsersThisWeek,
+      todaysBookings: fromDb.todaysBookings,
+    };
+  } catch {
+    // DB unavailable — keep placeholder
+  }
   return (
     <div className="space-y-6">
       <div className="space-y-1">

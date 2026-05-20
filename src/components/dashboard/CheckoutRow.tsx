@@ -1,13 +1,15 @@
-import { Button } from "@/components/ui/button";
-import { Package, Calendar, RotateCcw } from "lucide-react";
+import { Package, Calendar } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import type { PlaceholderCheckout } from "@/lib/placeholder/dashboard";
+import { ReturnCheckoutButton } from "./ReturnCheckoutButton";
 
 interface CheckoutRowProps {
   checkout: PlaceholderCheckout;
+  /** Real checkout ID from DB (undefined when using placeholder data) */
+  dbCheckoutId?: string;
 }
 
-export function CheckoutRow({ checkout }: CheckoutRowProps) {
+export function CheckoutRow({ checkout, dbCheckoutId }: CheckoutRowProps) {
   const isReturned = checkout.returnedAt !== null;
   const isOverdue = !isReturned && new Date() > checkout.dueDate;
 
@@ -36,16 +38,11 @@ export function CheckoutRow({ checkout }: CheckoutRowProps) {
             <p className="text-xs text-muted-foreground">Returned</p>
             <p className="text-xs text-green-600 font-medium">{checkout.returnedAt ? formatDate(checkout.returnedAt) : "—"}</p>
           </div>
+        ) : dbCheckoutId ? (
+          <ReturnCheckoutButton checkoutId={dbCheckoutId} isOverdue={isOverdue} />
         ) : (
-          <Button
-            variant="outline"
-            size="sm"
-            className={isOverdue ? "border-red-200 text-red-600 hover:bg-red-50" : ""}
-            disabled
-          >
-            <RotateCcw className="h-3 w-3 mr-1" />
-            Return
-          </Button>
+          // Placeholder mode: show disabled button
+          <ReturnCheckoutButton checkoutId={checkout.id} isOverdue={isOverdue} />
         )}
       </div>
     </div>

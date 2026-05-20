@@ -1,10 +1,12 @@
-// Server component — no "use client" needed.
+// Async server component — uses live procurement data with placeholder fallback.
 import { LayoutGrid, FolderKanban, ShoppingCart, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ProcurementRow } from "@/components/robotics/ProcurementRow";
+import { NewProcurementRequestButton } from "@/components/robotics/NewProcurementRequestButton";
 import {
   PLACEHOLDER_PROCUREMENT,
   PLACEHOLDER_ROBOTICS_PROJECTS,
+  type RoboticsProcurement,
 } from "@/lib/placeholder/robotics";
 import { cn } from "@/lib/utils";
 
@@ -116,7 +118,46 @@ const divisionBadge: Record<string, "default" | "secondary" | "outline"> = {
 
 // ─── Main Component ─────────────────────────────────────────────────────────
 
-export function SharedSection() {
+export async function SharedSection() {
+  // Procurement from DB with placeholder fallback
+  let procurement: RoboticsProcurement[] = PLACEHOLDER_PROCUREMENT;
+  let roboticsLabId: string | null = null;
+
+  try {
+    const { getProcurementRequests } = await import("@/app/actions/procurement");
+    const fromDb = await getProcurementRequests();
+    if (fromDb.length) {
+      roboticsLabId = fromDb[0]?.labId ?? null;
+      procurement = fromDb.map((r) => ({
+        id: r.id,
+        itemName: r.itemName,
+        qty: r.quantity,
+        vendor: r.vendor ?? undefined,
+        expectedArrival: r.expectedArrival
+          ? r.expectedArrival.toISOString().split("T")[0]
+          : undefined,
+        status: r.status as RoboticsProcurement["status"],
+        requestedBy: r.requestedBy.name ?? r.requestedBy.email,
+      }));
+    }
+  } catch {
+    // DB unavailable or auth context missing — keep placeholder
+  }
+
+  // Resolve labId for the New Request button if not yet set
+  if (!roboticsLabId) {
+    try {
+      const { getLabBySlug } = await import("@/app/actions/labs");
+      const lab = await getLabBySlug("robotics");
+      roboticsLabId = lab?.id ?? null;
+    } catch {
+      // keep null
+    }
+  }
+
+  // Projects still from placeholder — requires Project → Member join (future work)
+  const projects = PLACEHOLDER_ROBOTICS_PROJECTS;
+
   return (
     <section aria-labelledby="shared-heading" className="space-y-10">
       {/* ── Availability Heatmap ──────────────────────── */}
@@ -148,11 +189,11 @@ export function SharedSection() {
           </h2>
         </div>
 
-        {PLACEHOLDER_ROBOTICS_PROJECTS.length === 0 ? (
+        {projects.length === 0 ? (
           <SectionEmptyState message="No active projects." />
         ) : (
           <div className="grid gap-3 sm:grid-cols-2">
-            {PLACEHOLDER_ROBOTICS_PROJECTS.map((project) => (
+            {projects.map((project) => (
               <article
                 key={project.id}
                 className="rounded-xl border border-white/10 bg-card/60 p-4 hover:bg-card/80 transition-colors"
@@ -205,19 +246,24 @@ export function SharedSection() {
           >
             Procurement Tickets
           </h2>
-          <span className="ml-auto text-[0.72rem] text-muted-foreground">
+          <span className="text-[0.72rem] text-muted-foreground">
             Sorted by arrival
           </span>
+          <div className="ml-auto">
+            {roboticsLabId && (
+              <NewProcurementRequestButton labId={roboticsLabId} />
+            )}
+          </div>
         </div>
 
-        {PLACEHOLDER_PROCUREMENT.length === 0 ? (
+        {procurement.length === 0 ? (
           <div className="flex flex-col items-center gap-2 py-10 text-center">
             <ShoppingCart className="h-8 w-8 text-muted-foreground/40" aria-hidden="true" />
             <p className="text-sm text-muted-foreground">No procurement requests.</p>
           </div>
         ) : (
           <div className="space-y-2">
-            {PLACEHOLDER_PROCUREMENT.map((item) => (
+            {procurement.map((item) => (
               <ProcurementRow key={item.id} item={item} />
             ))}
           </div>
