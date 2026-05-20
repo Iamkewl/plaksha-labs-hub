@@ -20,17 +20,25 @@ import {
   Clock,
   BarChart3,
   ShoppingCart,
+  FlaskConical,
+  Cpu,
+  PackageOpen,
+  Shield,
 } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, roles: ["STUDENT", "MENTOR", "ADMIN"] },
+  { name: "Explore Labs", href: "/labs", icon: FlaskConical, roles: ["STUDENT", "MENTOR", "ADMIN"] },
+  { name: "Robotics Lab", href: "/labs/robotics/dashboard", icon: Cpu, roles: ["STUDENT", "MENTOR", "ADMIN"] },
   { name: "Machines", href: "/catalog/machines", icon: Wrench, roles: ["STUDENT", "MENTOR", "ADMIN"] },
   { name: "Materials", href: "/catalog/materials", icon: Package, roles: ["STUDENT", "MENTOR", "ADMIN"] },
   { name: "Bookings", href: "/bookings", icon: CalendarDays, roles: ["STUDENT", "MENTOR", "ADMIN"] },
+  { name: "My Checkouts", href: "/dashboard/checkouts", icon: PackageOpen, roles: ["STUDENT", "MENTOR", "ADMIN"] },
   { name: "Projects", href: "/projects", icon: FolderKanban, roles: ["STUDENT", "MENTOR", "ADMIN"] },
   { name: "My Availability", href: "/mentor/availability", icon: Clock, roles: ["MENTOR", "ADMIN"] },
+  { name: "Admin Overview", href: "/admin", icon: Shield, roles: ["ADMIN"] },
   { name: "Training", href: "/admin/training", icon: GraduationCap, roles: ["ADMIN"] },
   { name: "Users", href: "/admin/users", icon: Users, roles: ["ADMIN"] },
   { name: "Material Requests", href: "/admin/material-requests", icon: Package, roles: ["ADMIN"] },
@@ -47,6 +55,10 @@ export function AppShell({ children, unreadCount = 0 }: { children: React.ReactN
   const filteredNav = navigation.filter((item) =>
     item.roles.includes(userRole)
   );
+
+  const activeHref = filteredNav
+    .filter((item) => pathname === item.href || pathname.startsWith(item.href + "/"))
+    .sort((a, b) => b.href.length - a.href.length)[0]?.href;
 
   return (
     <div className="app-canvas flex min-h-screen text-foreground">
@@ -68,10 +80,10 @@ export function AppShell({ children, unreadCount = 0 }: { children: React.ReactN
         <div className="flex h-16 items-center justify-between border-b border-white/10 px-4">
           <Link href="/dashboard" className="group flex items-center gap-3">
             <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-indigo-400 text-[0.65rem] font-bold tracking-wide text-primary-foreground shadow-[0_12px_30px_-12px_rgba(128,131,255,0.6)]">
-              PM
+              PL
             </span>
             <span className="text-sm font-semibold uppercase tracking-[0.14em] text-foreground/90 transition-colors group-hover:text-primary">
-              Plaksha Makerspace
+              Plaksha Labs Hub
             </span>
           </Link>
           <button className="text-muted-foreground lg:hidden" onClick={() => setSidebarOpen(false)}>
@@ -85,14 +97,15 @@ export function AppShell({ children, unreadCount = 0 }: { children: React.ReactN
 
         <nav className="flex flex-col gap-1.5 px-3 py-3">
           {filteredNav.map((item) => {
-            const isActive = pathname.startsWith(item.href);
+            const isActive = item.href === activeHref;
             return (
               <Link
                 key={item.href}
                 href={item.href}
+                aria-current={isActive ? "page" : undefined}
                 onClick={() => setSidebarOpen(false)}
                 className={cn(
-                  "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all",
+                  "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                   isActive
                     ? "bg-primary/14 text-primary shadow-[inset_0_0_0_1px_rgba(192,193,255,0.25)]"
                     : "text-muted-foreground hover:bg-white/5 hover:text-foreground"

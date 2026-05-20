@@ -32,6 +32,8 @@ import Link from "next/link";
 import { formatDateShort } from "@/lib/utils";
 import { ReactiveMetric, ReactiveReveal } from "@/components/once-ui/reactive-elements";
 
+import { StatCard } from "@/components/dashboard/StatCard";
+
 export default async function DashboardPage() {
   const session = await auth();
   if (!session?.user) redirect("/auth/signin");
@@ -39,7 +41,7 @@ export default async function DashboardPage() {
   const data = await getDashboardStats();
 
   if (data.role === "STUDENT") {
-    return <StudentDashboard data={data} userName={session.user.name} />;
+    return <StudentDashboardHub data={data} userName={session.user.name} />;
   }
   if (data.role === "MENTOR") {
     return <MentorDashboard data={data} userName={session.user.name} />;
@@ -51,7 +53,7 @@ export default async function DashboardPage() {
 
 type StudentData = Extract<Awaited<ReturnType<typeof getDashboardStats>>, { role: "STUDENT" }>;
 
-function StudentDashboard({ data, userName }: { data: StudentData; userName?: string | null }) {
+function StudentDashboardHub({ data, userName }: { data: StudentData; userName?: string | null }) {
   return (
     <div className="space-y-6">
       <ReactiveReveal className="space-y-1" translateY={0.35}>
@@ -66,66 +68,36 @@ function StudentDashboard({ data, userName }: { data: StudentData; userName?: st
       {/* KPI Cards */}
       <ReactiveReveal delay={0.04} translateY={0.45}>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Link href="/bookings">
-            <Card className="hover:shadow-md transition-shadow cursor-pointer">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Upcoming Bookings
-                </CardTitle>
-                <CalendarDays className="h-4 w-4 text-blue-500" />
-              </CardHeader>
-              <CardContent>
-                <ReactiveMetric value={data.upcomingBookings.length} className="text-2xl font-bold" />
-                <p className="text-xs text-muted-foreground">scheduled sessions</p>
-              </CardContent>
-            </Card>
-          </Link>
+          <StatCard
+            title="Upcoming Bookings"
+            value={data.upcomingBookings.length}
+            description="scheduled sessions"
+            icon={<CalendarDays className="h-4 w-4 text-blue-500" />}
+            href="/dashboard/bookings"
+          />
 
-          <Link href="/projects">
-            <Card className="hover:shadow-md transition-shadow cursor-pointer">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Active Projects
-                </CardTitle>
-                <FolderKanban className="h-4 w-4 text-emerald-500" />
-              </CardHeader>
-              <CardContent>
-                <ReactiveMetric value={data.activeProjects.length} className="text-2xl font-bold" />
-                <p className="text-xs text-muted-foreground">team projects</p>
-              </CardContent>
-            </Card>
-          </Link>
+          <StatCard
+            title="Active Projects"
+            value={data.activeProjects.length}
+            description="team projects"
+            icon={<FolderKanban className="h-4 w-4 text-emerald-500" />}
+            href="/dashboard/projects"
+          />
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Pending Requests
-              </CardTitle>
-              <ClipboardList className="h-4 w-4 text-amber-500" />
-            </CardHeader>
-            <CardContent>
-              <ReactiveMetric value={data.pendingRequests} className="text-2xl font-bold" />
-              <p className="text-xs text-muted-foreground">material requests</p>
-            </CardContent>
-          </Card>
+          <StatCard
+            title="Pending Requests"
+            value={data.pendingRequests}
+            description="material requests"
+            icon={<ClipboardList className="h-4 w-4 text-amber-500" />}
+          />
 
-          <Link href="/notifications">
-            <Card className="hover:shadow-md transition-shadow cursor-pointer">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Notifications
-                </CardTitle>
-                <Bell className="h-4 w-4 text-violet-500" />
-              </CardHeader>
-              <CardContent>
-                <ReactiveMetric
-                  value={data.recentNotifications.filter((n) => !n.read).length}
-                  className="text-2xl font-bold"
-                />
-                <p className="text-xs text-muted-foreground">unread</p>
-              </CardContent>
-            </Card>
-          </Link>
+          <StatCard
+            title="Notifications"
+            value={data.recentNotifications.filter((n) => !n.read).length}
+            description="unread"
+            icon={<Bell className="h-4 w-4 text-violet-500" />}
+            href="/dashboard"
+          />
         </div>
       </ReactiveReveal>
 
@@ -135,7 +107,7 @@ function StudentDashboard({ data, userName }: { data: StudentData; userName?: st
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-base">Upcoming Bookings</CardTitle>
-            <Link href="/bookings">
+            <Link href="/dashboard/bookings">
               <Button variant="ghost" size="sm">
                 View all <ArrowRight className="ml-1 h-3 w-3" />
               </Button>
@@ -198,7 +170,7 @@ function StudentDashboard({ data, userName }: { data: StudentData; userName?: st
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-base">My Projects</CardTitle>
-            <Link href="/projects">
+            <Link href="/dashboard/projects">
               <Button variant="ghost" size="sm">
                 View all <ArrowRight className="ml-1 h-3 w-3" />
               </Button>

@@ -1,10 +1,18 @@
-import { PrismaClient, Role, MachineStatus } from "@prisma/client";
+import {
+  PrismaClient,
+  Role,
+  MachineStatus,
+  AssetKind,
+  AssetStatus,
+  ProcurementStatus,
+  LabRoleType,
+} from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("🌱 Seeding database...");
+  console.log("Seeding database...");
 
   const alphaPassword = process.env.SEED_ALPHA_PASSWORD ?? "AlphaTest@123";
   const hashedPassword = await bcrypt.hash(alphaPassword, 12);
@@ -115,7 +123,7 @@ async function main() {
     },
   });
 
-  console.log("  ✓ Users created");
+  console.log("  Users created");
 
   // ─── Machines ───────────────────────────────────────
   const machines = await Promise.all([
@@ -287,7 +295,7 @@ async function main() {
     }),
   ]);
 
-  console.log(`  ✓ ${machines.length} machines created`);
+  console.log(`  ${machines.length} machines created`);
 
   // ─── Materials ──────────────────────────────────────
   const materials = await Promise.all([
@@ -458,7 +466,7 @@ async function main() {
     }),
   ]);
 
-  console.log(`  ✓ ${materials.length} materials created`);
+  console.log(`  ${materials.length} materials created`);
 
   // ─── Training Records ──────────────────────────────
   const trainingRecords = await Promise.all([
@@ -495,7 +503,7 @@ async function main() {
     }),
   ]);
 
-  console.log(`  ✓ ${trainingRecords.length} training records created`);
+  console.log(`  ${trainingRecords.length} training records created`);
 
   // ─── Sample Project ─────────────────────────────────
   const project = await prisma.project.create({
@@ -513,7 +521,7 @@ async function main() {
     },
   });
 
-  console.log(`  ✓ Project "${project.name}" created`);
+  console.log(`  Project "${project.name}" created`);
 
   // ─── Mentor Availability ────────────────────────────
   await Promise.all([
@@ -534,7 +542,7 @@ async function main() {
     ),
   ]);
 
-  console.log("  ✓ Mentor availability set");
+  console.log("  Mentor availability set");
 
   // ─── Sample Bookings ─────────────────────────────────
   const tomorrow = new Date();
@@ -596,9 +604,264 @@ async function main() {
     }),
   ]);
 
-  console.log("  ✓ Sample bookings created");
+  console.log("  Sample bookings created");
 
-  console.log("\n✅ Seed complete!");
+  // --- Multi-lab backfill ---
+
+  console.log("\n  Starting multi-lab backfill...");
+
+  // ─── Labs ─────────────────────────────────────────────
+  const makerspace = await prisma.lab.upsert({
+    where: { slug: "makerspace" },
+    update: { name: "Plaksha Makerspace" },
+    create: {
+      slug: "makerspace",
+      name: "Plaksha Makerspace",
+      description: "Main fabrication lab with 3D printers, laser cutters, CNC machines, and woodworking equipment.",
+      location: "Building A, Rooms 101-105",
+      contactEmail: "makerspace@plaksha.edu.in",
+      isPublic: true,
+    },
+  });
+
+  const robotics = await prisma.lab.upsert({
+    where: { slug: "robotics" },
+    update: { name: "Plaksha Robotics Lab" },
+    create: {
+      slug: "robotics",
+      name: "Plaksha Robotics Lab",
+      description: "Robotics research and build lab with mechanical and electronics divisions.",
+      location: "Building B, Room 201",
+      contactEmail: "robotics@plaksha.edu.in",
+      isPublic: true,
+    },
+  });
+
+  console.log("  Labs upserted");
+
+  // ─── Lab Divisions (Robotics only) ────────────────────
+  const divMechanical = await prisma.labDivision.upsert({
+    where: { labId_slug: { labId: robotics.id, slug: "mechanical" } },
+    update: { name: "Mechanical" },
+    create: {
+      labId: robotics.id,
+      slug: "mechanical",
+      name: "Mechanical",
+      description: "Mechanical design, fabrication, and assembly.",
+    },
+  });
+
+  const divElectronics = await prisma.labDivision.upsert({
+    where: { labId_slug: { labId: robotics.id, slug: "electronics" } },
+    update: { name: "Electronics" },
+    create: {
+      labId: robotics.id,
+      slug: "electronics",
+      name: "Electronics",
+      description: "PCB design, embedded systems, and sensor integration.",
+    },
+  });
+
+  console.log("  Lab divisions upserted");
+
+  // ─── Backfill labId on existing Machines ────────────────
+  await prisma.machine.updateMany({
+    where: { labId: null },
+    data: { labId: makerspace.id },
+  });
+  console.log("  Machines backfilled to Makerspace");
+
+  // ─── Backfill labId on existing Materials ────────────────
+  await prisma.material.updateMany({
+    where: { labId: null },
+    data: { labId: makerspace.id },
+  });
+  console.log("  Materials backfilled to Makerspace");
+
+  // ─── Backfill labId on existing Bookings ─────────────────
+  await prisma.booking.updateMany({
+    where: { labId: null },
+    data: { labId: makerspace.id },
+  });
+  console.log("  Bookings backfilled to Makerspace");
+
+  // ─── Backfill labId on existing Projects ─────────────────
+  await prisma.project.updateMany({
+    where: { labId: null },
+    data: { labId: makerspace.id },
+  });
+  console.log("  Projects backfilled to Makerspace");
+
+  // ─── Backfill labId on existing MaterialRequests ──────────
+  await prisma.materialRequest.updateMany({
+    where: { labId: null },
+    data: { labId: makerspace.id },
+  });
+  console.log("  MaterialRequests backfilled to Makerspace");
+
+  // ─── Asset rows for each Machine (idempotent via machineId unique) ──
+  // Re-fetch machines so we have their labId populated
+  const allMachines = await prisma.machine.findMany({ where: { labId: makerspace.id } });
+
+  // Map MachineStatus -> AssetStatus
+  function machineStatusToAssetStatus(ms: MachineStatus): AssetStatus {
+    switch (ms) {
+      case MachineStatus.IN_USE:
+        return AssetStatus.IN_USE;
+      case MachineStatus.MAINTENANCE:
+        return AssetStatus.MAINTENANCE;
+      case MachineStatus.RETIRED:
+        return AssetStatus.RETIRED;
+      default:
+        return AssetStatus.AVAILABLE;
+    }
+  }
+
+  for (const m of allMachines) {
+    const existing = await prisma.asset.findUnique({ where: { machineId: m.id } });
+    if (!existing) {
+      await prisma.asset.create({
+        data: {
+          labId: makerspace.id,
+          name: m.name,
+          kind: AssetKind.MACHINE,
+          status: machineStatusToAssetStatus(m.status),
+          location: m.location,
+          machineId: m.id,
+        },
+      });
+    }
+  }
+  console.log(`  Asset rows created for ${allMachines.length} machines`);
+
+  // ─── InventoryItem rows for each Material (idempotent via materialId unique) ──
+  const allMaterials = await prisma.material.findMany({ where: { labId: makerspace.id } });
+
+  for (const mat of allMaterials) {
+    const existing = await prisma.inventoryItem.findUnique({ where: { materialId: mat.id } });
+    if (!existing) {
+      await prisma.inventoryItem.create({
+        data: {
+          labId: makerspace.id,
+          name: mat.name,
+          qtyOnHand: Math.round(mat.currentStock),
+          reorderLevel: Math.round(mat.lowStockThreshold),
+          materialId: mat.id,
+        },
+      });
+    }
+  }
+  console.log(`  InventoryItem rows created for ${allMaterials.length} materials`);
+
+  // ─── Robotics-only Assets (mechanical tools) ─────────────
+  const roboticsAssetNames = ["Caliper Set", "Allen Key Set", "Bench Vise", "Drill Press"];
+  for (const name of roboticsAssetNames) {
+    const existing = await prisma.asset.findFirst({
+      where: { name, labId: robotics.id },
+    });
+    if (!existing) {
+      await prisma.asset.create({
+        data: {
+          labId: robotics.id,
+          divisionId: divMechanical.id,
+          name,
+          kind: AssetKind.TOOL,
+          status: AssetStatus.AVAILABLE,
+        },
+      });
+    }
+  }
+  console.log("  Robotics mechanical assets created");
+
+  // ─── Robotics-only InventoryItems (electronics) ──────────
+  const roboticsItems: Array<{ name: string; qty: number }> = [
+    { name: "Arduino Uno R3", qty: 12 },
+    { name: "ESP32 DevKit", qty: 8 },
+    { name: "10k Resistor (100-pack)", qty: 30 },
+    { name: "Jumper Wire Pack", qty: 25 },
+    { name: "LiPo Battery 11.1V 2200mAh", qty: 4 },
+  ];
+
+  for (const item of roboticsItems) {
+    const existing = await prisma.inventoryItem.findFirst({
+      where: { name: item.name, labId: robotics.id },
+    });
+    if (!existing) {
+      await prisma.inventoryItem.create({
+        data: {
+          labId: robotics.id,
+          divisionId: divElectronics.id,
+          name: item.name,
+          qtyOnHand: item.qty,
+          reorderLevel: 5,
+        },
+      });
+    }
+  }
+  console.log("  Robotics electronics inventory items created");
+
+  // ─── ProcurementRequests (3 rows, spread across next 14 days) ──
+  const now = new Date();
+  const day5 = new Date(now);
+  day5.setDate(now.getDate() + 5);
+  const day10 = new Date(now);
+  day10.setDate(now.getDate() + 10);
+  const day14 = new Date(now);
+  day14.setDate(now.getDate() + 14);
+
+  const procurementSeeds: Array<{
+    labId: string;
+    requestedById: string;
+    itemName: string;
+    quantity: number;
+    vendor: string;
+    expectedArrival: Date;
+    status: ProcurementStatus;
+    notes: string;
+  }> = [
+    {
+      labId: makerspace.id,
+      requestedById: admin.id,
+      itemName: "PLA Filament (White) 5kg",
+      quantity: 5,
+      vendor: "Sculpteo Supplies",
+      expectedArrival: day5,
+      status: ProcurementStatus.NEW,
+      notes: "Stock running low; needed before end-of-month projects.",
+    },
+    {
+      labId: robotics.id,
+      requestedById: mentor1.id,
+      itemName: "LiPo Battery 11.1V 2200mAh (x10)",
+      quantity: 10,
+      vendor: "RobotShop India",
+      expectedArrival: day10,
+      status: ProcurementStatus.APPROVED,
+      notes: "For drone competition team batteries.",
+    },
+    {
+      labId: robotics.id,
+      requestedById: mentor2.id,
+      itemName: "Arduino Mega 2560 (x5)",
+      quantity: 5,
+      vendor: "RoboElements",
+      expectedArrival: day14,
+      status: ProcurementStatus.ORDERED,
+      notes: "Required for autonomous navigation modules.",
+    },
+  ];
+
+  for (const pr of procurementSeeds) {
+    const existing = await prisma.procurementRequest.findFirst({
+      where: { labId: pr.labId, itemName: pr.itemName },
+    });
+    if (!existing) {
+      await prisma.procurementRequest.create({ data: pr });
+    }
+  }
+  console.log("  Procurement requests created");
+
+  console.log("\nSeed complete!");
   console.log("\n  Demo accounts:");
   console.log("  Admin:   admin@plaksha.edu.in");
   console.log("  Mentor:  rajesh.kumar@plaksha.edu.in");

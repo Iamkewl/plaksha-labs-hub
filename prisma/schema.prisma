@@ -67,6 +67,44 @@ enum NotificationType {
   TRAINING_COMPLETED
 }
 
+// --- Plaksha Labs Hub: multi-lab extension ---
+
+enum LabRoleType {
+  MEMBER
+  STAFF
+  LEAD
+}
+
+enum AssetKind {
+  MACHINE
+  TOOL
+  EQUIPMENT
+}
+
+enum AssetStatus {
+  AVAILABLE
+  IN_USE
+  CHECKED_OUT
+  MAINTENANCE
+  RETIRED
+}
+
+enum CheckoutStatus {
+  OUT
+  RETURNED
+  OVERDUE
+  LOST
+}
+
+enum ProcurementStatus {
+  NEW
+  APPROVED
+  ORDERED
+  RECEIVED
+  REJECTED
+  CANCELLED
+}
+
 // ─── Models ─────────────────────────────────────────────
 
 model User {
@@ -97,6 +135,11 @@ model User {
   materialApprovals   MaterialRequest[]  @relation("MaterialApprover")
   materialIssuances   MaterialRequest[]  @relation("MaterialIssuer")
   notifications       Notification[]
+
+  // Multi-lab extension
+  labRoles             LabRole[]
+  checkouts            Checkout[]
+  procurementRequests  ProcurementRequest[]
 
   @@map("users")
 }
@@ -159,9 +202,15 @@ model Machine {
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
 
+  // Multi-lab extension (nullable — additive only)
+  labId String?
+  lab   Lab?    @relation(fields: [labId], references: [id])
+
   trainings Training[]
   bookings  Booking[]
+  asset     Asset?
 
+  @@index([labId])
   @@map("machines")
 }
 
@@ -180,9 +229,15 @@ model Material {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
+  // Multi-lab extension (nullable — additive only)
+  labId String?
+  lab   Lab?    @relation(fields: [labId], references: [id])
+
   bomItems         BomItem[]
   materialRequests MaterialRequest[]
+  inventoryItem    InventoryItem?
 
+  @@index([labId])
   @@map("materials")
 }
 
@@ -216,10 +271,15 @@ model Project {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  // Multi-lab extension (nullable — additive only)
+  labId String?
+  lab   Lab?    @relation(fields: [labId], references: [id])
+
   mentor  User?           @relation("ProjectMentor", fields: [mentorId], references: [id])
   members ProjectMember[]
   boms    Bom[]
 
+  @@index([labId])
   @@map("projects")
 }
 
@@ -290,6 +350,10 @@ model Booking {
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
 
+  // Multi-lab extension (nullable — additive only)
+  labId String?
+  lab   Lab?    @relation(fields: [labId], references: [id])
+
   user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   machine Machine? @relation(fields: [machineId], references: [id])
   mentor  User?    @relation("MentorBookings", fields: [mentorId], references: [id])
@@ -297,6 +361,7 @@ model Booking {
   @@index([userId, startTime])
   @@index([machineId, status])
   @@index([mentorId, status])
+  @@index([labId])
   @@map("bookings")
 }
 
@@ -337,6 +402,10 @@ model MaterialRequest {
   approvedAt      DateTime?
   issuedAt        DateTime?
 
+  // Multi-lab extension (nullable — additive only)
+  labId String?
+  lab   Lab?    @relation(fields: [labId], references: [id])
+
   bom       Bom?     @relation(fields: [bomId], references: [id])
   material  Material @relation(fields: [materialId], references: [id])
   requester User     @relation("MaterialRequester", fields: [requestedBy], references: [id])
@@ -344,6 +413,9 @@ model MaterialRequest {
   approver  User?    @relation("MaterialApprover", fields: [approvedBy], references: [id])
   issuer    User?    @relation("MaterialIssuer", fields: [issuedBy], references: [id])
 
+  procurementRequests ProcurementRequest[]
+
+  @@index([labId])
   @@map("material_requests")
 }
 
@@ -364,4 +436,149 @@ model Notification {
   @@index([userId, read])
   @@index([createdAt])
   @@map("notifications")
+}
+
+// --- Plaksha Labs Hub: multi-lab extension ---
+
+model Lab {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  name         String
+  description  String?
+  location     String?
+  contactEmail String?
+  isPublic     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  divisions           LabDivision[]
+  roles               LabRole[]
+  assets              Asset[]
+  inventoryItems      InventoryItem[]
+  procurementRequests ProcurementRequest[]
+  machines            Machine[]
+  materials           Material[]
+  bookings            Booking[]
+  projects            Project[]
+  materialRequests    MaterialRequest[]
+
+  @@map("labs")
+}
+
+model LabDivision {
+  id          String  @id @default(cuid())
+  labId       String
+  slug        String
+  name        String
+  description String?
+
+  lab            Lab             @relation(fields: [labId], references: [id], onDelete: Cascade)
+  assets         Asset[]
+  inventoryItems InventoryItem[]
+  roles          LabRole[]
+
+  @@unique([labId, slug])
+  @@map("lab_divisions")
+}
+
+model LabRole {
+  id         String      @id @default(cuid())
+  userId     String
+  labId      String
+  divisionId String?
+  role       LabRoleType @default(MEMBER)
+  createdAt  DateTime    @default(now())
+
+  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lab      Lab          @relation(fields: [labId], references: [id], onDelete: Cascade)
+  division LabDivision? @relation(fields: [divisionId], references: [id])
+
+  @@unique([userId, labId, divisionId])
+  @@map("lab_roles")
+}
+
+model Asset {
+  id         String      @id @default(cuid())
+  labId      String
+  divisionId String?
+  name       String
+  kind       AssetKind
+  status     AssetStatus @default(AVAILABLE)
+  serialNo   String?
+  location   String?
+  machineId  String?     @unique
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  lab      Lab          @relation(fields: [labId], references: [id])
+  division LabDivision? @relation(fields: [divisionId], references: [id])
+  machine  Machine?     @relation(fields: [machineId], references: [id])
+  checkouts Checkout[]
+
+  @@index([status])
+  @@map("assets")
+}
+
+model InventoryItem {
+  id           String   @id @default(cuid())
+  labId        String
+  divisionId   String?
+  name         String
+  sku          String?
+  qtyOnHand    Int      @default(0)
+  reorderLevel Int      @default(0)
+  location     String?
+  materialId   String?  @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  lab      Lab          @relation(fields: [labId], references: [id])
+  division LabDivision? @relation(fields: [divisionId], references: [id])
+  material Material?    @relation(fields: [materialId], references: [id])
+  checkouts Checkout[]
+
+  @@map("inventory_items")
+}
+
+model Checkout {
+  id              String         @id @default(cuid())
+  userId          String
+  assetId         String?
+  inventoryItemId String?
+  quantity        Int            @default(1)
+  checkedOutAt    DateTime       @default(now())
+  dueAt           DateTime?
+  returnedAt      DateTime?
+  status          CheckoutStatus @default(OUT)
+  notes           String?
+
+  user          User           @relation(fields: [userId], references: [id])
+  asset         Asset?         @relation(fields: [assetId], references: [id])
+  inventoryItem InventoryItem? @relation(fields: [inventoryItemId], references: [id])
+
+  @@index([status])
+  @@map("checkouts")
+}
+
+model ProcurementRequest {
+  id                      String            @id @default(cuid())
+  labId                   String
+  requestedById           String
+  itemName                String
+  quantity                Int               @default(1)
+  vendor                  String?
+  expectedArrival         DateTime?
+  status                  ProcurementStatus @default(NEW)
+  notes                   String?
+  linkedMaterialRequestId String?
+  createdAt               DateTime          @default(now())
+  updatedAt               DateTime          @updatedAt
+
+  lab                   Lab              @relation(fields: [labId], references: [id])
+  requestedBy           User             @relation(fields: [requestedById], references: [id])
+  linkedMaterialRequest MaterialRequest? @relation(fields: [linkedMaterialRequestId], references: [id])
+
+  @@index([status])
+  @@index([expectedArrival])
+  @@map("procurement_requests")
 }
