@@ -24,6 +24,14 @@
     --input: 240 9% 30%;
     --ring: 239 100% 88%;
     --radius: 0.9rem;
+
+    /* Lab accent colors */
+    --lab-makerspace: 27 96% 61%;
+    --lab-makerspace-subtle: 27 96% 61% / 0.12;
+    --lab-makerspace-border: 27 96% 61% / 0.30;
+    --lab-robotics: 239 100% 78%;
+    --lab-robotics-subtle: 239 100% 78% / 0.12;
+    --lab-robotics-border: 239 100% 78% / 0.30;
   }
 
   .light {
@@ -46,6 +54,14 @@
     --border: 214 31% 88%;
     --input: 214 31% 88%;
     --ring: 204 100% 20%;
+
+    /* Lab accent colors — light mode */
+    --lab-makerspace: 27 90% 45%;
+    --lab-makerspace-subtle: 27 90% 45% / 0.08;
+    --lab-makerspace-border: 27 90% 45% / 0.25;
+    --lab-robotics: 225 80% 50%;
+    --lab-robotics-subtle: 225 80% 50% / 0.08;
+    --lab-robotics-border: 225 80% 50% / 0.25;
   }
 }
 
@@ -103,5 +119,110 @@
 
   .section-kicker {
     @apply text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-primary/80;
+  }
+
+  /* Lab-specific gradient banners */
+  .lab-makerspace-gradient {
+    background: linear-gradient(135deg,
+      hsl(27 96% 61% / 0.18) 0%,
+      hsl(40 90% 55% / 0.08) 60%,
+      transparent 100%
+    );
+  }
+
+  .lab-robotics-gradient {
+    background: linear-gradient(135deg,
+      hsl(239 100% 78% / 0.18) 0%,
+      hsl(220 90% 65% / 0.08) 60%,
+      transparent 100%
+    );
+  }
+
+  /* Hero ambient glow — specific to landing */
+  .hero-glow-makerspace {
+    background: radial-gradient(ellipse 60% 40% at 80% 0%,
+      hsl(27 96% 61% / 0.14),
+      transparent 70%
+    );
+  }
+
+  .hero-glow-robotics {
+    background: radial-gradient(ellipse 60% 40% at 20% 0%,
+      hsl(239 100% 78% / 0.14),
+      transparent 70%
+    );
+  }
+
+  /* Stagger-in animation for card grids */
+  @keyframes stagger-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .stagger-in {
+    animation: stagger-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .stagger-in-1 { animation-delay: 0ms; }
+  .stagger-in-2 { animation-delay: 60ms; }
+  .stagger-in-3 { animation-delay: 120ms; }
+  .stagger-in-4 { animation-delay: 180ms; }
+  .stagger-in-5 { animation-delay: 240ms; }
+  .stagger-in-6 { animation-delay: 300ms; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stagger-in,
+    .stagger-in-1,
+    .stagger-in-2,
+    .stagger-in-3,
+    .stagger-in-4,
+    .stagger-in-5,
+    .stagger-in-6 {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* Subtle top-bar stripe accent for lab cards */
+  .lab-stripe-makerspace {
+    border-top: 2px solid hsl(27 96% 61% / 0.65);
+  }
+
+  .lab-stripe-robotics {
+    border-top: 2px solid hsl(239 100% 78% / 0.65);
+  }
+
+  /* Row hover for dense tables */
+  .table-row-hover {
+    @apply transition-colors duration-100 hover:bg-muted/40;
+  }
+
+  /* Nav underline indicator with transition */
+  .nav-indicator {
+    position: relative;
+  }
+
+  .nav-indicator::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: hsl(var(--primary));
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .nav-indicator[aria-current="page"]::after {
+    transform: scaleX(1);
   }
 }

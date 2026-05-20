@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import { getDashboardStats } from "@/app/actions/analytics";
+import { getStudentDashboardStats } from "@/app/actions/dashboard";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -40,8 +41,19 @@ export default async function DashboardPage() {
 
   const data = await getDashboardStats();
 
+  // Augment with checkout stats from the new labs-hub action
+  let activeCheckouts = 0;
+  try {
+    if (data.role === "STUDENT") {
+      const labStats = await getStudentDashboardStats(session.user.id);
+      activeCheckouts = labStats.activeCheckouts;
+    }
+  } catch {
+    // Non-critical — dashboard still renders without checkout count
+  }
+
   if (data.role === "STUDENT") {
-    return <StudentDashboardHub data={data} userName={session.user.name} />;
+    return <StudentDashboardHub data={data} userName={session.user.name} activeCheckouts={activeCheckouts} />;
   }
   if (data.role === "MENTOR") {
     return <MentorDashboard data={data} userName={session.user.name} />;
@@ -53,7 +65,7 @@ export default async function DashboardPage() {
 
 type StudentData = Extract<Awaited<ReturnType<typeof getDashboardStats>>, { role: "STUDENT" }>;
 
-function StudentDashboardHub({ data, userName }: { data: StudentData; userName?: string | null }) {
+function StudentDashboardHub({ data, userName, activeCheckouts }: { data: StudentData; userName?: string | null; activeCheckouts?: number }) {
   return (
     <div className="space-y-6">
       <ReactiveReveal className="space-y-1" translateY={0.35}>
@@ -85,10 +97,11 @@ function StudentDashboardHub({ data, userName }: { data: StudentData; userName?:
           />
 
           <StatCard
-            title="Pending Requests"
-            value={data.pendingRequests}
-            description="material requests"
-            icon={<ClipboardList className="h-4 w-4 text-amber-500" />}
+            title="Active Checkouts"
+            value={activeCheckouts ?? 0}
+            description="tools checked out"
+            icon={<Package className="h-4 w-4 text-amber-500" />}
+            href="/dashboard/checkouts"
           />
 
           <StatCard
@@ -129,13 +142,13 @@ function StudentDashboardHub({ data, userName }: { data: StudentData; userName?:
                 {data.upcomingBookings.slice(0, 3).map((b) => (
                   <div
                     key={b.id}
-                    className="flex items-center gap-3 rounded-lg border p-3"
+                    className="flex items-center gap-3 rounded-lg border border-border/50 bg-muted/20 p-3 transition-colors hover:bg-muted/30"
                   >
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
                       {b.machine ? (
-                        <Wrench className="h-4 w-4 text-blue-600" />
+                        <Wrench className="h-4 w-4 text-primary" />
                       ) : (
-                        <Users className="h-4 w-4 text-blue-600" />
+                        <Users className="h-4 w-4 text-primary" />
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -191,7 +204,7 @@ function StudentDashboardHub({ data, userName }: { data: StudentData; userName?:
               <div className="space-y-3">
                 {data.activeProjects.slice(0, 4).map((p) => (
                   <Link key={p.id} href={`/projects/${p.id}`}>
-                    <div className="flex items-center justify-between rounded-lg border p-3 hover:bg-muted/50 transition-colors">
+                    <div className="flex items-center justify-between rounded-lg border border-border/50 bg-muted/20 p-3 hover:bg-muted/30 transition-colors">
                       <div className="min-w-0">
                         <p className="text-sm font-medium truncate">{p.name}</p>
                         <p className="text-xs text-muted-foreground">
@@ -228,8 +241,8 @@ function StudentDashboardHub({ data, userName }: { data: StudentData; userName?:
                 {data.recentNotifications.slice(0, 4).map((n) => (
                   <div
                     key={n.id}
-                    className={`flex items-start gap-3 rounded-md p-2 text-sm ${
-                      !n.read ? "bg-blue-50/50" : ""
+                    className={`flex items-start gap-3 rounded-md p-2 text-sm transition-colors ${
+                      !n.read ? "bg-primary/5 ring-1 ring-primary/10" : "hover:bg-muted/20"
                     }`}
                   >
                     <Bell className="mt-0.5 h-4 w-4 text-muted-foreground shrink-0" />
@@ -353,8 +366,8 @@ function MentorDashboard({ data, userName }: { data: MentorData; userName?: stri
                     key={s.id}
                     className="flex items-center gap-3 rounded-lg border p-3"
                   >
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-violet-50">
-                      <Users className="h-4 w-4 text-violet-600" />
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-violet-500/15">
+                      <Users className="h-4 w-4 text-violet-400" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">
@@ -411,8 +424,8 @@ function MentorDashboard({ data, userName }: { data: MentorData; userName?: stri
                     key={s.id}
                     className="flex items-center gap-3 rounded-lg border p-3"
                   >
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-50">
-                      <Users className="h-4 w-4 text-emerald-600" />
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500/15">
+                      <Users className="h-4 w-4 text-emerald-400" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">
@@ -451,7 +464,7 @@ function MentorDashboard({ data, userName }: { data: MentorData; userName?: stri
               <div className="space-y-3">
                 {data.supervisedProjects.map((p) => (
                   <Link key={p.id} href={`/projects/${p.id}`}>
-                    <div className="rounded-lg border p-3 hover:bg-muted/50 transition-colors">
+                    <div className="rounded-lg border border-border/50 bg-muted/20 p-3 hover:bg-muted/30 transition-colors">
                       <p className="text-sm font-medium">{p.name}</p>
                       <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
                         <span className="flex items-center gap-1">
@@ -556,83 +569,37 @@ function AdminDashboard({ data, userName }: { data: AdminData; userName?: string
       {/* KPI Cards */}
       <ReactiveReveal delay={0.04} translateY={0.45}>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          <Link href="/admin/users">
-            <Card className="hover:shadow-md transition-shadow cursor-pointer">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Total Users
-                </CardTitle>
-                <Users className="h-4 w-4 text-blue-500" />
-              </CardHeader>
-              <CardContent>
-                <ReactiveMetric value={data.totalUsers} className="text-2xl font-bold" />
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Link href="/catalog/machines">
-            <Card className="hover:shadow-md transition-shadow cursor-pointer">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Machines
-                </CardTitle>
-                <Wrench className="h-4 w-4 text-emerald-500" />
-              </CardHeader>
-              <CardContent>
-                <ReactiveMetric value={data.totalMachines} className="text-2xl font-bold" />
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Bookings Today
-              </CardTitle>
-              <CalendarDays className="h-4 w-4 text-violet-500" />
-            </CardHeader>
-            <CardContent>
-              <ReactiveMetric value={data.bookingsToday} className="text-2xl font-bold" />
-            </CardContent>
-          </Card>
-
-          <Link href="/admin/material-requests">
-            <Card className="hover:shadow-md transition-shadow cursor-pointer">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Pending Requests
-                </CardTitle>
-                <ClipboardList className="h-4 w-4 text-amber-500" />
-              </CardHeader>
-              <CardContent>
-                <ReactiveMetric
-                  value={data.pendingMaterialRequests + data.pendingBoms}
-                  className="text-2xl font-bold"
-                />
-                <p className="text-xs text-muted-foreground">
-                  {data.pendingMaterialRequests} material · {data.pendingBoms} BOM
-                </p>
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Card className={data.lowStockCount > 0 ? "border-orange-200" : ""}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Low Stock
-              </CardTitle>
-              <AlertTriangle
-                className={`h-4 w-4 ${data.lowStockCount > 0 ? "text-orange-500" : "text-muted-foreground"}`}
-              />
-            </CardHeader>
-            <CardContent>
-              <ReactiveMetric
-                value={data.lowStockCount}
-                className={`text-2xl font-bold ${data.lowStockCount > 0 ? "text-orange-600" : ""}`}
-              />
-              <p className="text-xs text-muted-foreground">items below threshold</p>
-            </CardContent>
-          </Card>
+          <StatCard
+            title="Total Users"
+            value={data.totalUsers}
+            icon={<Users className="h-4 w-4 text-blue-500" />}
+            href="/admin/users"
+          />
+          <StatCard
+            title="Machines"
+            value={data.totalMachines}
+            icon={<Wrench className="h-4 w-4 text-emerald-500" />}
+            href="/catalog/machines"
+          />
+          <StatCard
+            title="Bookings Today"
+            value={data.bookingsToday}
+            icon={<CalendarDays className="h-4 w-4 text-violet-500" />}
+          />
+          <StatCard
+            title="Pending Requests"
+            value={data.pendingMaterialRequests + data.pendingBoms}
+            description={`${data.pendingMaterialRequests} material · ${data.pendingBoms} BOM`}
+            icon={<ClipboardList className="h-4 w-4 text-amber-500" />}
+            href="/admin/material-requests"
+          />
+          <StatCard
+            title="Low Stock"
+            value={data.lowStockCount}
+            description="items below threshold"
+            icon={<AlertTriangle className={`h-4 w-4 ${data.lowStockCount > 0 ? "text-orange-500" : "text-muted-foreground"}`} />}
+            variant={data.lowStockCount > 0 ? "warning" : "default"}
+          />
         </div>
       </ReactiveReveal>
 
@@ -640,13 +607,13 @@ function AdminDashboard({ data, userName }: { data: AdminData; userName?: string
         <div className="grid gap-6 lg:grid-cols-2">
         {/* Low Stock Alert */}
         {data.lowStockItems.length > 0 && (
-          <Card className="border-orange-200 bg-orange-50/30">
+          <Card className="border-orange-500/25 bg-orange-500/5">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base text-orange-800">
+              <CardTitle className="flex items-center gap-2 text-base text-orange-400">
                 <AlertTriangle className="h-4 w-4" />
                 Low Stock Alert
               </CardTitle>
-              <CardDescription className="text-orange-700/70">
+              <CardDescription>
                 Materials below their restock threshold
               </CardDescription>
             </CardHeader>

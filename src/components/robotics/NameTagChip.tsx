@@ -10,10 +10,19 @@ function getInitials(name: string): string {
     .join("");
 }
 
-// Deterministic pastel accent per division
-const divisionColor: Record<RoboticsActiveUser["division"], string> = {
-  mechanical: "bg-amber-500/20 text-amber-300 border-amber-500/30",
-  electronics: "bg-violet-500/20 text-violet-300 border-violet-500/30",
+// Division accent classes — aligned with global lab tokens where possible
+const divisionColor: Record<
+  RoboticsActiveUser["division"],
+  { avatar: string; badge: string }
+> = {
+  mechanical: {
+    avatar: "bg-amber-500/18 text-amber-300 border-amber-500/30",
+    badge: "border-amber-500/25 bg-amber-500/10 text-amber-300",
+  },
+  electronics: {
+    avatar: "bg-violet-500/18 text-violet-300 border-violet-500/30",
+    badge: "border-violet-500/25 bg-violet-500/10 text-violet-300",
+  },
 };
 
 interface NameTagChipProps {
@@ -23,12 +32,12 @@ interface NameTagChipProps {
 
 export function NameTagChip({ user, className }: NameTagChipProps) {
   const initials = getInitials(user.name);
-  const accentClass = divisionColor[user.division];
+  const colors = divisionColor[user.division];
 
   return (
     <div
       className={cn(
-        "flex flex-col items-center gap-2 rounded-xl border border-white/10 bg-card/60 p-4 text-center hover:bg-card/80 transition-colors",
+        "flex flex-col items-center gap-2.5 rounded-xl border border-white/10 bg-card/70 p-5 text-center transition-all duration-200 hover:border-white/18 hover:bg-card/85",
         className
       )}
     >
@@ -37,20 +46,22 @@ export function NameTagChip({ user, className }: NameTagChipProps) {
         aria-hidden="true"
         className={cn(
           "flex h-12 w-12 items-center justify-center rounded-full border text-sm font-semibold",
-          accentClass
+          colors.avatar
         )}
       >
         {initials}
       </span>
 
       {/* Name */}
-      <p className="text-sm font-medium text-foreground leading-tight">{user.name}</p>
+      <p className="text-sm font-semibold text-foreground leading-tight">
+        {user.name}
+      </p>
 
       {/* Division chip */}
       <span
         className={cn(
-          "rounded-md border px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide",
-          accentClass
+          "rounded-full border px-2.5 py-0.5 text-[0.64rem] font-semibold uppercase tracking-wider",
+          colors.badge
         )}
       >
         {user.division}
@@ -58,12 +69,14 @@ export function NameTagChip({ user, className }: NameTagChipProps) {
 
       {/* Current tool */}
       {user.currentToolName ? (
-        <p className="text-[0.72rem] text-muted-foreground leading-snug">
+        <p className="text-[0.72rem] leading-snug text-muted-foreground">
           Using:{" "}
           <span className="text-foreground/80">{user.currentToolName}</span>
         </p>
       ) : (
-        <p className="text-[0.72rem] text-muted-foreground">No tool checked out</p>
+        <p className="text-[0.72rem] text-muted-foreground/60">
+          No tool checked out
+        </p>
       )}
     </div>
   );

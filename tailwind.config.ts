@@ -43,6 +43,9 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        /* Lab semantic tokens */
+        "lab-makerspace": "hsl(var(--lab-makerspace))",
+        "lab-robotics": "hsl(var(--lab-robotics))",
       },
       borderRadius: {
         lg: "var(--radius)",

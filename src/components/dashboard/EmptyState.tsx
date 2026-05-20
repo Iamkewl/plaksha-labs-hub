@@ -12,15 +12,27 @@ interface EmptyStateProps {
   };
 }
 
-export function EmptyState({ icon: Icon, title, description, action }: EmptyStateProps) {
+export function EmptyState({
+  icon: Icon,
+  title,
+  description,
+  action,
+}: EmptyStateProps) {
   return (
-    <div className="py-8 text-center">
-      <Icon className="mx-auto h-8 w-8 text-muted-foreground/50" />
-      <p className="mt-2 text-sm font-medium">{title}</p>
-      <p className="mt-1 text-xs text-muted-foreground">{description}</p>
+    <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border/50 bg-muted/15 px-6 py-14 text-center">
+      <span
+        className="flex h-12 w-12 items-center justify-center rounded-full bg-muted/50"
+        aria-hidden="true"
+      >
+        <Icon className="h-5 w-5 text-muted-foreground/60" />
+      </span>
+      <p className="mt-4 text-sm font-semibold text-foreground">{title}</p>
+      <p className="mt-1.5 max-w-xs text-xs leading-relaxed text-muted-foreground">
+        {description}
+      </p>
       {action && (
-        <Link href={action.href}>
-          <Button variant="outline" size="sm" className="mt-4">
+        <Link href={action.href} className="mt-5">
+          <Button variant="outline" size="sm">
             {action.label}
           </Button>
         </Link>
