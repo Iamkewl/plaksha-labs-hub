@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { AlertTriangle, RotateCcw, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
-export default function AppError({
+export default function AdminError({
   error,
   reset,
 }: {
@@ -14,7 +14,7 @@ export default function AppError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error("[AppError]", error);
+    console.error("[AdminError]", error);
   }, [error]);
 
   return (
@@ -27,11 +27,13 @@ export default function AppError({
             </div>
           </div>
           <div className="space-y-1">
-            <h2 className="text-lg font-semibold text-foreground">Page Error</h2>
+            <h2 className="text-lg font-semibold text-foreground">
+              Admin page error
+            </h2>
             <p className="text-sm leading-relaxed text-muted-foreground">
               {error.message === "Unauthorized"
-                ? "You don't have permission to view this page."
-                : "Something went wrong loading this page."}
+                ? "You don't have admin access. Contact your administrator."
+                : "Something went wrong loading the admin panel."}
             </p>
             {error.digest && (
               <p className="font-mono text-xs text-muted-foreground/60">

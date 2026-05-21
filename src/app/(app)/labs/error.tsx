@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { AlertTriangle, RotateCcw, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
-export default function AppError({
+export default function AppLabsError({
   error,
   reset,
 }: {
@@ -14,7 +14,7 @@ export default function AppError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error("[AppError]", error);
+    console.error("[AppLabsError]", error);
   }, [error]);
 
   return (
@@ -27,11 +27,11 @@ export default function AppError({
             </div>
           </div>
           <div className="space-y-1">
-            <h2 className="text-lg font-semibold text-foreground">Page Error</h2>
+            <h2 className="text-lg font-semibold text-foreground">
+              Failed to load labs
+            </h2>
             <p className="text-sm leading-relaxed text-muted-foreground">
-              {error.message === "Unauthorized"
-                ? "You don't have permission to view this page."
-                : "Something went wrong loading this page."}
+              There was an error loading the labs section. Please try again.
             </p>
             {error.digest && (
               <p className="font-mono text-xs text-muted-foreground/60">
