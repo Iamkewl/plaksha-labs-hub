@@ -73,22 +73,20 @@ git push
 |---|---|---|
 | `DATABASE_URL` | pooled Neon URL from step 1 | Required |
 | `DIRECT_URL` | un-pooled Neon URL from step 1 | Required for migrations |
-| `AUTH_SECRET` | generated, see below | Required |
-| `AUTH_URL` | leave blank for now | Vercel will inject `VERCEL_URL` automatically; you can fill this in after the first deploy with the real `https://plaksha-labs-hub.vercel.app` |
+| `AUTH_SECRET` | `2hZxHRstWU/ZptuymsokA+Nfz6dkZDRYbmkglPrVDww=` | Pre-generated for this prototype |
+| `AUTH_URL` | leave blank for now | Fill in after the first deploy with the real `https://plaksha-labs-hub.vercel.app` |
 | `AUTH_TRUST_HOST` | `true` | Required for NextAuth on Vercel |
 | `AUTH_DEV_BYPASS` | `false` | Disables the dev shortcut buttons |
 | `NEXT_PUBLIC_AUTH_DEV_BYPASS` | `false` | Same, client-side |
 | `AUTH_CREDENTIALS_ENABLED` | `true` | Keeps the email+password form active |
 | `NEXT_PUBLIC_AUTH_CREDENTIALS_ENABLED` | `true` | Same, client-side |
-| `SEED_ALPHA_PASSWORD` | strong password you pick | The initial admin password; you'll log in with `admin@plaksha.edu.in` + this value |
+| `SEED_ALPHA_PASSWORD` | `PlakshaProto2026!` | Initial admin password — login as `admin@plaksha.edu.in` + this value |
 
-Generate `AUTH_SECRET` locally:
+**Login after seeding:**
+- Email: `admin@plaksha.edu.in`
+- Password: `PlakshaProto2026!`
 
-```bash
-openssl rand -base64 32
-```
-
-(On Windows PowerShell: `[Convert]::ToBase64String((1..32 | ForEach-Object { Get-Random -Maximum 256 }))`)
+(These are baked in for the prototype. Rotate before going to real users.)
 
 7. Click **Deploy**. First build takes 3–5 min.
 
@@ -102,7 +100,7 @@ Vercel doesn't run migrations automatically. You do this **once** from your loca
 # Export production env locally just for this command
 $env:DATABASE_URL = "<the pooled URL from Neon>"
 $env:DIRECT_URL   = "<the un-pooled URL from Neon>"
-$env:SEED_ALPHA_PASSWORD = "<the same password you set in Vercel>"
+$env:SEED_ALPHA_PASSWORD = "PlakshaProto2026!"
 
 # Apply schema
 npx prisma migrate deploy
