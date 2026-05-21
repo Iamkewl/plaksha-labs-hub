@@ -1,141 +1,179 @@
-import Link from "next/link";
-import { ArrowRight, FlaskConical } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { ReactiveReveal } from "@/components/once-ui/reactive-elements";
-import { MagneticButton } from "@/components/motion/MagneticButton";
+import { GraduationCap, Users, ShieldCheck } from "lucide-react";
+import { RoleCard } from "@/components/public/RoleCard";
 
+/**
+ * Hero — rich teal band, min 70vh.
+ *
+ * Left half: kicker label + huge headline "Book. / Build. / Showcase." +
+ *   descriptor + two inline CTAs.
+ * Right half: three role cards.
+ *
+ * Layers (back → front):
+ *   1. Teal-to-deep-teal gradient base.
+ *   2. Fine dot-grid (white 7% on 24px grid).
+ *   3. Three drifting blurred light orbs (CSS-only, 18s–30s loops).
+ *   4. Subtle diagonal noise texture via SVG data-URI (adds grain/depth).
+ *   5. Content.
+ *
+ * Underline on "Showcase." — CSS width transition from 0→100% after a 200ms
+ * delay. Uses animation-fill-mode: both so it plays on load. Pure CSS — no JS.
+ *
+ * Headline: clamp(4.5rem, 10vw, 8rem) — genuinely large at every viewport.
+ *
+ * NOTE: <style> tag is legal in Next.js App Router RSC — hoisted to <head>.
+ */
 export function Hero() {
   return (
-    <section
-      aria-labelledby="hero-heading"
-      className="aurora-mesh aurora-mesh-extra relative mx-auto max-w-7xl px-4 pb-24 pt-20 sm:px-6 lg:px-8 lg:pb-36 lg:pt-32"
-    >
-      {/* Ambient dual-lab glow — kept for additive depth below aurora mesh */}
-      <div
-        className="pointer-events-none absolute inset-0 overflow-hidden"
-        aria-hidden="true"
+    <>
+      <section
+        aria-labelledby="hero-heading"
+        className="relative w-full overflow-hidden"
+        style={{ minHeight: "70vh" }}
       >
-        <div className="hero-glow-makerspace absolute inset-0" />
-        <div className="hero-glow-robotics absolute inset-0" />
-        {/* Bottom section fade — smooth transition into the card grid below */}
-        <div className="section-fade-in absolute bottom-0 left-0 right-0 h-32" />
-      </div>
+        {/* Layer 1: teal-to-deep-teal gradient base */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(150deg, hsl(182 78% 36%) 0%, hsl(182 80% 30%) 45%, hsl(182 81% 20%) 100%)",
+          }}
+        />
 
-      <div className="relative max-w-3xl">
-        {/* Kicker badge */}
-        <ReactiveReveal delay={0} translateY={0.4}>
-          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.05] px-4 py-1.5 backdrop-blur-sm transition-colors duration-200 hover:border-white/[0.20] hover:bg-white/[0.08]">
-            <FlaskConical
-              className="h-3.5 w-3.5 text-primary/70"
-              aria-hidden="true"
-            />
-            <span className="section-kicker" style={{ letterSpacing: "0.16em" }}>
-              Plaksha University &middot; Labs Hub
-            </span>
-          </div>
-        </ReactiveReveal>
+        {/* Layer 2: dot-grid */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle, rgba(255,255,255,0.09) 1px, transparent 1px)",
+            backgroundSize: "24px 24px",
+          }}
+        />
 
-        {/* Headline — display weight, hero tracking */}
-        <ReactiveReveal delay={0.07} translateY={0.55}>
-          <h1
-            id="hero-heading"
-            className="plaksha-headline text-5xl font-bold leading-[1.08] text-foreground sm:text-6xl lg:text-7xl"
-          >
-            One platform.
-            <br />
-            {/* Gradient text — animated subtle brightness shift via CSS */}
-            <span
-              className="bg-gradient-to-r from-primary via-indigo-300 to-primary/55 bg-clip-text text-transparent"
-              style={{
-                backgroundSize: "200% auto",
-                animation: "ribbon-sweep 6s linear infinite",
-              }}
-            >
-              Every lab
-            </span>{" "}
-            on campus.
-          </h1>
-        </ReactiveReveal>
+        {/* Layer 3: grain texture — adds tactile depth */}
+        <div
+          aria-hidden="true"
+          className="pl-hero-grain pointer-events-none absolute inset-0"
+        />
 
-        {/* Sub-copy */}
-        <ReactiveReveal delay={0.14} translateY={0.45}>
-          <p className="mt-6 max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Makerspace. Robotics Lab. Machine catalogs, bookings, component
-            inventory, mentor sessions&mdash;managed together in one operating
-            surface built for Plaksha students.
-          </p>
-        </ReactiveReveal>
+        {/* Layer 4: drifting light orbs */}
+        <div aria-hidden="true" className="pl-hero-orb pl-hero-orb-1" />
+        <div aria-hidden="true" className="pl-hero-orb pl-hero-orb-2" />
+        <div aria-hidden="true" className="pl-hero-orb pl-hero-orb-3" />
 
-        {/* CTA row */}
-        <ReactiveReveal delay={0.20} translateY={0.35}>
-          <div className="mt-10 flex flex-wrap items-center gap-3">
-            {/* Primary CTA — magnetic pull + glow halo */}
-            <MagneticButton strength={0.30}>
-              <Link href="/labs" aria-label="Explore labs at Plaksha" className="relative">
-                {/* Glow halo behind button — animate-glow-pulse */}
-                <span
-                  aria-hidden="true"
-                  className="absolute inset-0 -z-10 rounded-lg blur-md"
-                  style={{
-                    background: "hsl(239 100% 88% / 0.35)",
-                    animation: "glow-pulse 3s ease-in-out infinite",
-                  }}
-                />
-                <Button
-                  size="lg"
-                  className="relative gap-2 shadow-[0_8px_24px_-8px_hsl(239_100%_88%/0.45)] transition-all duration-200 hover:shadow-[0_12px_32px_-8px_hsl(239_100%_88%/0.60)] hover:-translate-y-px"
-                >
-                  Explore Labs{" "}
-                  <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true" />
-                </Button>
-              </Link>
-            </MagneticButton>
-            <Link href="/auth/signin">
-              <Button
-                variant="outline"
-                size="lg"
-                className="transition-all duration-200 hover:border-white/[0.25] hover:bg-white/[0.06]"
+        {/* Bottom-edge feather — blends hero into the section-fade-teal div */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute bottom-0 left-0 right-0 h-24"
+          style={{
+            background:
+              "linear-gradient(to bottom, transparent 0%, hsl(182 81% 20% / 0.6) 100%)",
+          }}
+        />
+
+        {/* Content */}
+        <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
+
+            {/* Left column: kicker + headline + descriptor */}
+            <div>
+              {/* Kicker — tracks in from below */}
+              <p
+                className="pl-hero-kicker mb-5 text-xs font-semibold uppercase tracking-widest text-white/60"
               >
-                Sign In
-              </Button>
-            </Link>
-          </div>
-        </ReactiveReveal>
+                Plaksha Labs Hub
+              </p>
 
-        {/* Lab pills */}
-        <ReactiveReveal delay={0.28} translateY={0.28}>
-          <div
-            className="mt-12 flex flex-wrap items-center gap-3"
-            aria-label="Available labs"
-          >
-            <span className="text-xs uppercase tracking-widest text-muted-foreground/50">
-              Labs
-            </span>
+              {/* Headline — each word staggers in */}
+              <h1
+                id="hero-heading"
+                className="plaksha-headline font-bold leading-[0.95] text-white"
+                style={{ fontSize: "clamp(4.5rem, 10vw, 8rem)" }}
+              >
+                <span className="pl-hero-word pl-hero-word-1 block">
+                  Book.
+                </span>
+                <span className="pl-hero-word pl-hero-word-2 block">
+                  Build.
+                </span>
+                {/* "Showcase." with animated yellow underline */}
+                <span className="pl-hero-word pl-hero-word-3 relative inline-block">
+                  Showcase.
+                  <span aria-hidden="true" className="pl-hero-underline" />
+                </span>
+              </h1>
 
-            {/* Makerspace pill */}
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-[hsl(27_96%_61%/0.32)] bg-[hsl(27_96%_61%/0.07)] px-3 py-1 text-xs font-medium text-[hsl(var(--lab-makerspace))] transition-colors duration-150 hover:border-[hsl(27_96%_61%/0.50)] hover:bg-[hsl(27_96%_61%/0.12)]">
-              <span
-                className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--lab-makerspace))] status-dot-open"
-                aria-hidden="true"
+              {/* Descriptor + CTAs — fade in together */}
+              <div className="pl-hero-body">
+                <p className="mt-8 max-w-[38ch] text-base leading-relaxed text-white/70 sm:text-lg">
+                  The unified platform for Plaksha students to reserve
+                  equipment, collaborate with mentors, and share what you
+                  make.
+                </p>
+
+                {/* Inline CTAs baked into the hero — higher conversion than a separate strip */}
+                <div className="mt-8 flex flex-wrap items-center gap-3">
+                  <a
+                    href="/labs"
+                    className="
+                      inline-flex items-center rounded-full
+                      bg-white px-6 py-2.5
+                      text-sm font-semibold text-[hsl(182_80%_28%)]
+                      shadow-lg
+                      transition-all duration-200
+                      hover:-translate-y-px hover:shadow-xl
+                      focus-visible:outline-none focus-visible:ring-2
+                      focus-visible:ring-white focus-visible:ring-offset-2
+                      focus-visible:ring-offset-[hsl(182_80%_30%)]
+                    "
+                  >
+                    Explore Labs
+                  </a>
+                  <a
+                    href="/auth/signin"
+                    className="
+                      inline-flex items-center rounded-full
+                      border border-white/30 bg-white/10 px-6 py-2.5
+                      text-sm font-semibold text-white
+                      backdrop-blur-sm
+                      transition-all duration-200
+                      hover:bg-white/20 hover:border-white/50
+                      focus-visible:outline-none focus-visible:ring-2
+                      focus-visible:ring-white focus-visible:ring-offset-2
+                      focus-visible:ring-offset-[hsl(182_80%_30%)]
+                    "
+                  >
+                    Sign in
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Right column: role cards */}
+            <div
+              className="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-3"
+              aria-label="Platform roles"
+            >
+              <RoleCard
+                icon={GraduationCap}
+                role="Student"
+                blurb="Request machine time, join sessions, and submit your builds for review."
               />
-              Makerspace
-            </span>
-
-            {/* Robotics pill */}
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-[hsl(239_100%_78%/0.32)] bg-[hsl(239_100%_78%/0.07)] px-3 py-1 text-xs font-medium text-[hsl(var(--lab-robotics))] transition-colors duration-150 hover:border-[hsl(239_100%_78%/0.50)] hover:bg-[hsl(239_100%_78%/0.12)]">
-              <span
-                className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--lab-robotics))]"
-                aria-hidden="true"
+              <RoleCard
+                icon={Users}
+                role="Mentor"
+                blurb="Approve requests, guide projects, and track student progress across labs."
               />
-              Robotics Lab
-            </span>
-
-            <span className="text-xs text-muted-foreground/35">
-              + more coming
-            </span>
+              <RoleCard
+                icon={ShieldCheck}
+                role="Admin"
+                blurb="Manage resources, oversee access permissions, and publish announcements."
+              />
+            </div>
           </div>
-        </ReactiveReveal>
-      </div>
-    </section>
+        </div>
+      </section>
+    </>
   );
 }

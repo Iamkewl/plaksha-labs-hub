@@ -47,12 +47,18 @@ export function StaggerGrid({
 }: StaggerGridProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [revealed, setRevealed] = useState(false);
+  const [armed, setArmed] = useState(false);
   const [prefersReduced, setPrefersReduced] = useState(false);
 
   useEffect(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setPrefersReduced(reduce);
+    if (reduce) setRevealed(true);
+    else setArmed(true);
+  }, []);
+
+  useEffect(() => {
     const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setPrefersReduced(mql.matches);
-    if (mql.matches) setRevealed(true);
     const onChange = () => {
       setPrefersReduced(mql.matches);
       if (mql.matches) setRevealed(true);
@@ -93,6 +99,7 @@ export function StaggerGrid({
           <div
             key={(child as ReactElement<HTMLAttributes<HTMLElement>>).key ?? i}
             className="scroll-reveal"
+            data-pre-reveal={armed && !isRevealed ? "true" : undefined}
             data-revealed={isRevealed ? "true" : undefined}
             style={
               isRevealed && !prefersReduced

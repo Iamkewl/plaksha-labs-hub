@@ -37,11 +37,17 @@ export function ScrollReveal({
 }: ScrollRevealProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [revealed, setRevealed] = useState(false);
+  const [armed, setArmed] = useState(false);
   const [prefersReduced, setPrefersReduced] = useState(false);
 
   useEffect(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setPrefersReduced(reduce);
+    if (!reduce) setArmed(true);
+  }, []);
+
+  useEffect(() => {
     const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setPrefersReduced(mql.matches);
     const onChange = () => setPrefersReduced(mql.matches);
     mql.addEventListener("change", onChange);
     return () => mql.removeEventListener("change", onChange);
@@ -80,6 +86,7 @@ export function ScrollReveal({
     <div
       ref={ref}
       className={`scroll-reveal${className ? ` ${className}` : ""}`}
+      data-pre-reveal={armed && !revealed ? "true" : undefined}
       data-revealed={revealed ? "true" : undefined}
       style={style}
     >
