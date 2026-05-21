@@ -86,7 +86,15 @@ function NavLink({
 
 // ─── LabSwitcher ──────────────────────────────────────────────────────────────
 
-function LabSwitcher({ currentSlug }: { currentSlug: string }) {
+const LAB_PREF_KEY = "plaksha:active-lab";
+
+function LabSwitcher({
+  currentSlug,
+  onSelect,
+}: {
+  currentSlug: string;
+  onSelect: (slug: string) => void;
+}) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -119,6 +127,14 @@ function LabSwitcher({ currentSlug }: { currentSlug: string }) {
     setOpen(false);
     const config = LAB_NAV_CONFIGS.find((l) => l.labSlug === slug);
     if (!config) return;
+    // Persist + notify parent so the sidebar updates without waiting for the
+    // route change to land
+    try {
+      window.localStorage.setItem(LAB_PREF_KEY, slug);
+    } catch {
+      /* localStorage may be disabled (incognito etc.) — silently ignore */
+    }
+    onSelect(slug);
     // Navigate to the first item in that lab's config
     router.push(config.items[0].href);
   }
@@ -292,7 +308,38 @@ export function Sidebar({ onNavClick, unreadCount = 0 }: SidebarProps) {
   const pathname = usePathname();
   const { data: session } = useSession();
 
-  const currentSlug = inferLabSlug(pathname);
+  // Active lab resolution order:
+  //   1. URL — when the user is on /labs/<slug>/* we trust the path
+  //   2. localStorage — last lab the user explicitly picked
+  //   3. Default (makerspace)
+  // This stops generic routes like /projects or /bookings (which exist in
+  // every lab) from snapping the sidebar back to Makerspace.
+  const urlSlug = pathname.match(/^\/labs\/([^/]+)/)?.[1];
+  const urlSlugValid = urlSlug && LAB_NAV_CONFIGS.some((l) => l.labSlug === urlSlug);
+  const [storedSlug, setStoredSlug] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const v = window.localStorage.getItem(LAB_PREF_KEY);
+      if (v && LAB_NAV_CONFIGS.some((l) => l.labSlug === v)) setStoredSlug(v);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  // Keep storedSlug in sync if the URL nav lands us in a lab-scoped path
+  useEffect(() => {
+    if (urlSlugValid && urlSlug && urlSlug !== storedSlug) {
+      setStoredSlug(urlSlug);
+      try {
+        window.localStorage.setItem(LAB_PREF_KEY, urlSlug);
+      } catch {
+        /* ignore */
+      }
+    }
+  }, [urlSlug, urlSlugValid, storedSlug]);
+
+  const currentSlug = (urlSlugValid && urlSlug) || storedSlug || inferLabSlug(pathname);
   const labConfig = getLabNavConfig(currentSlug);
   const userRole = (session?.user?.role ?? "STUDENT") as "STUDENT" | "MENTOR" | "ADMIN";
 
@@ -317,7 +364,7 @@ export function Sidebar({ onNavClick, unreadCount = 0 }: SidebarProps) {
       </div>
 
       {/* ── Lab switcher ─────────────────────────────────────────────────── */}
-      <LabSwitcher currentSlug={currentSlug} />
+      <LabSwitcher currentSlug={currentSlug} onSelect={setStoredSlug} />
 
       {/* ── Scrollable nav area ───────────────────────────────────────────  */}
       <nav
