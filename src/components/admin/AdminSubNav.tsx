@@ -25,7 +25,7 @@ export function AdminSubNav() {
 
   return (
     <nav
-      className="sticky top-16 z-20 border-b border-border/50 bg-background/90 backdrop-blur-xl"
+      className="sticky top-16 z-20 border-b border-border/45 bg-background/88 backdrop-blur-xl"
       role="navigation"
       aria-label="Admin sections"
     >
@@ -46,7 +46,9 @@ export function AdminSubNav() {
                 aria-selected={isActive}
                 aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "relative shrink-0 border-b-2 px-4 py-4 text-sm font-medium whitespace-nowrap transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                  "nav-indicator relative shrink-0 border-b-2 px-4 py-4 text-sm font-medium whitespace-nowrap",
+                  "transition-colors duration-150 ease-snap",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                   isActive
                     ? "border-primary text-foreground"
                     : "border-transparent text-muted-foreground hover:text-foreground"

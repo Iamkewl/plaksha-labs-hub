@@ -24,32 +24,41 @@ export function StatTile({
   const tile = (
     <div
       className={cn(
-        "group relative overflow-hidden rounded-2xl border bg-card/75 p-5 backdrop-blur-sm transition-all duration-200",
-        href &&
-          "cursor-pointer hover:border-white/20 hover:shadow-[0_16px_40px_-20px_rgba(0,0,0,0.5)]",
+        "group relative overflow-hidden rounded-2xl border bg-card/75 p-5 backdrop-blur-sm",
+        "transition-all duration-200 ease-snap",
+        href && "hover:border-white/[0.18] hover:shadow-tile-lift hover:-translate-y-0.5",
         variant === "warning"
-          ? "border-orange-500/25 bg-orange-500/5"
-          : "border-white/10"
+          ? "border-orange-500/22 bg-orange-500/[0.04]"
+          : "border-white/[0.09]"
       )}
     >
+      {/* Top accent line for warning variant */}
       {variant === "warning" && (
         <div
-          className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-orange-500/60 to-amber-400/60"
+          className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-orange-500/55 to-amber-400/55"
           aria-hidden="true"
         />
       )}
 
+      {/* Header row: label + icon */}
       <div className="flex items-center justify-between gap-3">
-        <p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+        <p
+          className="text-[0.67rem] font-semibold uppercase text-muted-foreground"
+          style={{ letterSpacing: "0.10em" }}
+        >
           {title}
         </p>
         {icon && (
-          <span className="shrink-0 opacity-80" aria-hidden="true">
+          <span
+            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-muted/40 opacity-70"
+            aria-hidden="true"
+          >
             {icon}
           </span>
         )}
       </div>
 
+      {/* Value */}
       <div className="mt-3">
         {isNumeric ? (
           <ReactiveMetric
@@ -63,7 +72,9 @@ export function StatTile({
           <p className="text-3xl font-bold leading-none">{value}</p>
         )}
         {description && (
-          <p className="mt-1.5 text-xs text-muted-foreground">{description}</p>
+          <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+            {description}
+          </p>
         )}
       </div>
     </div>

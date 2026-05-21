@@ -10,18 +10,18 @@ function getInitials(name: string): string {
     .join("");
 }
 
-// Division accent classes — aligned with global lab tokens where possible
+// Division accent palette — warm/cool contrast matches DivisionToggle
 const divisionColor: Record<
   RoboticsActiveUser["division"],
   { avatar: string; badge: string }
 > = {
   mechanical: {
-    avatar: "bg-amber-500/18 text-amber-300 border-amber-500/30",
-    badge: "border-amber-500/25 bg-amber-500/10 text-amber-300",
+    avatar: "bg-amber-500/15 text-amber-300 border-amber-500/28",
+    badge: "border-amber-500/22 bg-amber-500/[0.09] text-amber-300",
   },
   electronics: {
-    avatar: "bg-violet-500/18 text-violet-300 border-violet-500/30",
-    badge: "border-violet-500/25 bg-violet-500/10 text-violet-300",
+    avatar: "bg-violet-500/15 text-violet-300 border-violet-500/28",
+    badge: "border-violet-500/22 bg-violet-500/[0.09] text-violet-300",
   },
 };
 
@@ -37,7 +37,8 @@ export function NameTagChip({ user, className }: NameTagChipProps) {
   return (
     <div
       className={cn(
-        "flex flex-col items-center gap-2.5 rounded-xl border border-white/10 bg-card/70 p-5 text-center transition-all duration-200 hover:border-white/18 hover:bg-card/85",
+        "flex flex-col items-center gap-2.5 rounded-xl border border-white/[0.09] bg-card/70 p-5 text-center",
+        "transition-all duration-200 ease-snap hover:border-white/[0.17] hover:bg-card/85",
         className
       )}
     >
@@ -53,16 +54,17 @@ export function NameTagChip({ user, className }: NameTagChipProps) {
       </span>
 
       {/* Name */}
-      <p className="text-sm font-semibold text-foreground leading-tight">
+      <p className="text-sm font-semibold leading-tight text-foreground">
         {user.name}
       </p>
 
-      {/* Division chip */}
+      {/* Division badge */}
       <span
         className={cn(
-          "rounded-full border px-2.5 py-0.5 text-[0.64rem] font-semibold uppercase tracking-wider",
+          "rounded-full border px-2.5 py-0.5 text-[0.63rem] font-semibold uppercase",
           colors.badge
         )}
+        style={{ letterSpacing: "0.08em" }}
       >
         {user.division}
       </span>
@@ -71,10 +73,10 @@ export function NameTagChip({ user, className }: NameTagChipProps) {
       {user.currentToolName ? (
         <p className="text-[0.72rem] leading-snug text-muted-foreground">
           Using:{" "}
-          <span className="text-foreground/80">{user.currentToolName}</span>
+          <span className="text-foreground/75">{user.currentToolName}</span>
         </p>
       ) : (
-        <p className="text-[0.72rem] text-muted-foreground/60">
+        <p className="text-[0.72rem] text-muted-foreground/50">
           No tool checked out
         </p>
       )}
