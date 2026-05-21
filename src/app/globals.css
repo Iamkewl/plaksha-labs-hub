@@ -3,108 +3,165 @@
 @tailwind utilities;
 
 @layer base {
+  /*
+   * ── TOKEN SYSTEM: LIGHT-MODE DEFAULT (Figma pivot 2026-05-21) ─────────────
+   *
+   * Design direction confirmed by Suryaansh:
+   *   1. Teal primary  — #0F8E92 (hero/buttons) / #0C6E71 (sidebar)
+   *   2. Yellow accent — #FFD43B stat circles
+   *   3. Light-mode default — :root IS the light theme
+   *   4. Dark mode defined under .dark for opt-in toggle
+   *
+   * Figma source: docs/design/figma-exports/public-landing.png
+   *               docs/design/figma-exports/auth-and-dashboard.png
+   * ──────────────────────────────────────────────────────────────────────── */
+
   :root {
-    /* ── Base surface scale ─────────────────────────────────────────────── */
-    --background: 240 7% 8%;
-    --foreground: 240 13% 93%;
-    --card: 240 7% 12%;
-    --card-foreground: 240 13% 93%;
-    --popover: 240 7% 13%;
-    --popover-foreground: 240 13% 93%;
-
-    /* ── Brand / primary ────────────────────────────────────────────────── */
-    /* Periwinkle-indigo: #c0c1ff ≈ HSL 239 100% 88%                        */
-    --primary: 239 100% 88%;
-    --primary-foreground: 245 78% 20%;
-
-    /* ── Neutrals ───────────────────────────────────────────────────────── */
-    --secondary: 240 6% 20%;
-    --secondary-foreground: 240 13% 90%;
-    --muted: 240 7% 10%;
-    --muted-foreground: 240 10% 58%;
-    --accent: 240 5% 21%;
-    --accent-foreground: 240 13% 92%;
-
-    /* ── Semantic ───────────────────────────────────────────────────────── */
-    --destructive: 0 72% 65%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 240 9% 22%;
-    --input: 240 9% 22%;
-    --ring: 239 100% 88%;
-
-    /* ── Radius scale ───────────────────────────────────────────────────── */
-    /* 0.75rem = 12px for default cards; hero/marketing uses rounded-2xl(1rem) */
-    --radius: 0.75rem;
-
-    /* ── Lab accent colors ──────────────────────────────────────────────── */
-    /* Makerspace: warm amber-orange #f97316 ≈ HSL 27 96% 61%               */
-    --lab-makerspace: 27 96% 61%;
-    --lab-makerspace-subtle: 27 96% 61% / 0.10;
-    --lab-makerspace-border: 27 96% 61% / 0.28;
-    /* Robotics: periwinkle indigo — mirrors --primary family               */
-    --lab-robotics: 239 100% 78%;
-    --lab-robotics-subtle: 239 100% 78% / 0.10;
-    --lab-robotics-border: 239 100% 78% / 0.28;
-
-    /* ── Plaksha brand green ────────────────────────────────────────────── */
-    --plaksha-green: 148 52% 40%;
-    --plaksha-green-subtle: 148 52% 40% / 0.10;
-    --plaksha-green-border: 148 52% 40% / 0.25;
-
-    /* ── Surface interaction token ──────────────────────────────────────── */
-    --surface-hover: 240 8% 16%;
-
-    /* ── Typography scale extensions ────────────────────────────────────── */
-    /* Kicker letter-spacing token — 0.18em for all-caps labels             */
-    --tracking-kicker: 0.18em;
-    /* Hero headline letter-spacing — tighter than Tailwind tracking-tight   */
-    --tracking-hero: -0.03em;
-  }
-
-  .light {
-    /* ── Base surface scale ─────────────────────────────────────────────── */
-    --background: 226 100% 98%;
-    --foreground: 214 62% 10%;
+    /* ── Base surface scale (light) ─────────────────────────────────────── */
+    /* White main bg; very faint blue-gray tint to avoid harsh pure white   */
+    --background: 210 20% 98%;
+    --foreground: 215 25% 12%;
     --card: 0 0% 100%;
-    --card-foreground: 214 62% 10%;
+    --card-foreground: 215 25% 12%;
     --popover: 0 0% 100%;
-    --popover-foreground: 214 62% 10%;
+    --popover-foreground: 215 25% 12%;
 
-    /* ── Brand / primary ────────────────────────────────────────────────── */
-    /* Plaksha institutional navy: #003366 ≈ HSL 210 100% 20%               */
-    --primary: 210 100% 20%;
+    /* ── Brand / primary — Teal #0F8E92 = HSL 182 80% 32% ──────────────── */
+    --primary: 182 80% 32%;
     --primary-foreground: 0 0% 100%;
 
+    /* ── Sidebar — Teal darker #0C6E71 = HSL 182 81% 24% ───────────────── */
+    /* Used as the app sidebar panel background                              */
+    --sidebar: 182 81% 24%;
+    --sidebar-foreground: 0 0% 100%;
+    /* Sidebar active item gets a semi-transparent white highlight           */
+    --sidebar-active: 0 0% 100% / 0.14;
+
+    /* ── Yellow accent — #FFD43B = HSL 47 100% 61% ─────────────────────── */
+    /* Stat circles, highlight badges                                         */
+    --accent: 47 100% 61%;
+    --accent-foreground: 215 25% 12%;
+
+    /* ── Brand leaf green — #5BAA5B = HSL 120 32% 51% ──────────────────── */
+    --brand-leaf: 120 32% 51%;
+    --brand-leaf-subtle: 120 32% 51% / 0.08;
+    --brand-leaf-border: 120 32% 51% / 0.20;
+
+    /* ── Surface muted — light gray section bg #EEEEEE = HSL 0 0% 93% ──── */
+    /* "What Happens Here?" card section + footer strip                      */
+    --surface-muted: 0 0% 93%;
+    --surface-muted-foreground: 215 16% 40%;
+
     /* ── Neutrals ───────────────────────────────────────────────────────── */
-    --secondary: 212 80% 95%;
-    --secondary-foreground: 216 32% 22%;
-    --muted: 212 80% 95%;
-    --muted-foreground: 215 16% 42%;
-    --accent: 212 80% 95%;
-    --accent-foreground: 216 32% 22%;
+    --secondary: 210 16% 93%;
+    --secondary-foreground: 215 25% 20%;
+    --muted: 210 16% 95%;
+    --muted-foreground: 215 14% 46%;
 
     /* ── Semantic ───────────────────────────────────────────────────────── */
     --destructive: 0 70% 44%;
     --destructive-foreground: 0 0% 100%;
-    --border: 214 31% 88%;
-    --input: 214 31% 88%;
-    --ring: 210 100% 20%;
+    /* Card border: hsl(214 20% 90%) — very subtle */
+    --border: 214 20% 90%;
+    --input: 214 20% 90%;
+    --ring: 182 80% 32%;
 
-    /* ── Lab accent colors — light mode ─────────────────────────────────── */
+    /* ── Radius scale ───────────────────────────────────────────────────── */
+    /* Figma cards: ~10–12px. Using 0.75rem (12px).                          */
+    --radius: 0.75rem;
+
+    /* ── Lab accent colors (secondary indicators only) ──────────────────── */
+    /* Makerspace: warm amber-orange — no longer brand-primary               */
     --lab-makerspace: 27 90% 45%;
     --lab-makerspace-subtle: 27 90% 45% / 0.08;
-    --lab-makerspace-border: 27 90% 45% / 0.22;
-    --lab-robotics: 225 80% 50%;
-    --lab-robotics-subtle: 225 80% 50% / 0.08;
-    --lab-robotics-border: 225 80% 50% / 0.22;
+    --lab-makerspace-border: 27 90% 45% / 0.20;
+    /* Robotics: periwinkle — no longer brand-primary                        */
+    --lab-robotics: 225 80% 55%;
+    --lab-robotics-subtle: 225 80% 55% / 0.08;
+    --lab-robotics-border: 225 80% 55% / 0.22;
 
-    /* ── Plaksha brand green — light mode ───────────────────────────────── */
-    --plaksha-green: 148 52% 34%;
-    --plaksha-green-subtle: 148 52% 34% / 0.07;
-    --plaksha-green-border: 148 52% 34% / 0.20;
+    /* ── Plaksha brand green (alias → brand-leaf) ───────────────────────── */
+    --plaksha-green: 120 32% 51%;
+    --plaksha-green-subtle: 120 32% 51% / 0.07;
+    --plaksha-green-border: 120 32% 51% / 0.18;
 
-    /* ── Surface interaction token — light mode ─────────────────────────── */
-    --surface-hover: 214 40% 96%;
+    /* ── Surface interaction ────────────────────────────────────────────── */
+    --surface-hover: 210 20% 96%;
+
+    /* ── Shadow — soft lift for light-mode cards ────────────────────────── */
+    /* Figma uses very diffuse box shadows, not punchy ones                  */
+    --shadow-card-lift: 0 4px 24px -6px rgba(0, 0, 0, 0.10);
+
+    /* ── Typography scale extensions ───────────────────────────────────── */
+    --tracking-kicker: 0.18em;
+    --tracking-hero: -0.03em;
+  }
+
+  /* ── Dark mode (opt-in via .dark class) ──────────────────────────────── */
+  /* Retained for future toggle support. Teal adapts slightly in dark.      */
+  .dark {
+    /* ── Base surface scale (dark) ─────────────────────────────────────── */
+    --background: 210 14% 8%;
+    --foreground: 210 20% 92%;
+    --card: 210 14% 12%;
+    --card-foreground: 210 20% 92%;
+    --popover: 210 14% 13%;
+    --popover-foreground: 210 20% 92%;
+
+    /* ── Brand / primary — teal lightened for dark bg ───────────────────── */
+    /* Teal at 32% L is too dark on dark surfaces; push to 48% for contrast  */
+    --primary: 182 70% 48%;
+    --primary-foreground: 182 100% 8%;
+
+    /* ── Sidebar — stays the same deep teal ─────────────────────────────── */
+    --sidebar: 182 81% 18%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-active: 0 0% 100% / 0.12;
+
+    /* ── Yellow accent — unchanged in dark ─────────────────────────────── */
+    --accent: 47 100% 61%;
+    --accent-foreground: 215 25% 8%;
+
+    /* ── Brand leaf ─────────────────────────────────────────────────────── */
+    --brand-leaf: 120 32% 58%;
+    --brand-leaf-subtle: 120 32% 58% / 0.10;
+    --brand-leaf-border: 120 32% 58% / 0.25;
+
+    /* ── Surface muted (dark) ───────────────────────────────────────────── */
+    --surface-muted: 210 14% 15%;
+    --surface-muted-foreground: 210 14% 60%;
+
+    /* ── Neutrals (dark) ────────────────────────────────────────────────── */
+    --secondary: 210 12% 20%;
+    --secondary-foreground: 210 20% 88%;
+    --muted: 210 14% 10%;
+    --muted-foreground: 210 10% 56%;
+
+    /* ── Semantic (dark) ────────────────────────────────────────────────── */
+    --destructive: 0 72% 65%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 210 12% 22%;
+    --input: 210 12% 22%;
+    --ring: 182 70% 48%;
+
+    /* ── Lab accents (dark) ─────────────────────────────────────────────── */
+    --lab-makerspace: 27 90% 55%;
+    --lab-makerspace-subtle: 27 90% 55% / 0.10;
+    --lab-makerspace-border: 27 90% 55% / 0.26;
+    --lab-robotics: 225 80% 65%;
+    --lab-robotics-subtle: 225 80% 65% / 0.10;
+    --lab-robotics-border: 225 80% 65% / 0.26;
+
+    /* ── Plaksha brand green (dark) ─────────────────────────────────────── */
+    --plaksha-green: 120 32% 58%;
+    --plaksha-green-subtle: 120 32% 58% / 0.10;
+    --plaksha-green-border: 120 32% 58% / 0.25;
+
+    /* ── Surface interaction (dark) ─────────────────────────────────────── */
+    --surface-hover: 210 14% 16%;
+
+    /* ── Shadow (dark) ──────────────────────────────────────────────────── */
+    --shadow-card-lift: 0 8px 32px -8px rgba(0, 0, 0, 0.45);
 
     --tracking-kicker: 0.18em;
     --tracking-hero: -0.03em;
@@ -129,11 +186,12 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-body), ui-sans-serif, system-ui, -apple-system, sans-serif;
-    /* Dual-lab ambient glow: periwinkle north-west, amber north-east        */
-    background-image:
-      radial-gradient(circle at 6% -14%, hsl(239 100% 78% / 0.20), transparent 32%),
-      radial-gradient(circle at 94% 0%, hsl(27 96% 61% / 0.13), transparent 30%),
-      linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--background)) 100%);
+    /*
+     * Light-mode body: clean white; no ambient gradient noise.
+     * The dark periwinkle/amber glow was dark-mode only — removed.
+     * The public-surface agent will add the teal hero band here
+     * once the hero component is rebuilt (replace the aurora mesh).
+     */
     min-height: 100vh;
   }
 
@@ -144,7 +202,7 @@
   h5,
   h6 {
     font-family: var(--font-display), ui-sans-serif, system-ui, -apple-system, sans-serif;
-    /* Base heading tracking — h1/h2 override with --tracking-hero */
+    font-weight: 700;
     letter-spacing: -0.025em;
   }
 
@@ -153,74 +211,108 @@
     letter-spacing: var(--tracking-hero, -0.03em);
   }
 
+  /* Body text weight and line-height baseline */
+  p, li, td, th {
+    font-weight: 400;
+    line-height: 1.625;
+  }
+
+  /* Kicker labels — 600 weight, uppercase, tracked */
+  .kicker,
+  [data-kicker] {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-kicker, 0.18em);
+    font-size: 0.68rem;
+  }
+
   ::selection {
-    background: hsl(239 100% 78% / 0.28);
-    color: hsl(240 13% 95%);
+    background: hsl(182 80% 32% / 0.20);
+    color: hsl(215 25% 12%);
   }
 }
 
 @layer utilities {
-  /* ── App canvas ────────────────────────────────────────────────────────── */
+  /* ── App canvas ─────────────────────────────────────────────────────────── */
+  /* Clean light surface for authenticated app shell.                          */
+  /* Sidebar provides the teal; main canvas stays neutral.                     */
   .app-canvas {
-    background:
-      radial-gradient(circle at 8% -12%, hsl(239 100% 78% / 0.16), transparent 32%),
-      radial-gradient(circle at 94% 6%, hsl(27 96% 61% / 0.10), transparent 32%),
-      linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--background)) 100%);
+    background: hsl(var(--background));
+  }
+
+  /* ── Sidebar surface ────────────────────────────────────────────────────── */
+  /* Deep teal panel — #0C6E71 = HSL 182 81% 24%                               */
+  .sidebar-surface {
+    background: hsl(var(--sidebar));
+    color: hsl(var(--sidebar-foreground));
   }
 
   /* ── Surface panel system ──────────────────────────────────────────────── */
-  /* Standard: nav, sidebars, sheet overlays                                  */
+  /* Standard: nav, sidebars, sheet overlays                                    */
+  /* Light mode: clean white + very subtle border + soft shadow                 */
   .surface-panel {
-    @apply border border-white/[0.09] bg-card/85 backdrop-blur-xl shadow-[0_16px_40px_-24px_rgba(0,0,0,0.70)];
+    @apply border border-border bg-card/95 shadow-sm backdrop-blur-sm;
   }
 
-  /* Soft: inner cards, secondary panels                                       */
+  /* Soft: inner cards, secondary panels                                         */
   .surface-panel-soft {
-    @apply border border-white/[0.06] bg-card/70 backdrop-blur-md;
+    @apply border border-border bg-card/80 backdrop-blur-sm;
   }
 
-  /* Elevated: modals, popovers                                                */
+  /* Elevated: modals, popovers                                                  */
   .surface-elevated {
-    @apply border border-white/[0.11] bg-card/92 backdrop-blur-2xl shadow-[0_24px_56px_-20px_rgba(0,0,0,0.80)];
+    @apply border border-border bg-card shadow-md backdrop-blur-md;
   }
 
-  /* ── Typography utilities ─────────────────────────────────────────────── */
-  /* Section kicker — small caps label above headings                          */
+  /* ── Card with lift shadow ───────────────────────────────────────────────── */
+  /* Figma: soft shadow, not punchy. Hover adds subtle translate.               */
+  .card-lift {
+    box-shadow: var(--shadow-card-lift, 0 4px 24px -6px rgba(0,0,0,0.10));
+    transition: box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .card-lift:hover {
+    box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.14);
+    transform: translateY(-2px);
+  }
+
+  /* ── Typography utilities ────────────────────────────────────────────────── */
+  /* Section kicker — small caps label above headings                            */
   .section-kicker {
     @apply text-[0.68rem] font-semibold uppercase text-primary/70;
     letter-spacing: var(--tracking-kicker, 0.18em);
   }
 
-  /* Plaksha institutional headline treatment                                   */
+  /* Plaksha institutional headline treatment                                     */
   .plaksha-headline {
     letter-spacing: var(--tracking-hero, -0.03em);
     font-weight: 700;
   }
 
-  /* ── Dividers ──────────────────────────────────────────────────────────── */
+  /* ── Dividers ────────────────────────────────────────────────────────────── */
   /* Horizontal fade divider */
   .section-divider {
-    @apply h-px bg-gradient-to-r from-transparent via-border/40 to-transparent;
+    @apply h-px bg-gradient-to-r from-transparent via-border/60 to-transparent;
   }
 
-  /* ── Semantic colour helpers ───────────────────────────────────────────── */
+  /* ── Semantic colour helpers ─────────────────────────────────────────────── */
   .text-success {
-    color: hsl(var(--plaksha-green));
+    color: hsl(var(--brand-leaf));
   }
   .bg-success-subtle {
-    background-color: hsl(var(--plaksha-green-subtle));
+    background-color: hsl(var(--brand-leaf-subtle));
   }
   .border-success {
-    border-color: hsl(var(--plaksha-green-border));
+    border-color: hsl(var(--brand-leaf-border));
   }
 
-  /* ── Lab gradient banners ─────────────────────────────────────────────── */
-  /* Subtler — 135° sweep so it stays out of the text zone                    */
+  /* ── Lab gradient banners ────────────────────────────────────────────────── */
+  /* Subtle tinted backgrounds — secondary indicators only now                   */
   .lab-makerspace-gradient {
     background: linear-gradient(
       135deg,
-      hsl(27 96% 61% / 0.16) 0%,
-      hsl(38 90% 55% / 0.06) 55%,
+      hsl(27 90% 45% / 0.10) 0%,
+      hsl(38 90% 55% / 0.04) 55%,
       transparent 100%
     );
   }
@@ -228,18 +320,27 @@
   .lab-robotics-gradient {
     background: linear-gradient(
       135deg,
-      hsl(239 100% 78% / 0.16) 0%,
-      hsl(220 90% 65% / 0.06) 55%,
+      hsl(225 80% 55% / 0.10) 0%,
+      hsl(220 90% 65% / 0.04) 55%,
       transparent 100%
     );
   }
 
-  /* ── Hero ambient glows ───────────────────────────────────────────────── */
-  /* Slightly stronger presence than before — elliptic for more coverage      */
+  /* ── Hero ambient glows — teal flavored for light mode ───────────────────── */
+  /* Public-surface agent: replace aurora-mesh with a teal band here            */
+  .hero-glow-teal {
+    background: radial-gradient(
+      ellipse 55% 45% at 50% -10%,
+      hsl(182 80% 32% / 0.12),
+      transparent 70%
+    );
+  }
+
+  /* Keep old glow names for lab pages — renamed to secondary role              */
   .hero-glow-makerspace {
     background: radial-gradient(
       ellipse 55% 45% at 85% -5%,
-      hsl(27 96% 61% / 0.17),
+      hsl(27 90% 45% / 0.12),
       transparent 70%
     );
   }
@@ -247,22 +348,111 @@
   .hero-glow-robotics {
     background: radial-gradient(
       ellipse 55% 45% at 15% -5%,
-      hsl(239 100% 78% / 0.17),
+      hsl(225 80% 55% / 0.12),
       transparent 70%
     );
   }
 
-  /* ── Lab top-bar stripe accents ───────────────────────────────────────── */
+  /* ── Lab top-bar stripe accents ───────────────────────────────────────────── */
   .lab-stripe-makerspace {
-    border-top: 2px solid hsl(27 96% 61% / 0.55);
+    border-top: 2px solid hsl(27 90% 45% / 0.45);
   }
 
   .lab-stripe-robotics {
-    border-top: 2px solid hsl(239 100% 78% / 0.55);
+    border-top: 2px solid hsl(225 80% 55% / 0.45);
   }
 
-  /* ── Animation keyframes ──────────────────────────────────────────────── */
-  /* Stagger-in: card grid entrance                                            */
+  /* ── Teal primary stripe — for top-nav and CTA bands ─────────────────────── */
+  .teal-stripe {
+    border-top: 2px solid hsl(var(--primary) / 0.60);
+  }
+
+  /* ── Aurora mesh backdrop — DISABLED FOR LIGHT MODE ─────────────────────── */
+  /*
+   * The aurora-mesh animation was designed for dark backgrounds and does not
+   * survive the light-mode flip (washed-out, invisible orbs).
+   *
+   * STATUS: suppressed via display:none on ::before / ::after pseudo-elements.
+   *
+   * ACTION FOR PUBLIC-SURFACE AGENT: Replace the .aurora-mesh wrapper in
+   *   src/components/public/Hero.tsx with a solid teal band component.
+   *   The teal hero bg per Figma is `hsl(182 80% 32%)` (--primary) with
+   *   white headline text. No animated orbs. Consider a subtle static
+   *   teal-to-teal-dark gradient: from-[hsl(182_80%_32%)] to-[hsl(182_81%_24%)].
+   */
+  .aurora-mesh {
+    position: relative;
+    isolation: isolate;
+  }
+
+  /* Suppress both orbs — they are dark-only effects */
+  .aurora-mesh::before,
+  .aurora-mesh::after {
+    display: none; /* DISABLED: dark-mode aurora orbs, not suitable for light mode */
+  }
+
+  /* Third orb — also suppressed */
+  .aurora-mesh-extra::before {
+    display: none; /* DISABLED: dark-mode aurora orbs */
+  }
+
+  /* ── Section gradient fade ───────────────────────────────────────────────── */
+  .section-fade-in {
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      hsl(var(--background) / 0.6) 30%,
+      hsl(var(--background)) 100%
+    );
+  }
+
+  /* ── Lab accent ribbon ───────────────────────────────────────────────────── */
+  /* Decorative gradient stripe — placed above lab hero content                  */
+  .lab-accent-ribbon {
+    height: 3px;
+    border-radius: 0 0 2px 2px;
+    background-size: 200% auto;
+    animation: ribbon-sweep 4s linear infinite;
+  }
+
+  .lab-accent-ribbon-makerspace {
+    background: linear-gradient(
+      90deg,
+      hsl(27 90% 45% / 0.0) 0%,
+      hsl(27 90% 45% / 0.9) 30%,
+      hsl(38 90% 55%) 50%,
+      hsl(27 90% 45% / 0.9) 70%,
+      hsl(27 90% 45% / 0.0) 100%
+    );
+    background-size: 200% auto;
+  }
+
+  .lab-accent-ribbon-robotics {
+    background: linear-gradient(
+      90deg,
+      hsl(225 80% 55% / 0.0) 0%,
+      hsl(225 80% 55% / 0.9) 30%,
+      hsl(220 90% 65%) 50%,
+      hsl(225 80% 55% / 0.9) 70%,
+      hsl(225 80% 55% / 0.0) 100%
+    );
+    background-size: 200% auto;
+  }
+
+  /* Teal ribbon variant — for primary CTA bands                                */
+  .lab-accent-ribbon-teal {
+    background: linear-gradient(
+      90deg,
+      hsl(182 80% 32% / 0.0) 0%,
+      hsl(182 80% 32% / 0.9) 30%,
+      hsl(182 81% 24%) 50%,
+      hsl(182 80% 32% / 0.9) 70%,
+      hsl(182 80% 32% / 0.0) 100%
+    );
+    background-size: 200% auto;
+  }
+
+  /* ── Animation keyframes ──────────────────────────────────────────────────── */
   @keyframes stagger-in {
     from {
       opacity: 0;
@@ -274,7 +464,6 @@
     }
   }
 
-  /* Horizontal fade-slide: inline reveal (kickers, badges)                    */
   @keyframes fade-slide-x {
     from {
       opacity: 0;
@@ -286,14 +475,13 @@
     }
   }
 
-  /* Pulse-ring: used on status dots                                            */
   @keyframes pulse-ring {
-    0% { box-shadow: 0 0 0 0 hsl(var(--plaksha-green) / 0.40); }
-    70% { box-shadow: 0 0 0 6px hsl(var(--plaksha-green) / 0); }
-    100% { box-shadow: 0 0 0 0 hsl(var(--plaksha-green) / 0); }
+    0% { box-shadow: 0 0 0 0 hsl(var(--brand-leaf) / 0.40); }
+    70% { box-shadow: 0 0 0 6px hsl(var(--brand-leaf) / 0); }
+    100% { box-shadow: 0 0 0 0 hsl(var(--brand-leaf) / 0); }
   }
 
-  /* Aurora mesh: gradient orbs that drift across the hero background          */
+  /* Aurora keyframes kept for dark-mode reactivation if toggle is added */
   @keyframes aurora-1 {
     0%   { transform: translate(0%, 0%) scale(1); }
     33%  { transform: translate(4%, -6%) scale(1.08); }
@@ -314,13 +502,11 @@
     100% { transform: translate(0%, 0%) scale(1.05); }
   }
 
-  /* Shimmer — skeleton / loading placeholder sweep                            */
   @keyframes shimmer {
     from { background-position: -200% center; }
     to   { background-position:  200% center; }
   }
 
-  /* Scroll-reveal fade-up — used by ScrollReveal primitive                    */
   @keyframes scroll-reveal {
     from {
       opacity: 0;
@@ -332,19 +518,16 @@
     }
   }
 
-  /* Accent ribbon shimmer sweep                                                */
   @keyframes ribbon-sweep {
     0%   { background-position: -200% 50%; }
     100% { background-position:  200% 50%; }
   }
 
-  /* Glow pulse — for magnetic button halo                                      */
   @keyframes glow-pulse {
     0%, 100% { opacity: 0.55; transform: scale(1); }
     50%       { opacity: 0.80; transform: scale(1.04); }
   }
 
-  /* Gradient border spin for card hover                                        */
   @keyframes border-spin {
     from { --border-angle: 0deg; }
     to   { --border-angle: 360deg; }
@@ -368,15 +551,14 @@
   .stagger-in-7 { animation-delay: 360ms; }
   .stagger-in-8 { animation-delay: 420ms; }
 
-  /* ── Shimmer skeleton utility ─────────────────────────────────────────── */
-  /* Usage: add `shimmer` class to any skeleton placeholder element            */
+  /* ── Shimmer skeleton utility ─────────────────────────────────────────────── */
   .shimmer {
     background: linear-gradient(
       90deg,
       hsl(var(--muted) / 0.6) 0%,
-      hsl(var(--muted-foreground) / 0.12) 40%,
-      hsl(var(--muted-foreground) / 0.18) 50%,
-      hsl(var(--muted-foreground) / 0.12) 60%,
+      hsl(var(--muted-foreground) / 0.10) 40%,
+      hsl(var(--muted-foreground) / 0.16) 50%,
+      hsl(var(--muted-foreground) / 0.10) 60%,
       hsl(var(--muted) / 0.6) 100%
     );
     background-size: 200% auto;
@@ -384,8 +566,7 @@
     border-radius: var(--radius);
   }
 
-  /* ── Scroll-reveal utility ────────────────────────────────────────────── */
-  /* JS sets data-revealed="true" via IntersectionObserver                    */
+  /* ── Scroll-reveal utility ────────────────────────────────────────────────── */
   .scroll-reveal {
     opacity: 0;
     transform: translateY(20px);
@@ -399,119 +580,19 @@
     transform: translateY(0);
   }
 
-  /* ── Aurora mesh backdrop ─────────────────────────────────────────────── */
-  /* Wrap children in .aurora-mesh — animated gradient orbs behind content    */
-  .aurora-mesh {
-    position: relative;
-    isolation: isolate;
-  }
-
-  .aurora-mesh::before,
-  .aurora-mesh::after {
-    content: "";
-    position: absolute;
-    pointer-events: none;
-    border-radius: 50%;
-    filter: blur(72px);
-    z-index: -1;
-  }
-
-  /* Periwinkle orb — top-left anchor */
-  .aurora-mesh::before {
-    width: 55%;
-    height: 65%;
-    top: -20%;
-    left: -10%;
-    background: radial-gradient(
-      circle,
-      hsl(239 100% 78% / 0.22) 0%,
-      hsl(220 90% 68% / 0.10) 50%,
-      transparent 70%
-    );
-    animation: aurora-1 28s ease-in-out infinite;
-  }
-
-  /* Amber orb — top-right anchor */
-  .aurora-mesh::after {
-    width: 50%;
-    height: 60%;
-    top: -15%;
-    right: -8%;
-    background: radial-gradient(
-      circle,
-      hsl(27 96% 61% / 0.16) 0%,
-      hsl(38 90% 55% / 0.07) 50%,
-      transparent 70%
-    );
-    animation: aurora-2 34s ease-in-out infinite;
-    animation-delay: -12s;
-  }
-
-  /* Third (green) orb — bottom-center, very subtle */
-  .aurora-mesh-extra::before {
-    content: "";
-    position: absolute;
-    pointer-events: none;
-    border-radius: 50%;
-    filter: blur(80px);
-    z-index: -1;
-    width: 35%;
-    height: 40%;
-    bottom: -10%;
-    left: 32%;
-    background: radial-gradient(
-      circle,
-      hsl(148 52% 40% / 0.08) 0%,
-      transparent 70%
-    );
-    animation: aurora-3 40s ease-in-out infinite;
-    animation-delay: -20s;
-  }
-
-  /* ── Section gradient fade — smooth transition from hero into card grid ── */
-  .section-fade-in {
+  /* ── Section gradient fade ───────────────────────────────────────────────── */
+  /* Smooth transition from teal hero band into white card grid                  */
+  /* Public-surface agent: apply this between Hero and the first card section    */
+  .section-fade-teal {
     background: linear-gradient(
       180deg,
-      transparent 0%,
-      hsl(var(--background) / 0.6) 30%,
-      hsl(var(--background)) 100%
+      hsl(182 80% 32%) 0%,
+      hsl(210 20% 98%) 100%
     );
+    height: 4rem;
   }
 
-  /* ── Lab accent ribbon ────────────────────────────────────────────────── */
-  /* Decorative gradient stripe — placed above lab hero content               */
-  .lab-accent-ribbon {
-    height: 3px;
-    border-radius: 0 0 2px 2px;
-    background-size: 200% auto;
-    animation: ribbon-sweep 4s linear infinite;
-  }
-
-  .lab-accent-ribbon-makerspace {
-    background: linear-gradient(
-      90deg,
-      hsl(27 96% 61% / 0.0) 0%,
-      hsl(27 96% 61% / 0.9) 30%,
-      hsl(38 90% 55%) 50%,
-      hsl(27 96% 61% / 0.9) 70%,
-      hsl(27 96% 61% / 0.0) 100%
-    );
-    background-size: 200% auto;
-  }
-
-  .lab-accent-ribbon-robotics {
-    background: linear-gradient(
-      90deg,
-      hsl(239 100% 78% / 0.0) 0%,
-      hsl(239 100% 78% / 0.9) 30%,
-      hsl(220 90% 70%) 50%,
-      hsl(239 100% 78% / 0.9) 70%,
-      hsl(239 100% 78% / 0.0) 100%
-    );
-    background-size: 200% auto;
-  }
-
-  /* Disable all CSS animations when user prefers reduced motion              */
+  /* Disable all CSS animations when user prefers reduced motion                */
   @media (prefers-reduced-motion: reduce) {
     .stagger-in,
     .stagger-in-1,
@@ -539,26 +620,22 @@
       transition: none;
     }
 
-    .aurora-mesh::before,
-    .aurora-mesh::after,
-    .aurora-mesh-extra::before {
-      animation: none;
-    }
+    /* Aurora keyframes already display:none — no extra rule needed */
 
     .lab-accent-ribbon,
     .lab-accent-ribbon-makerspace,
-    .lab-accent-ribbon-robotics {
+    .lab-accent-ribbon-robotics,
+    .lab-accent-ribbon-teal {
       animation: none;
     }
   }
 
-  /* ── Row hover for dense tables ───────────────────────────────────────── */
+  /* ── Row hover for dense tables ───────────────────────────────────────────── */
   .table-row-hover {
     @apply transition-colors duration-100 hover:bg-muted/40;
   }
 
-  /* ── Nav underline indicator ──────────────────────────────────────────── */
-  /* Scale-in from center — matches Figma underline tab pattern               */
+  /* ── Nav underline indicator ─────────────────────────────────────────────── */
   .nav-indicator {
     position: relative;
   }
@@ -581,12 +658,15 @@
     transform: scaleX(1);
   }
 
-  /* ── Sidebar nav item active state ───────────────────────────────────── */
+  /* ── Sidebar nav item active state ──────────────────────────────────────── */
+  /* White semi-transparent highlight on teal sidebar background               */
   .sidebar-item-active {
-    @apply bg-primary/10 text-primary shadow-[inset_0_0_0_1px_hsl(var(--primary)/0.18)];
+    background: hsl(var(--sidebar-active));
+    color: hsl(var(--sidebar-foreground));
+    box-shadow: inset 0 0 0 1px hsl(0 0% 100% / 0.16);
   }
 
-  /* ── Open-status pulse dot ───────────────────────────────────────────── */
+  /* ── Open-status pulse dot ───────────────────────────────────────────────── */
   .status-dot-open {
     animation: pulse-ring 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }

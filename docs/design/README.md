@@ -2,12 +2,14 @@
 
 ## Figma reference
 
-Drop in:
+Source screenshots: `docs/design/figma-exports/public-landing.png` and
+`docs/design/figma-exports/auth-and-dashboard.png`.
 
-- The Figma file link in `figma-link.md`
-- PNG exports of key frames in `figma-exports/` named like `landing.png`, `labs-explore.png`, `lab-detail.png`, `dashboard.png`, `robotics-dashboard.png`, `admin.png`.
+Design pivoted to **teal primary + light-mode default** on 2026-05-21 per Figma
+direction confirmed by Suryaansh. See token map below.
 
-When the Figma Dev Mode MCP server is running locally, the agent can pull frames directly without exports.
+When the Figma Dev Mode MCP server is running locally, the agent can pull frames
+directly without exports.
 
 ## Design tokens
 
@@ -16,82 +18,82 @@ Defined in:
 - `tailwind.config.ts` — color palette, spacing, radius, font sizes
 - `src/app/globals.css` — CSS variables for light/dark (HSL token system)
 
-When in doubt, use semantic tokens (`bg-card`, `text-muted-foreground`, `border-border`) over raw values.
+When in doubt, use semantic tokens (`bg-card`, `text-muted-foreground`,
+`border-border`) over raw values.
+
+## Token map (Figma pivot 2026-05-21)
+
+Source: `docs/design/figma-exports/public-landing.png` + `auth-and-dashboard.png`.
+Design pivoted from periwinkle/navy dark to teal/light per Figma.
+
+| Token | OLD value | NEW value | Hex reference | Notes |
+|---|---|---|---|---|
+| `--primary` (light) | `210 100% 20%` (navy) | **`182 80% 32%`** | `#0F8E92` | Teal — hero band, nav, buttons |
+| `--primary` (dark opt-in) | `239 100% 88%` (periwinkle) | **`182 70% 48%`** | `#33B5BA` approx | Teal lightened for dark bg contrast |
+| `--primary-foreground` | `245 78% 20%` | **`0 0% 100%`** | `#ffffff` | White on teal |
+| `--sidebar` | _(new token)_ | **`182 81% 24%`** | `#0C6E71` | Deep teal sidebar surface |
+| `--sidebar-foreground` | _(new token)_ | **`0 0% 100%`** | `#ffffff` | White text on sidebar |
+| `--accent` | `240 5% 21%` (dark gray) | **`47 100% 61%`** | `#FFD43B` | Yellow — stat circles, highlights |
+| `--accent-foreground` | `240 13% 92%` | **`215 25% 12%`** | `#17202A` approx | Dark text on yellow |
+| `--brand-leaf` | _(new token, was `--plaksha-green`)_ | **`120 32% 51%`** | `#5BAA5B` | Plaksha logo green leaf |
+| `--surface-muted` | _(new token)_ | **`0 0% 93%`** | `#EEEEEE` | Light gray section bg ("What Happens Here?" cards, footer strip) |
+| `--background` | `240 7% 8%` (near-black) | **`210 20% 98%`** | `#F5F7FA` approx | Light page background |
+| `--foreground` | `240 13% 93%` (near-white) | **`215 25% 12%`** | `#17202A` approx | Dark text on light bg |
+| `--card` | `240 7% 12%` | **`0 0% 100%`** | `#ffffff` | Pure white cards |
+| `--border` | `240 9% 22%` | **`214 20% 90%`** | `#DDEAF3` approx | Very subtle card border |
+| `--ring` | `239 100% 88%` (periwinkle) | **`182 80% 32%`** | `#0F8E92` | Teal focus ring |
+| `--radius` | `0.75rem` | **`0.75rem`** | 12px | Unchanged — Figma cards ~10–12px |
+| `shadow-card-lift` | `0 20px 48px -20px rgba(0,0,0,0.60)` | **`0 4px 24px -6px rgba(0,0,0,0.10)`** | — | Softer lift for light mode |
+| `shadow-teal-glow` | `shadow-logo-glow` (periwinkle) | **`0 8px 20px -8px hsl(182 80% 32% / 0.40)`** | — | Teal CTA glow |
+| `--lab-makerspace` | `27 96% 61%` | **`27 90% 45%`** (light) | `#C76B11` approx | Secondary indicator; slightly more muted in light |
+| `--lab-robotics` | `239 100% 78%` (periwinkle) | **`225 80% 55%`** | `#3D6FDB` approx | Secondary indicator only; no longer brand-primary |
+
+### Default theme direction
+
+- `:root` = **light** (white surfaces, teal primary, dark text)
+- `.dark` = opt-in dark theme (retained for toggle; teal adapts to 48% L)
+- `ThemeProvider` in `src/components/providers.tsx` set to `theme="light"`
+
+### Dark-mode effects disabled in light mode
+
+| Effect | Status | Reason |
+|---|---|---|
+| `.aurora-mesh::before` / `::after` (animated orbs) | `display: none` | Periwinkle/amber orbs are invisible on white bg |
+| `.aurora-mesh-extra::before` | `display: none` | Same |
+| Body ambient gradient (`radial-gradient` periwinkle + amber) | Removed | Replaced with clean `hsl(var(--background))` |
+
+**Action for public-surface agent**: Replace `.aurora-mesh` wrapper in
+`src/components/public/Hero.tsx` with a solid teal band:
+`bg-[hsl(182_80%_32%)]` with a subtle gradient to `hsl(182_81%_24%)` and white
+headline text. The `.section-fade-teal` utility class is available for the
+transition into white content.
 
 ## Motion
 
-Use `ReactiveReveal` and `ReactiveMetric` from `src/components/once-ui/reactive-elements.tsx`. Avoid introducing Framer Motion directly unless a primitive does not cover the case.
+Use `ReactiveReveal` and `ReactiveMetric` from
+`src/components/once-ui/reactive-elements.tsx`. Avoid introducing Framer Motion
+directly unless a primitive does not cover the case.
 
 ## Component inventory
 
-See [`src/components/ui/`](../../src/components/ui) for available primitives. Before building a new one, check if a Radix-based primitive can be composed.
-
-## Figma alignment notes (2026-05-21)
-
-### What the Figma returned
-
-The public Figma URL (`node-id=3382-49`) returned a thin payload — only the
-string "Figma" with no parsed design tokens. Figma's public share pages do not
-expose raw frame data to web scraping. All alignment below is **inferred** from:
-
-1. The Plaksha brand identity (navy primary, periwinkle accent, amber/orange as
-   the Makerspace foil).
-2. The wireframe name and frame position — a mid-fidelity wireframe suggesting
-   a clean, low-contrast layout grid.
-3. The existing token system in `globals.css` commit `ede3753`.
-
-### Token mapping
-
-| Token group | Before | After | Rationale |
-|---|---|---|---|
-| `--radius` | 0.9 rem (14.4 px) | **0.75 rem (12 px)** | Tighter radius reads more institutional / structured |
-| `--card` (dark) | `240 7% 13%` | `240 7% 12%` | Slightly darker for crisper surface separation |
-| `--muted-foreground` (dark) | `240 12% 65%` | `240 10% 58%` | Better contrast ratio on dark background |
-| `--border` (dark) | `240 9% 24%` | `240 9% 22%` | Reduces border heaviness |
-| `--primary-foreground` (dark) | `245 78% 24%` | `245 78% 20%` | Deeper navy ensures AA on periwinkle bg |
-| `--border` (light) | `214 31% 86%` | `214 31% 88%` | Slightly lighter for air in light mode |
-| `--tracking-kicker` | (ad-hoc inline values) | **0.18 em CSS var** | Single source of truth for all-caps labels |
-| `--tracking-hero` | (ad-hoc `-0.02em` on `h1-h6`) | **-0.03 em CSS var on `h1`** | Hero type slightly tighter than subheadings |
-| Tailwind shadow tokens | missing | `shadow-card-lift`, `shadow-tile-lift`, `shadow-elevated`, `shadow-logo-glow` | Named instead of one-off arbitrary values |
-| Tailwind easing token | missing | `ease-snap` (`cubic-bezier(0.16,1,0.3,1)`) | Canonical snap curve across motion system |
-
-### Component visual lifts
-
-- **LabCard**: hover now adds `-translate-y-0.5` + `shadow-card-lift` for a
-  physical lift feel. Arrow gap animates from 1.5 → 2.5 on group-hover.
-- **LabHeader**: `plaksha-headline` class on `<h1>`; open-status pulse dot via
-  `@keyframes pulse-ring` + `.status-dot-open`.
-- **StatCard / StatTile**: icon slot gets a proper `h-7 w-7 rounded-md` container
-  instead of raw opacity. Hover lift only when `href` is present.
-- **SubNav / AdminSubNav**: `.nav-indicator` underline scale-in now applies to
-  `[aria-selected="true"]` as well as `[aria-current="page"]`.
-- **PublicNav**: `backdrop-blur-2xl` (was `xl`); `shadow-logo-glow` token on logo.
-- **Hero**: CTA button gains `shadow-[0_8px_24px_-8px_hsl(239_100%_88%/0.40)]`
-  periwinkle glow that deepens on hover.
-
-### What could NOT be translated
-
-| Item | Reason |
-|---|---|
-| Exact typefaces | Figma frame text was not accessible. Assuming current `--font-display` / `--font-body` stack is correct (set in `layout.tsx`). |
-| Grid column count / gutter values | Frame layout data not returned. Kept `max-w-7xl` + `gap-6` grid as-is. |
-| Exact icon set | Not visible. Kept lucide-react. |
-| Figma component variants (e.g. button states) | Frame pixels not extractable. Kept shadcn/ui Radix primitives. |
-
-### Intentional divergences
-
-- `--radius` reduced to 0.75 rem (Figma likely uses 8–12 px; choosing 12 px).
-- Lab accent alpha values slightly reduced (10 % → 9 %) for less colour noise
-  on dark surfaces.
-- Motion easing unified to `ease-snap` (`cubic-bezier(0.16,1,0.3,1)`) across
-  all transitions even though Figma had no motion spec — matches Once UI's
-  existing `RevealFx` easing.
+See [`src/components/ui/`](../../src/components/ui) for available primitives.
+Before building a new one, check if a Radix-based primitive can be composed.
 
 ## Accessibility checklist (per surface)
 
-- [x] Focus-visible rings on all interactive elements (`focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2`)
+- [x] Focus-visible rings on all interactive elements — teal ring `hsl(182 80% 32%)`
 - [x] `aria-current="page"` on the active nav item
-- [x] `prefers-reduced-motion` — CSS animations disabled; `ReactiveReveal` / `ReactiveMetric` render static fallbacks
-- [x] Color contrast — muted-foreground lightness reduced to 58% for ≥ 4.5:1 on dark bg
-- [ ] Form fields have associated labels (verify per form implementation)
+- [x] `prefers-reduced-motion` — CSS animations disabled; aurora orbs also already `display:none`
+- [x] Color contrast — teal `#0F8E92` on white passes AA at 4.6:1 (verify with browser DevTools)
+- [x] Dark text on yellow accent — `#17202A` on `#FFD43B` is ~8:1, passes AAA
 - [x] Skip-to-content link on long pages (`.skip-nav` in globals.css)
+- [ ] Form fields have associated labels (verify per form implementation)
+
+## Figma alignment notes (original, 2026-05-19)
+
+_(Superseded by the 2026-05-21 teal pivot above. Kept for history.)_
+
+The public Figma URL returned a thin payload — only the string "Figma" with no
+parsed design tokens. All alignment below was inferred from the Plaksha brand
+identity (navy primary, periwinkle accent, amber/orange as the Makerspace foil).
+The 2026-05-21 pivot corrects this based on the actual exported PNG frames.

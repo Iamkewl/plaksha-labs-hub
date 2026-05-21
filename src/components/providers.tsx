@@ -26,9 +26,9 @@ export function Providers({ children }: { children: ReactNode }) {
 
   return (
     <ThemeProvider
-      theme="dark"
-      brand="blue"
-      accent="indigo"
+      theme="light"
+      brand="cyan"
+      accent="yellow"
       neutral="gray"
       solid="contrast"
       solidStyle="flat"

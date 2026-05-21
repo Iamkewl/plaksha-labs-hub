@@ -1,6 +1,15 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  /*
+   * Dark mode: class-based opt-in.
+   * Default is light (:root). Dark is activated by adding .dark to <html>.
+   * The Once UI ThemeProvider in providers.tsx controls this via data-theme;
+   * the .dark Tailwind class is set separately by the app-shell agent if a
+   * theme toggle is wired up.
+   *
+   * Figma pivot 2026-05-21: teal primary, light-mode default.
+   */
   darkMode: ["class"],
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -10,14 +19,14 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        /* ── Semantic surface tokens ─────────────────────────────────── */
+        /* ── Semantic surface tokens ───────────────────────────────────── */
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
+          DEFAULT: "hsl(var(--primary))",           /* Teal #0F8E92 = HSL 182 80% 32% */
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
@@ -33,7 +42,7 @@ const config: Config = {
           foreground: "hsl(var(--muted-foreground))",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
+          DEFAULT: "hsl(var(--accent))",            /* Yellow #FFD43B = HSL 47 100% 61% */
           foreground: "hsl(var(--accent-foreground))",
         },
         popover: {
@@ -44,57 +53,85 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        /* ── Lab semantic tokens ─────────────────────────────────────── */
+
+        /* ── App sidebar tokens ────────────────────────────────────────── */
+        /* Deep teal sidebar: #0C6E71 = HSL 182 81% 24%                    */
+        sidebar: {
+          DEFAULT: "hsl(var(--sidebar))",
+          foreground: "hsl(var(--sidebar-foreground))",
+        },
+
+        /* ── Brand tokens ──────────────────────────────────────────────── */
+        /* Plaksha logo leaf green: #5BAA5B = HSL 120 32% 51%              */
+        "brand-leaf": "hsl(var(--brand-leaf))",
+
+        /* ── Surface muted — light gray section bg: HSL 0 0% 93% ───────── */
+        "surface-muted": "hsl(var(--surface-muted))",
+        "surface-muted-foreground": "hsl(var(--surface-muted-foreground))",
+
+        /* ── Lab semantic tokens (secondary indicators) ─────────────────── */
+        /* Makerspace: warm amber-orange — no longer brand-primary           */
         "lab-makerspace": "hsl(var(--lab-makerspace))",
+        /* Robotics: periwinkle — no longer brand-primary                    */
         "lab-robotics": "hsl(var(--lab-robotics))",
-        /* Plaksha brand green — success / institutional */
+
+        /* ── Legacy alias — plaksha-green maps to brand-leaf ───────────── */
         "plaksha-green": "hsl(var(--plaksha-green))",
-        /* Surface interaction */
+
+        /* ── Surface interaction ───────────────────────────────────────── */
         "surface-hover": "hsl(var(--surface-hover))",
       },
       borderRadius: {
-        /* Maps to --radius (0.75rem = 12px) */
+        /* --radius = 0.75rem (12px) — Figma cards ~10–12px               */
         lg: "var(--radius)",
-        /* Cards use lg; inner elements use md (10px) */
+        /* Inner elements: 10px */
         md: "calc(var(--radius) - 2px)",
-        /* Tight chips, tags */
+        /* Tight chips, tags: 8px */
         sm: "calc(var(--radius) - 4px)",
       },
       letterSpacing: {
-        /* Kicker / all-caps label spacing — referenced as tracking-kicker */
         kicker: "var(--tracking-kicker, 0.18em)",
-        /* Hero headline — tighter than Tailwind's tracking-tight */
         hero: "var(--tracking-hero, -0.03em)",
       },
       boxShadow: {
-        /* Card lift shadow — used on hover states */
-        "card-lift": "0 20px 48px -20px rgba(0,0,0,0.60)",
-        /* Stat tile lift */
-        "tile-lift": "0 16px 40px -20px rgba(0,0,0,0.50)",
+        /*
+         * Light-mode card lift — Figma uses very diffuse shadows.
+         * Much softer than the previous dark-mode values.
+         */
+        "card-lift": "0 4px 24px -6px rgba(0, 0, 0, 0.10)",
+        /* Hover lift */
+        "card-lift-hover": "0 8px 32px -8px rgba(0, 0, 0, 0.14)",
+        /* Stat tile */
+        "tile-lift": "0 4px 20px -6px rgba(0, 0, 0, 0.10)",
         /* Modal / elevated surfaces */
-        elevated: "0 24px 56px -20px rgba(0,0,0,0.80)",
-        /* Nav logo glow — periwinkle */
-        "logo-glow": "0 8px 20px -8px hsl(239 100% 88% / 0.50)",
-        "logo-glow-strong": "0 10px 24px -8px hsl(239 100% 88% / 0.70)",
+        elevated: "0 8px 40px -12px rgba(0, 0, 0, 0.18)",
+        /* Teal glow — CTA buttons, primary interactive elements */
+        "teal-glow": "0 8px 20px -8px hsl(182 80% 32% / 0.40)",
+        "teal-glow-strong": "0 10px 24px -8px hsl(182 80% 32% / 0.60)",
+        /* Yellow accent glow — stat circles */
+        "accent-glow": "0 6px 16px -6px hsl(47 100% 61% / 0.50)",
+        /* Legacy — kept for backward compat during sibling agent migration */
+        "logo-glow": "0 8px 20px -8px hsl(182 80% 32% / 0.40)",
+        "logo-glow-strong": "0 10px 24px -8px hsl(182 80% 32% / 0.60)",
       },
       transitionTimingFunction: {
-        /* expo ease-out — the canonical snap curve across the system */
+        /* Canonical snap curve — expo ease-out */
         snap: "cubic-bezier(0.16, 1, 0.3, 1)",
       },
       animation: {
-        /* Aurora orb drift — used in aurora-mesh utility class via CSS        */
+        /* Aurora orb drift — kept for dark-mode reactivation; suppressed in light mode via CSS */
         "aurora-1": "aurora-1 28s ease-in-out infinite",
         "aurora-2": "aurora-2 34s ease-in-out infinite",
         "aurora-3": "aurora-3 40s ease-in-out infinite",
-        /* Shimmer sweep — skeleton placeholders                               */
+        /* Shimmer sweep — skeleton placeholders */
         shimmer: "shimmer 1.8s linear infinite",
-        /* Scroll-reveal — trigger class applied via JS                        */
+        /* Scroll-reveal */
         "scroll-reveal": "scroll-reveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) both",
-        /* Ribbon sweep — decorative accent stripe on lab heroes               */
+        /* Ribbon sweep */
         "ribbon-sweep": "ribbon-sweep 4s linear infinite",
-        /* Glow pulse — magnetic CTA button halo                               */
+        /* Glow pulse — CTA button halo */
         "glow-pulse": "glow-pulse 3s ease-in-out infinite",
-        /* Stagger in (explicit, mirrors CSS utility) */
+        /* Stagger in */
         "stagger-in": "stagger-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both",
         /* Fade slide X */
         "fade-slide-x": "fade-slide-x 0.34s cubic-bezier(0.16, 1, 0.3, 1) both",
