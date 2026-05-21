@@ -7,7 +7,7 @@ datasource db {
   url       = env("DATABASE_URL")
   // Direct (un-pooled) connection used for migrations on Neon.
   // Locally, leave DIRECT_URL unset and Prisma falls back to DATABASE_URL.
-  directUrl = env("DIRECT_URL")
+  directUrl = env("postgresql://neondb_owner:npg_pN8xh0TkaeBE@ep-still-water-ao0ybsyl-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require")
 }
 
 // ─── Enums ──────────────────────────────────────────────
