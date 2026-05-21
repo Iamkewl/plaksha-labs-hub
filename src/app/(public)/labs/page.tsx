@@ -1,6 +1,8 @@
 import { PLACEHOLDER_LABS, type PlaceholderLab } from "@/lib/placeholder/labs";
 import { LabCard } from "@/components/labs/LabCard";
 import { getLabs } from "@/app/actions/labs";
+import { StaggerGrid } from "@/components/motion/StaggerGrid";
+import { ScrollReveal } from "@/components/motion/ScrollReveal";
 
 export const metadata = {
   title: "Explore Labs — Plaksha Labs Hub",
@@ -55,18 +57,20 @@ export default async function LabsPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-20">
       {/* Page header */}
-      <header className="max-w-2xl">
-        <p className="section-kicker">Facilities</p>
-        <h1 className="mt-3 text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl">
-          Explore Labs
-        </h1>
-        <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
-          Plaksha hosts two primary labs — a full-spectrum Makerspace for
-          fabrication and prototyping, and a Robotics Lab with dedicated
-          Mechanical and Electronics divisions. Sign in to book time, check out
-          tools, and manage your projects.
-        </p>
-      </header>
+      <ScrollReveal threshold={0.05}>
+        <header className="max-w-2xl">
+          <p className="section-kicker fade-slide-x">Facilities</p>
+          <h1 className="mt-3 text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl">
+            Explore Labs
+          </h1>
+          <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
+            Plaksha hosts two primary labs — a full-spectrum Makerspace for
+            fabrication and prototyping, and a Robotics Lab with dedicated
+            Mechanical and Electronics divisions. Sign in to book time, check out
+            tools, and manage your projects.
+          </p>
+        </header>
+      </ScrollReveal>
 
       {/* Filter chips — static until client-side filtering lands */}
       <div
@@ -86,18 +90,20 @@ export default async function LabsPage() {
         ))}
       </div>
 
-      {/* Lab grid */}
+      {/* Lab grid — StaggerGrid handles scroll-driven entrance with 60ms stagger */}
       <section aria-labelledby="labs-list-heading" className="mt-10">
         <h2 id="labs-list-heading" className="sr-only">
           Available labs
         </h2>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {labs.map((lab, i) => (
-            <div key={lab.slug} className={`stagger-in stagger-in-${Math.min(i + 1, 6)}`}>
-              <LabCard lab={lab} />
-            </div>
+        <StaggerGrid
+          className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+          staggerDelay={60}
+          baseDelay={80}
+        >
+          {labs.map((lab) => (
+            <LabCard key={lab.slug} lab={lab} />
           ))}
-        </div>
+        </StaggerGrid>
       </section>
 
       {/* Coming soon note */}
