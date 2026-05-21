@@ -22,7 +22,7 @@ export function SubNav() {
 
   return (
     <nav
-      className="sticky top-16 z-20 border-b border-border/45 bg-background/88 backdrop-blur-xl"
+      className="sticky top-0 z-20 border-b border-border/45 bg-background/88 backdrop-blur-xl"
       role="navigation"
       aria-label="Dashboard sections"
     >

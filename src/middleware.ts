@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { checkRateLimit } from "@/lib/rate-limit";
 
-const publicPaths = ["/", "/labs", "/makerspace-projects", "/auth/signin", "/api/auth"];
+const publicPaths = ["/", "/labs", "/makerspace-projects", "/auth/signin", "/auth/signup", "/api/auth"];
 
 export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -20,7 +20,7 @@ export default async function middleware(req: NextRequest) {
     });
   };
 
-  if (pathname.startsWith("/api/") || pathname.startsWith("/auth/signin")) {
+  if (pathname.startsWith("/api/") || pathname.startsWith("/auth/signin") || pathname.startsWith("/auth/signup")) {
     const result = await runRateLimit(req);
     if (result.ok) {
       return NextResponse.next();
