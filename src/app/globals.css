@@ -4,70 +4,121 @@
 
 @layer base {
   :root {
+    /* ── Base surface scale ─────────────────────────────────────────────── */
     --background: 240 7% 8%;
-    --foreground: 240 13% 90%;
-    --card: 240 7% 13%;
-    --card-foreground: 240 13% 90%;
-    --popover: 240 7% 14%;
-    --popover-foreground: 240 13% 90%;
-    --primary: 239 100% 88%;
-    --primary-foreground: 245 78% 24%;
-    --secondary: 240 6% 21%;
-    --secondary-foreground: 240 13% 90%;
-    --muted: 240 7% 11%;
-    --muted-foreground: 240 12% 73%;
-    --accent: 240 5% 22%;
-    --accent-foreground: 240 13% 90%;
-    --destructive: 0 74% 68%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 240 9% 30%;
-    --input: 240 9% 30%;
-    --ring: 239 100% 88%;
-    --radius: 0.9rem;
+    --foreground: 240 13% 93%;
+    --card: 240 7% 12%;
+    --card-foreground: 240 13% 93%;
+    --popover: 240 7% 13%;
+    --popover-foreground: 240 13% 93%;
 
-    /* Lab accent colors */
+    /* ── Brand / primary ────────────────────────────────────────────────── */
+    /* Periwinkle-indigo: #c0c1ff ≈ HSL 239 100% 88%                        */
+    --primary: 239 100% 88%;
+    --primary-foreground: 245 78% 20%;
+
+    /* ── Neutrals ───────────────────────────────────────────────────────── */
+    --secondary: 240 6% 20%;
+    --secondary-foreground: 240 13% 90%;
+    --muted: 240 7% 10%;
+    --muted-foreground: 240 10% 58%;
+    --accent: 240 5% 21%;
+    --accent-foreground: 240 13% 92%;
+
+    /* ── Semantic ───────────────────────────────────────────────────────── */
+    --destructive: 0 72% 65%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 9% 22%;
+    --input: 240 9% 22%;
+    --ring: 239 100% 88%;
+
+    /* ── Radius scale ───────────────────────────────────────────────────── */
+    /* 0.75rem = 12px for default cards; hero/marketing uses rounded-2xl(1rem) */
+    --radius: 0.75rem;
+
+    /* ── Lab accent colors ──────────────────────────────────────────────── */
+    /* Makerspace: warm amber-orange #f97316 ≈ HSL 27 96% 61%               */
     --lab-makerspace: 27 96% 61%;
-    --lab-makerspace-subtle: 27 96% 61% / 0.12;
-    --lab-makerspace-border: 27 96% 61% / 0.30;
+    --lab-makerspace-subtle: 27 96% 61% / 0.10;
+    --lab-makerspace-border: 27 96% 61% / 0.28;
+    /* Robotics: periwinkle indigo — mirrors --primary family               */
     --lab-robotics: 239 100% 78%;
-    --lab-robotics-subtle: 239 100% 78% / 0.12;
-    --lab-robotics-border: 239 100% 78% / 0.30;
+    --lab-robotics-subtle: 239 100% 78% / 0.10;
+    --lab-robotics-border: 239 100% 78% / 0.28;
+
+    /* ── Plaksha brand green ────────────────────────────────────────────── */
+    --plaksha-green: 148 52% 40%;
+    --plaksha-green-subtle: 148 52% 40% / 0.10;
+    --plaksha-green-border: 148 52% 40% / 0.25;
+
+    /* ── Surface interaction token ──────────────────────────────────────── */
+    --surface-hover: 240 8% 16%;
+
+    /* ── Typography scale extensions ────────────────────────────────────── */
+    /* Kicker letter-spacing token — 0.18em for all-caps labels             */
+    --tracking-kicker: 0.18em;
+    /* Hero headline letter-spacing — tighter than Tailwind tracking-tight   */
+    --tracking-hero: -0.03em;
   }
 
   .light {
+    /* ── Base surface scale ─────────────────────────────────────────────── */
     --background: 226 100% 98%;
-    --foreground: 214 62% 12%;
+    --foreground: 214 62% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 214 62% 12%;
+    --card-foreground: 214 62% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 214 62% 12%;
-    --primary: 204 100% 20%;
+    --popover-foreground: 214 62% 10%;
+
+    /* ── Brand / primary ────────────────────────────────────────────────── */
+    /* Plaksha institutional navy: #003366 ≈ HSL 210 100% 20%               */
+    --primary: 210 100% 20%;
     --primary-foreground: 0 0% 100%;
+
+    /* ── Neutrals ───────────────────────────────────────────────────────── */
     --secondary: 212 80% 95%;
     --secondary-foreground: 216 32% 22%;
     --muted: 212 80% 95%;
     --muted-foreground: 215 16% 42%;
     --accent: 212 80% 95%;
     --accent-foreground: 216 32% 22%;
+
+    /* ── Semantic ───────────────────────────────────────────────────────── */
     --destructive: 0 70% 44%;
     --destructive-foreground: 0 0% 100%;
     --border: 214 31% 88%;
     --input: 214 31% 88%;
-    --ring: 204 100% 20%;
+    --ring: 210 100% 20%;
 
-    /* Lab accent colors — light mode */
+    /* ── Lab accent colors — light mode ─────────────────────────────────── */
     --lab-makerspace: 27 90% 45%;
     --lab-makerspace-subtle: 27 90% 45% / 0.08;
-    --lab-makerspace-border: 27 90% 45% / 0.25;
+    --lab-makerspace-border: 27 90% 45% / 0.22;
     --lab-robotics: 225 80% 50%;
     --lab-robotics-subtle: 225 80% 50% / 0.08;
-    --lab-robotics-border: 225 80% 50% / 0.25;
+    --lab-robotics-border: 225 80% 50% / 0.22;
+
+    /* ── Plaksha brand green — light mode ───────────────────────────────── */
+    --plaksha-green: 148 52% 34%;
+    --plaksha-green-subtle: 148 52% 34% / 0.07;
+    --plaksha-green-border: 148 52% 34% / 0.20;
+
+    /* ── Surface interaction token — light mode ─────────────────────────── */
+    --surface-hover: 214 40% 96%;
+
+    --tracking-kicker: 0.18em;
+    --tracking-hero: -0.03em;
   }
 }
 
 @layer base {
   * {
     @apply border-border;
+  }
+
+  /* Skip-to-content link — visible only on focus */
+  .skip-nav {
+    @apply absolute -top-full left-4 z-[60] rounded-b-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-all focus:top-0;
   }
 
   :focus-visible {
@@ -78,10 +129,11 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-body), ui-sans-serif, system-ui, -apple-system, sans-serif;
+    /* Dual-lab ambient glow: periwinkle north-west, amber north-east        */
     background-image:
-      radial-gradient(circle at 8% -12%, rgba(128, 131, 255, 0.26), transparent 30%),
-      radial-gradient(circle at 92% 0%, rgba(217, 119, 33, 0.18), transparent 28%),
-      linear-gradient(180deg, #131316 0%, #121217 55%, #13151c 100%);
+      radial-gradient(circle at 6% -14%, hsl(239 100% 78% / 0.20), transparent 32%),
+      radial-gradient(circle at 94% 0%, hsl(27 96% 61% / 0.13), transparent 30%),
+      linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--background)) 100%);
     min-height: 100vh;
   }
 
@@ -92,68 +144,125 @@
   h5,
   h6 {
     font-family: var(--font-display), ui-sans-serif, system-ui, -apple-system, sans-serif;
-    letter-spacing: -0.01em;
+    /* Base heading tracking — h1/h2 override with --tracking-hero */
+    letter-spacing: -0.025em;
+  }
+
+  /* Tighter tracking for large hero headings */
+  h1 {
+    letter-spacing: var(--tracking-hero, -0.03em);
   }
 
   ::selection {
-    background: rgba(128, 131, 255, 0.34);
-    color: #f7f7ff;
+    background: hsl(239 100% 78% / 0.28);
+    color: hsl(240 13% 95%);
   }
 }
 
 @layer utilities {
+  /* ── App canvas ────────────────────────────────────────────────────────── */
   .app-canvas {
     background:
-      radial-gradient(circle at 10% -10%, rgba(128, 131, 255, 0.2), transparent 30%),
-      radial-gradient(circle at 92% 6%, rgba(217, 119, 33, 0.14), transparent 30%),
-      linear-gradient(180deg, #14141a 0%, #131318 60%, #141822 100%);
+      radial-gradient(circle at 8% -12%, hsl(239 100% 78% / 0.16), transparent 32%),
+      radial-gradient(circle at 94% 6%, hsl(27 96% 61% / 0.10), transparent 32%),
+      linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--background)) 100%);
   }
 
+  /* ── Surface panel system ──────────────────────────────────────────────── */
+  /* Standard: nav, sidebars, sheet overlays                                  */
   .surface-panel {
-    @apply border border-white/10 bg-card/85 backdrop-blur-xl shadow-[0_18px_44px_-26px_rgba(0,0,0,0.72)];
+    @apply border border-white/[0.09] bg-card/85 backdrop-blur-xl shadow-[0_16px_40px_-24px_rgba(0,0,0,0.70)];
   }
 
+  /* Soft: inner cards, secondary panels                                       */
   .surface-panel-soft {
-    @apply border border-white/5 bg-card/70 backdrop-blur-md;
+    @apply border border-white/[0.06] bg-card/70 backdrop-blur-md;
   }
 
+  /* Elevated: modals, popovers                                                */
+  .surface-elevated {
+    @apply border border-white/[0.11] bg-card/92 backdrop-blur-2xl shadow-[0_24px_56px_-20px_rgba(0,0,0,0.80)];
+  }
+
+  /* ── Typography utilities ─────────────────────────────────────────────── */
+  /* Section kicker — small caps label above headings                          */
   .section-kicker {
-    @apply text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-primary/80;
+    @apply text-[0.68rem] font-semibold uppercase text-primary/70;
+    letter-spacing: var(--tracking-kicker, 0.18em);
   }
 
-  /* Lab-specific gradient banners */
+  /* Plaksha institutional headline treatment                                   */
+  .plaksha-headline {
+    letter-spacing: var(--tracking-hero, -0.03em);
+    font-weight: 700;
+  }
+
+  /* ── Dividers ──────────────────────────────────────────────────────────── */
+  /* Horizontal fade divider */
+  .section-divider {
+    @apply h-px bg-gradient-to-r from-transparent via-border/40 to-transparent;
+  }
+
+  /* ── Semantic colour helpers ───────────────────────────────────────────── */
+  .text-success {
+    color: hsl(var(--plaksha-green));
+  }
+  .bg-success-subtle {
+    background-color: hsl(var(--plaksha-green-subtle));
+  }
+  .border-success {
+    border-color: hsl(var(--plaksha-green-border));
+  }
+
+  /* ── Lab gradient banners ─────────────────────────────────────────────── */
+  /* Subtler — 135° sweep so it stays out of the text zone                    */
   .lab-makerspace-gradient {
-    background: linear-gradient(135deg,
-      hsl(27 96% 61% / 0.18) 0%,
-      hsl(40 90% 55% / 0.08) 60%,
+    background: linear-gradient(
+      135deg,
+      hsl(27 96% 61% / 0.16) 0%,
+      hsl(38 90% 55% / 0.06) 55%,
       transparent 100%
     );
   }
 
   .lab-robotics-gradient {
-    background: linear-gradient(135deg,
-      hsl(239 100% 78% / 0.18) 0%,
-      hsl(220 90% 65% / 0.08) 60%,
+    background: linear-gradient(
+      135deg,
+      hsl(239 100% 78% / 0.16) 0%,
+      hsl(220 90% 65% / 0.06) 55%,
       transparent 100%
     );
   }
 
-  /* Hero ambient glow — specific to landing */
+  /* ── Hero ambient glows ───────────────────────────────────────────────── */
+  /* Slightly stronger presence than before — elliptic for more coverage      */
   .hero-glow-makerspace {
-    background: radial-gradient(ellipse 60% 40% at 80% 0%,
-      hsl(27 96% 61% / 0.14),
+    background: radial-gradient(
+      ellipse 55% 45% at 85% -5%,
+      hsl(27 96% 61% / 0.17),
       transparent 70%
     );
   }
 
   .hero-glow-robotics {
-    background: radial-gradient(ellipse 60% 40% at 20% 0%,
-      hsl(239 100% 78% / 0.14),
+    background: radial-gradient(
+      ellipse 55% 45% at 15% -5%,
+      hsl(239 100% 78% / 0.17),
       transparent 70%
     );
   }
 
-  /* Stagger-in animation for card grids */
+  /* ── Lab top-bar stripe accents ───────────────────────────────────────── */
+  .lab-stripe-makerspace {
+    border-top: 2px solid hsl(27 96% 61% / 0.55);
+  }
+
+  .lab-stripe-robotics {
+    border-top: 2px solid hsl(239 100% 78% / 0.55);
+  }
+
+  /* ── Animation keyframes ──────────────────────────────────────────────── */
+  /* Stagger-in: card grid entrance                                            */
   @keyframes stagger-in {
     from {
       opacity: 0;
@@ -165,17 +274,44 @@
     }
   }
 
-  .stagger-in {
-    animation: stagger-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  /* Horizontal fade-slide: inline reveal (kickers, badges)                    */
+  @keyframes fade-slide-x {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
   }
 
+  /* Pulse-ring: used on status dots                                            */
+  @keyframes pulse-ring {
+    0% { box-shadow: 0 0 0 0 hsl(var(--plaksha-green) / 0.40); }
+    70% { box-shadow: 0 0 0 6px hsl(var(--plaksha-green) / 0); }
+    100% { box-shadow: 0 0 0 0 hsl(var(--plaksha-green) / 0); }
+  }
+
+  .stagger-in {
+    animation: stagger-in 0.40s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .fade-slide-x {
+    animation: fade-slide-x 0.34s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  /* Stagger delay ladder — 60ms steps, up to 8 items */
   .stagger-in-1 { animation-delay: 0ms; }
   .stagger-in-2 { animation-delay: 60ms; }
   .stagger-in-3 { animation-delay: 120ms; }
   .stagger-in-4 { animation-delay: 180ms; }
   .stagger-in-5 { animation-delay: 240ms; }
   .stagger-in-6 { animation-delay: 300ms; }
+  .stagger-in-7 { animation-delay: 360ms; }
+  .stagger-in-8 { animation-delay: 420ms; }
 
+  /* Disable all CSS animations when user prefers reduced motion              */
   @media (prefers-reduced-motion: reduce) {
     .stagger-in,
     .stagger-in-1,
@@ -183,28 +319,23 @@
     .stagger-in-3,
     .stagger-in-4,
     .stagger-in-5,
-    .stagger-in-6 {
+    .stagger-in-6,
+    .stagger-in-7,
+    .stagger-in-8,
+    .fade-slide-x {
       animation: none;
       opacity: 1;
       transform: none;
     }
   }
 
-  /* Subtle top-bar stripe accent for lab cards */
-  .lab-stripe-makerspace {
-    border-top: 2px solid hsl(27 96% 61% / 0.65);
-  }
-
-  .lab-stripe-robotics {
-    border-top: 2px solid hsl(239 100% 78% / 0.65);
-  }
-
-  /* Row hover for dense tables */
+  /* ── Row hover for dense tables ───────────────────────────────────────── */
   .table-row-hover {
     @apply transition-colors duration-100 hover:bg-muted/40;
   }
 
-  /* Nav underline indicator with transition */
+  /* ── Nav underline indicator ──────────────────────────────────────────── */
+  /* Scale-in from center — matches Figma underline tab pattern               */
   .nav-indicator {
     position: relative;
   }
@@ -219,10 +350,21 @@
     background: hsl(var(--primary));
     transform: scaleX(0);
     transform-origin: center;
-    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .nav-indicator[aria-current="page"]::after {
+  .nav-indicator[aria-current="page"]::after,
+  .nav-indicator[aria-selected="true"]::after {
     transform: scaleX(1);
+  }
+
+  /* ── Sidebar nav item active state ───────────────────────────────────── */
+  .sidebar-item-active {
+    @apply bg-primary/10 text-primary shadow-[inset_0_0_0_1px_hsl(var(--primary)/0.18)];
+  }
+
+  /* ── Open-status pulse dot ───────────────────────────────────────────── */
+  .status-dot-open {
+    animation: pulse-ring 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 }
