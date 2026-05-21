@@ -4,7 +4,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import type { LabDivision } from "@/lib/placeholder/labs";
 
-// Per-division accent styles
+// Per-division accent styles — warm/cool palette contrast for quick scan
 const divisionAccent: Record<
   string,
   {
@@ -14,22 +14,20 @@ const divisionAccent: Record<
   }
 > = {
   mechanical: {
-    active:
-      "border-amber-500/40 bg-amber-500/12 text-amber-300",
-    card: "border-amber-500/20 bg-amber-500/5",
+    active: "border-amber-500/38 bg-amber-500/10 text-amber-300",
+    card: "border-amber-500/18 bg-amber-500/[0.04]",
     dot: "bg-amber-400",
   },
   electronics: {
-    active:
-      "border-violet-500/40 bg-violet-500/12 text-violet-300",
-    card: "border-violet-500/20 bg-violet-500/5",
+    active: "border-violet-500/38 bg-violet-500/10 text-violet-300",
+    card: "border-violet-500/18 bg-violet-500/[0.04]",
     dot: "bg-violet-400",
   },
 };
 
 const fallbackAccent = {
-  active: "border-primary/40 bg-primary/12 text-primary",
-  card: "border-primary/15 bg-primary/5",
+  active: "border-primary/38 bg-primary/10 text-primary",
+  card: "border-primary/15 bg-primary/[0.04]",
   dot: "bg-primary",
 };
 
@@ -46,7 +44,7 @@ export function DivisionToggle({ divisions }: DivisionToggleProps) {
 
   return (
     <div>
-      {/* Filter buttons */}
+      {/* Filter pill buttons */}
       <div
         role="group"
         aria-label="Filter by division"
@@ -62,10 +60,12 @@ export function DivisionToggle({ divisions }: DivisionToggleProps) {
               onClick={() => setActive(opt.slug)}
               aria-pressed={isActive}
               className={cn(
-                "rounded-lg border px-3.5 py-1.5 text-sm font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                "rounded-lg border px-3.5 py-1.5 text-sm font-medium",
+                "transition-all duration-150 ease-snap",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                 isActive
                   ? accent.active
-                  : "border-border bg-transparent text-muted-foreground hover:text-foreground hover:border-border/80"
+                  : "border-border bg-transparent text-muted-foreground hover:text-foreground hover:border-border/70"
               )}
             >
               {opt.name}
@@ -75,21 +75,22 @@ export function DivisionToggle({ divisions }: DivisionToggleProps) {
       </div>
 
       {/* Division cards */}
-      <div className="mt-6 grid gap-5 md:grid-cols-2">
+      <div className="mt-6 grid gap-4 md:grid-cols-2">
         {filtered.map((div) => {
           const accent = divisionAccent[div.slug] ?? fallbackAccent;
           return (
             <div
               key={div.slug}
               className={cn(
-                "relative overflow-hidden rounded-xl border p-6 backdrop-blur-sm transition-colors duration-150",
+                "relative overflow-hidden rounded-xl border p-6 backdrop-blur-sm",
+                "transition-colors duration-150",
                 accent.card
               )}
             >
-              {/* Accent dot */}
+              {/* Accent dot — top-right corner */}
               <span
                 className={cn(
-                  "absolute right-5 top-5 h-2 w-2 rounded-full",
+                  "absolute right-5 top-5 h-2 w-2 rounded-full opacity-70",
                   accent.dot
                 )}
                 aria-hidden="true"

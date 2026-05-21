@@ -31,7 +31,7 @@ export function LabSection({
           {heading}
         </h2>
         {description && (
-          <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
             {description}
           </p>
         )}
