@@ -36,9 +36,9 @@ export default async function MaterialsPage({
           <p className="text-muted-foreground">
             Browse consumables and raw materials
           </p>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <div className="mt-1 text-xs text-muted-foreground">
             Showing <ReactiveMetric value={materials.length} className="font-semibold text-foreground" /> item{materials.length === 1 ? "" : "s"}
-          </p>
+          </div>
         </div>
         {isAdmin && (
           <Link href="/admin/materials/new">

@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Plaksha Labs Hub — Executive Overview</title>
+<style>
+  :root {
+    --teal: #0F8E92;
+    --deep-teal: #0C6E71;
+    --yellow: #FFD43B;
+    --leaf: #5BAA5B;
+    --surface: #EEEEEE;
+    --bg: #F5F7FA;
+    --ink: #17202A;
+    --muted: #4B5563;
+    --border: #DDEAF3;
+    --card: #FFFFFF;
+  }
+
+  @page {
+    size: A4;
+    margin: 18mm 16mm 18mm 16mm;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Source Serif Pro", "Cambria", Georgia, "Times New Roman", serif;
+    font-size: 11.5pt;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .page {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 32px 48px 48px 48px;
+    background: var(--bg);
+  }
+
+  h1, h2, h3, h4, .display, .nav, .pill, .meta, .stat-label, .footer-mark {
+    font-family: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: var(--deep-teal);
+    letter-spacing: -0.01em;
+  }
+
+  h1.display {
+    font-size: 38pt;
+    line-height: 1.05;
+    margin: 0 0 8px 0;
+    color: #ffffff;
+  }
+
+  h2 {
+    font-size: 18pt;
+    margin: 0 0 6px 0;
+    color: var(--deep-teal);
+  }
+  h2 .num {
+    color: var(--teal);
+    font-weight: 600;
+    margin-right: 10px;
+  }
+
+  h3 {
+    font-size: 13pt;
+    margin: 18px 0 6px 0;
+    color: var(--deep-teal);
+  }
+
+  p { margin: 0 0 10px 0; }
+
+  a { color: var(--teal); text-decoration: none; border-bottom: 1px solid rgba(15,142,146,0.35); }
+
+  ul { margin: 0 0 12px 0; padding: 0 0 0 1.1em; }
+  li { margin: 4px 0; }
+  ul.tight li { margin: 2px 0; }
+
+  /* Section frame */
+  section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 28px;
+    margin: 0 0 22px 0;
+    box-shadow: 0 4px 24px -12px rgba(0,0,0,0.08);
+    page-break-inside: avoid;
+  }
+
+  section.allow-break { page-break-inside: auto; }
+
+  /* Yellow accent rule */
+  .accent-rule {
+    height: 4px;
+    width: 56px;
+    background: var(--yellow);
+    border-radius: 2px;
+    margin: 0 0 14px 0;
+  }
+
+  /* Cover */
+  .cover {
+    background: linear-gradient(135deg, var(--teal) 0%, var(--deep-teal) 100%);
+    color: #ffffff;
+    border-radius: 18px;
+    padding: 56px 48px 48px 48px;
+    margin: 0 0 28px 0;
+    position: relative;
+    overflow: hidden;
+    page-break-after: always;
+  }
+  .cover::after {
+    content: "";
+    position: absolute;
+    right: -80px; bottom: -80px;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: rgba(255,212,59,0.22);
+    filter: blur(6px);
+  }
+  .cover::before {
+    content: "";
+    position: absolute;
+    right: 60px; top: -30px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.10);
+  }
+  .cover .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 10pt;
+    color: rgba(255,255,255,0.85);
+    margin: 0 0 14px 0;
+  }
+  .cover .tagline {
+    font-family: "Source Serif Pro", Cambria, Georgia, serif;
+    font-size: 15pt;
+    line-height: 1.4;
+    color: rgba(255,255,255,0.95);
+    max-width: 620px;
+    margin: 6px 0 32px 0;
+  }
+  .cover .meta {
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+    gap: 6px 36px;
+    color: rgba(255,255,255,0.95);
+    font-size: 10.5pt;
+    font-family: "Inter", "Segoe UI", sans-serif;
+  }
+  .cover .meta b { color: var(--yellow); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; font-size: 9pt; }
+
+  .pill {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--yellow);
+    color: var(--ink);
+    font-size: 9.5pt;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* Pillars */
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin: 14px 0 4px 0;
+  }
+  .pillar {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    background: #fff;
+  }
+  .pillar h4 {
+    margin: 0 0 4px 0;
+    font-family: "Inter", "Segoe UI", sans-serif;
+    color: var(--teal);
+    font-size: 11pt;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .pillar p { margin: 0; font-size: 10.5pt; color: var(--muted); }
+
+  /* Token table */
+  table.tokens {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0 6px 0;
+    font-size: 10pt;
+  }
+  table.tokens th, table.tokens td {
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  table.tokens th {
+    font-family: "Inter", sans-serif;
+    color: var(--deep-teal);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 8.5pt;
+    background: #F8FBFC;
+  }
+  .swatch {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border-radius: 4px;
+    vertical-align: -2px;
+    margin-right: 8px;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+  code.mono {
+    font-family: "JetBrains Mono", Consolas, "Courier New", monospace;
+    font-size: 9.5pt;
+    color: var(--deep-teal);
+  }
+
+  /* Architecture diagram */
+  pre.diagram {
+    background: #0C6E71;
+    color: #E6FAFB;
+    border-radius: 12px;
+    padding: 18px 20px;
+    font-family: "JetBrains Mono", Consolas, "Courier New", monospace;
+    font-size: 8.4pt;
+    line-height: 1.45;
+    overflow-x: auto;
+    margin: 6px 0 0 0;
+    page-break-inside: avoid;
+  }
+
+  /* Figma reference frames */
+  figure.frame {
+    margin: 14px 0;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+    page-break-inside: avoid;
+  }
+  figure.frame img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  figure.frame figcaption {
+    padding: 8px 12px;
+    font-family: "Inter", sans-serif;
+    font-size: 9pt;
+    color: var(--muted);
+    background: #F8FBFC;
+    border-top: 1px solid var(--border);
+  }
+
+  .figma-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 6px 0 8px 0;
+  }
+  @media print {
+    .figma-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* Stack columns */
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .stack-grid h4 {
+    margin: 0 0 4px 0;
+    color: var(--teal);
+    font-size: 10.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-family: "Inter", sans-serif;
+  }
+
+  /* Timeline */
+  .phase {
+    border-left: 3px solid var(--yellow);
+    padding: 0 0 0 14px;
+    margin: 0 0 14px 0;
+    page-break-inside: avoid;
+  }
+  .phase h3 {
+    margin: 0 0 4px 0;
+    color: var(--deep-teal);
+    font-size: 11.5pt;
+  }
+  .phase .label {
+    display: inline-block;
+    background: var(--teal);
+    color: #fff;
+    font-family: "Inter", sans-serif;
+    font-size: 8.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    vertical-align: 2px;
+  }
+
+  /* Closing */
+  .closing {
+    background: var(--deep-teal);
+    color: #fff;
+    border-radius: 14px;
+    padding: 28px 32px;
+    margin: 18px 0 0 0;
+    text-align: center;
+  }
+  .closing h2 { color: #fff; margin: 0 0 6px 0; }
+  .closing p { color: rgba(255,255,255,0.92); }
+  .closing a { color: var(--yellow); border-bottom-color: rgba(255,212,59,0.5); }
+  .closing .footer-mark {
+    display: inline-block;
+    margin-top: 10px;
+    color: var(--yellow);
+    font-size: 9pt;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* Page break helpers */
+  .pb-after { page-break-after: always; }
+  .pb-before { page-break-before: always; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- COVER -->
+  <div class="cover">
+    <div class="eyebrow">Plaksha University · ILGC · 2026</div>
+    <h1 class="display">Plaksha Labs Hub</h1>
+    <p class="tagline">The unified platform for Plaksha makers — book equipment, build with mentors, showcase what you make.</p>
+    <div style="margin: 14px 0 26px 0;"><span class="pill">Executive overview</span></div>
+    <div class="meta">
+      <div><b>Author</b></div><div>Suryaansh</div>
+      <div><b>Course</b></div><div>ILGC</div>
+      <div><b>Institution</b></div><div>Plaksha University</div>
+      <div><b>Date</b></div><div>May 2026</div>
+    </div>
+  </div>
+
+  <!-- 1. PROBLEM -->
+  <section>
+    <div class="accent-rule"></div>
+    <h2><span class="num">01</span>Problem statement</h2>
+    <p>Plaksha's hands-on culture lives across a growing constellation of labs — the Makerspace, the Robotics Lab, and more on the horizon. Each lab has its own equipment, its own mentors, its own intake forms, and its own way of remembering what students built last semester. Operationally, this fragmentation costs the institution in four concrete ways:</p>
+    <ul>
+      <li><b>Booking lives in spreadsheets and WhatsApp.</b> A student wanting time on a laser cutter, a 3D printer, or a robotics rig has to chase availability across channels. Mentors arbitrate conflicts manually.</li>
+      <li><b>Inventory is invisible.</b> When a student needs M3 standoffs or a stepper driver, there is no single source of truth for what is in stock, where it lives, or who used the last one. Procurement requests sit in inboxes.</li>
+      <li><b>Mentor and admin workflows are manual.</b> Approvals for Bills of Materials, training sign-offs, and machine certifications travel by email. Bottlenecks are invisible until a deadline slips.</li>
+      <li><b>Student work disappears.</b> Some of the most impressive builds at Plaksha live only on a personal Notion page or a poster that comes down after demo day. There is no institutional showcase that compounds the brand of Plaksha as a maker school.</li>
+    </ul>
+    <p style="margin-top:14px;"><b>Plaksha Labs Hub</b> is built to close all four gaps inside one product.</p>
+  </section>
+
+  <!-- 2. SOLUTION -->
+  <section>
+    <div class="accent-rule"></div>
+    <h2><span class="num">02</span>Solution overview</h2>
+    <p>Plaksha Labs Hub is a single web platform where every Plaksha lab is a first-class tenant. Students discover labs and showcased work through a public front, then sign in to book equipment, file material requests, run their projects with mentors, and publish what they make. Mentors and admins run the same flows from the other side — approvals, inventory, analytics, training records — without leaving the app.</p>
+    <div class="pillars">
+      <div class="pillar">
+        <h4>Book</h4>
+        <p>Equipment availability, reservations, training prerequisites, and check-in / out for every lab from one calendar.</p>
+      </div>
+      <div class="pillar">
+        <h4>Build</h4>
+        <p>Projects, teams, Bills of Materials, mentor availability, material requests, and procurement — wired together so a project lead has one place to operate from.</p>
+      </div>
+      <div class="pillar">
+        <h4>Showcase</h4>
+        <p>A public landing page that surfaces featured builds, what happens inside Plaksha's labs, and a recruiting funnel for the next cohort of makers.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. CORE FEATURES -->
+  <section class="allow-break">
+    <div class="accent-rule"></div>
+    <h2><span class="num">03</span>Core features delivered</h2>
+    <ul>
+      <li><b>Public landing experience.</b> Teal hero band, role-aware entry cards (Student / Mentor / Admin), featured projects, "What Happens Here?" cards, stats ring, newsletter capture, and a recruiting CTA strip.</li>
+      <li><b>Multi-role authentication.</b> NextAuth v5 with Microsoft Entra ID single sign-on for Plaksha accounts, an email + password fallback for invited accounts, and a development bypass for offline review.</li>
+      <li><b>Lab-scoped app shell.</b> Persistent deep-teal vertical sidebar (240px) with a lab switcher, role-aware navigation, a yellow accent "+ New Project" pill, and a top header carrying search, notifications, and the user avatar.</li>
+      <li><b>Machine booking and inventory requests.</b> Calendar-driven booking with training prerequisites enforced, plus an inventory request workflow that walks from student submission through mentor review to admin approval.</li>
+      <li><b>Bills of Materials and procurement chain.</b> Project leads draft a BoM, submit for approval, and watch it flow through <code class="mono">BOM submitted → BOM approved → Material request approved → Issued</code> with notifications at every hop.</li>
+      <li><b>Mentor availability, notifications, admin analytics, training records.</b> First-class entities for everything the operations team currently runs out of email.</li>
+      <li><b>Robotics Lab module.</b> Robotics ships alongside the Makerspace as a fully separate lab tenant with its own divisions, assets, and dashboard — proving the multi-lab model.</li>
+      <li><b>Light / dark theme, mobile responsive, WCAG-AA accessibility.</b> Focus rings, skip-to-content links, contrast verified against the teal and yellow palette, and respect for <code class="mono">prefers-reduced-motion</code>.</li>
+    </ul>
+  </section>
+
+  <!-- 4. ARCHITECTURE -->
+  <section class="pb-before">
+    <div class="accent-rule"></div>
+    <h2><span class="num">04</span>Architecture</h2>
+    <p>The architecture deliberately keeps <b>Server Actions as the only API surface</b>. There is no separate REST or GraphQL layer to maintain; mutations are co-located with the components that trigger them, and authorisation is checked once at the action boundary against the session and the user's <code class="mono">LabRole</code> for the requested tenant.</p>
+<pre class="diagram">
+┌─────────────────────────────────────────────────────────────────┐
+│                     BROWSER  (any device)                        │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                  Next.js 14  ·  App Router                       │
+│                                                                  │
+│   (public) group                  (app) group                    │
+│   ──────────────                  ─────────                      │
+│   /             landing           /dashboard                     │
+│   /labs         directory         /labs/[slug]/...               │
+│   /projects     showcase          /projects/[id]/...             │
+│   /sign-in      auth split        /admin/...                     │
+│                                                                  │
+│   Tailwind tokens · Once UI primitives · Radix components        │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+              Server Actions  (the API layer)
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│        NextAuth v5  ·  Credentials + Entra ID + dev bypass       │
+│        Authorisation:  Role × LabRole × Lab tenancy              │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                  Prisma ORM   ──▶   PostgreSQL                   │
+│                                                                  │
+│   Core         User · Account · Session · Role                   │
+│   Tenancy      Lab · LabDivision · LabRole                       │
+│   Equipment    Machine · Asset · InventoryItem · Checkout        │
+│   Work         Project · ProjectMember · Bom · BomItem           │
+│   Flow         Booking · MaterialRequest · ProcurementRequest    │
+│   People ops   MentorAvailability · Training · Notification      │
+└─────────────────────────────────────────────────────────────────┘
+</pre>
+  </section>
+
+  <!-- 5. DESIGN SYSTEM -->
+  <section class="allow-break">
+    <div class="accent-rule"></div>
+    <h2><span class="num">05</span>Design system</h2>
+    <p>The product pivoted on 21 May 2026 to a <b>teal primary, yellow accent, light-mode default</b> palette aligned with the Figma direction. The teal anchors the institutional voice; the yellow is reserved for moments that should pull the eye — the "+ New Project" pill, the stats ring on the landing page, the active navigation indicator.</p>
+
+    <div class="figma-grid">
+      <figure class="frame">
+        <img src="../design/figma-exports/public-landing.png" alt="Plaksha Labs Hub — public landing Figma frame" />
+        <figcaption>Figma reference — public landing</figcaption>
+      </figure>
+      <figure class="frame">
+        <img src="../design/figma-exports/auth-and-dashboard.png" alt="Plaksha Labs Hub — sign-in and dashboard Figma frame" />
+        <figcaption>Figma reference — sign-in and dashboard</figcaption>
+      </figure>
+    </div>
+
+    <h3>Token map</h3>
+    <table class="tokens">
+      <thead>
+        <tr><th>Token</th><th>Hex</th><th>Role</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="swatch" style="background:#0F8E92"></span>Primary (teal)</td><td><code class="mono">#0F8E92</code></td><td>Hero band, primary CTAs, focus ring</td></tr>
+        <tr><td><span class="swatch" style="background:#0C6E71"></span>Deep teal (sidebar)</td><td><code class="mono">#0C6E71</code></td><td>App shell sidebar, footer</td></tr>
+        <tr><td><span class="swatch" style="background:#FFD43B"></span>Yellow accent</td><td><code class="mono">#FFD43B</code></td><td>New-project pill, stat ring, active indicator</td></tr>
+        <tr><td><span class="swatch" style="background:#5BAA5B"></span>Brand leaf green</td><td><code class="mono">#5BAA5B</code></td><td>Plaksha logo leaf, success states</td></tr>
+        <tr><td><span class="swatch" style="background:#EEEEEE"></span>Surface muted</td><td><code class="mono">#EEEEEE</code></td><td>"What Happens Here?" section, footer strip</td></tr>
+        <tr><td><span class="swatch" style="background:#F5F7FA"></span>Background</td><td><code class="mono">#F5F7FA</code></td><td>Page background (light-mode default)</td></tr>
+        <tr><td><span class="swatch" style="background:#17202A"></span>Foreground</td><td><code class="mono">#17202A</code></td><td>Body text</td></tr>
+        <tr><td><span class="swatch" style="background:#FFFFFF"></span>Card</td><td><code class="mono">#FFFFFF</code></td><td>Card surfaces</td></tr>
+        <tr><td><span class="swatch" style="background:#DDEAF3"></span>Border</td><td><code class="mono">#DDEAF3</code></td><td>Subtle separators</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Motion principles</h3>
+    <ul class="tight">
+      <li><b>Scroll-reveal entrances.</b> Content rises into view as the user scrolls, with subtle fade and translate.</li>
+      <li><b>Magnetic CTAs.</b> Primary buttons drift slightly toward the cursor inside their hit area — response without noise.</li>
+      <li><b>Glow cards.</b> Featured project tiles carry a soft cursor-follow glow, so the showcase feels alive.</li>
+      <li><b><code class="mono">prefers-reduced-motion</code> respected everywhere.</b> Every animation degrades to a static state for users who request it.</li>
+    </ul>
+  </section>
+
+  <!-- 6. WALKTHROUGH -->
+  <section class="allow-break">
+    <div class="accent-rule"></div>
+    <h2><span class="num">06</span>User journey — screen walkthrough</h2>
+
+    <h3>Public landing</h3>
+    <p>A teal hero band carries the institutional headline and a magnetic CTA. Below, three role cards (Student, Mentor, Admin) route the visitor to the right sign-in flow. A CTA strip invites prospective students into the labs, "What Happens Here?" cards explain the Book / Build / Showcase loop, Featured Builds surface real student work, the stats ring summarises the year, and a newsletter capture sits above the deep-teal footer.</p>
+
+    <h3>Sign-in</h3>
+    <p>A split layout: on the left, a blurred teal gradient hosts a floating "Hello, Maker!" pill — instantly readable as Plaksha. On the right, a clean form offers Microsoft Entra ID single sign-on for Plaksha accounts, with email + password as the secondary path.</p>
+
+    <h3>App shell</h3>
+    <p>A persistent deep-teal vertical sidebar at 240px carries the Plaksha mark, a lab switcher (Makerspace ↔ Robotics ↔ future labs), and role-aware navigation. The "+ New Project" pill sits in yellow to invite action. The top header carries search, notifications with an unread badge, and the user avatar.</p>
+
+    <h3>Lab pages</h3>
+    <p>The Robotics Lab dashboard surfaces division toggles (ground robotics, drones), asset cards with live status, upcoming bookings, and recent project activity. The Makerspace catalog mirrors the same shell, scoped to its own equipment and inventory.</p>
+
+    <h3>Admin</h3>
+    <p>A material-request approval queue lets staff approve, partially issue, or reject in one screen, with the project context one click away. Analytics summarise utilisation, throughput, and bottlenecks per lab.</p>
+  </section>
+
+  <!-- 7. TECH STACK -->
+  <section>
+    <div class="accent-rule"></div>
+    <h2><span class="num">07</span>Tech stack</h2>
+    <div class="stack-grid">
+      <div>
+        <h4>Frontend</h4>
+        <ul class="tight">
+          <li>Next.js 14 (App Router), React 18, TypeScript</li>
+          <li>Tailwind CSS with a custom HSL token system</li>
+          <li>Once UI primitives, Radix UI for behaviour, Lucide icons</li>
+          <li>TanStack Query for client-side cache coordination</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Backend</h4>
+        <ul class="tight">
+          <li>Server Actions as the sole API surface</li>
+          <li>Prisma ORM 6 against PostgreSQL</li>
+          <li>NextAuth v5 — Microsoft Entra ID, Credentials, dev bypass</li>
+          <li>Zod input validation, bcryptjs credential hashing</li>
+        </ul>
+      </div>
+      <div>
+        <h4>DevOps</h4>
+        <ul class="tight">
+          <li>Vercel-ready Next.js build</li>
+          <li>Prisma migrations checked into the repository</li>
+          <li>Production seeding scripts (<code class="mono">tsx prisma/seed.ts</code>)</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Tooling</h4>
+        <ul class="tight">
+          <li>ESLint + Next config, TypeScript strict mode</li>
+          <li>Sharp for image optimisation</li>
+          <li>Figma Dev Mode MCP server for design handoff</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. TIMELINE -->
+  <section class="allow-break pb-before">
+    <div class="accent-rule"></div>
+    <h2><span class="num">08</span>Project timeline</h2>
+
+    <div class="phase">
+      <h3><span class="label">Phase 0</span>Foundation</h3>
+      <ul class="tight">
+        <li>Initial repository, Next.js 14 scaffolding, providers, middleware, and the first auth pass.</li>
+        <li>Email + password authentication wired for alpha testers, with hashed credentials seeded for demo users.</li>
+        <li>Auth hardening across environments: shared JWT secret, cookie detection across dev and production, middleware token decoding.</li>
+        <li>Production seeding documented; legacy transcripts removed.</li>
+      </ul>
+    </div>
+
+    <div class="phase">
+      <h3><span class="label">Phase 1</span>Core flows</h3>
+      <ul class="tight">
+        <li>Plaksha Labs Hub multi-lab platform scaffolded: <code class="mono">Lab</code>, <code class="mono">LabDivision</code>, <code class="mono">LabRole</code>, <code class="mono">Asset</code>, <code class="mono">InventoryItem</code>, <code class="mono">Checkout</code>, <code class="mono">ProcurementRequest</code> joined the existing Makerspace schema.</li>
+        <li>Engineering docs published: architecture, conventions, and ADRs.</li>
+        <li>Prisma server actions wired end-to-end so projects, bookings, BoMs, material requests, and procurement run as functional flows rather than mocked screens.</li>
+      </ul>
+    </div>
+
+    <div class="phase">
+      <h3><span class="label">Phase 2</span>Polish and rebrand</h3>
+      <ul class="tight">
+        <li>Tokens refined: tighter radii, an HSL palette, and new shadow, easing, and tracking tokens.</li>
+        <li>Public surface alignment pass: Hero, PublicNav, PublicFooter brought to Figma fidelity.</li>
+        <li>Labs surface delivered: LabCard, LabHeader, LabTabs, LabSection, DivisionToggle, SectionEmptyState.</li>
+        <li>Dashboard, admin, and robotics surfaces shipped: stat tiles, subnav, empty states, asset cards.</li>
+        <li>Figma alignment notes published documenting token mapping, component lifts, and intentional divergences.</li>
+        <li>Motion primitives added: ScrollReveal, MagneticButton, GlowCard, StaggerGrid, plus aurora, shimmer, scroll-reveal, and ribbon keyframes.</li>
+        <li>Public surface motion pass: aurora-mesh hero, magnetic CTA, scroll-aware nav, footer reveal.</li>
+        <li>Labs motion pass: cursor-follow glow on cards, accent ribbons, scroll reveals, stagger grids.</li>
+        <li><b>Teal pivot:</b> primary colour moved to teal, light-mode set as default, per the Figma direction.</li>
+      </ul>
+    </div>
+
+    <div class="phase">
+      <h3><span class="label">Phase 3</span>Production readiness</h3>
+      <ul class="tight">
+        <li>Loading skeletons and error boundaries added for every route segment.</li>
+        <li>Designed 404 replacing the framework default.</li>
+        <li><code class="mono">buildMetadata</code> helper standardising Open Graph and Twitter card output across pages.</li>
+        <li>Runtime hardening: local font stack to remove remote font dependency, server / client boundary fix on the Robotics tabs, public <code class="mono">/labs</code> route unblocked.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 9. ROADMAP -->
+  <section>
+    <div class="accent-rule"></div>
+    <h2><span class="num">09</span>What's next</h2>
+    <ul>
+      <li><b>Real Plaksha photography</b> in the Featured Builds and hero zones, replacing the current placeholder set.</li>
+      <li><b>Manual validation pass on Procurement Approve / Reject</b> with the operations team running a week of live requests.</li>
+      <li><b>Mobile-first refinements</b> for the booking calendar and material-request submission — the highest-frequency touchpoints on phones.</li>
+      <li><b>Multi-campus rollout planning</b> so the lab tenancy model can host satellite locations without code changes.</li>
+      <li><b>Public API surface</b> for outbound integrations — calendar feeds, dashboards, alumni showcase embeds.</li>
+      <li><b>Telemetry and analytics</b> to close the loop on utilisation and surface bottlenecks before they bite.</li>
+    </ul>
+  </section>
+
+  <!-- 10. CLOSING -->
+  <div class="closing">
+    <h2 style="color:#fff;">Plaksha Labs Hub</h2>
+    <p>Built by <b>Suryaansh</b> as the ILGC project at <b>Plaksha University</b>, 2026.</p>
+    <p>Contact · <a href="mailto:suryaansh2112@gmail.com">suryaansh2112@gmail.com</a></p>
+    <div class="footer-mark">Book · Build · Showcase</div>
+  </div>
+
+</div>
+</body>
+</html>

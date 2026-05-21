@@ -244,9 +244,9 @@ export default async function AnalyticsPage() {
                 )}
                 Low Stock Items
               </CardTitle>
-              <CardDescription>
+              <div className="text-sm text-muted-foreground">
                 <ReactiveMetric value={materialData.lowStockItems.length} /> item{materialData.lowStockItems.length !== 1 ? "s" : ""} below threshold
-              </CardDescription>
+              </div>
             </CardHeader>
             <CardContent>
               {materialData.lowStockItems.length === 0 ? (
@@ -390,9 +390,9 @@ export default async function AnalyticsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="text-base">Users by Role</CardTitle>
-              <CardDescription>
+              <div className="text-sm text-muted-foreground">
                 <ReactiveMetric value={userData.totalUsers} /> total registered user{userData.totalUsers !== 1 ? "s" : ""}
-              </CardDescription>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Visual bar */}

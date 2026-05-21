@@ -89,7 +89,7 @@ export default async function MaterialRequestsAdminPage({
                 ? `${statusFilter.replaceAll("_", " ")} Requests`
                 : "All Requests"}
             </CardTitle>
-            <CardDescription><ReactiveMetric value={requests.length} /> request(s) found</CardDescription>
+            <div className="text-sm text-muted-foreground"><ReactiveMetric value={requests.length} /> request(s) found</div>
           </CardHeader>
           <CardContent className="p-0">
             {requests.length === 0 ? (

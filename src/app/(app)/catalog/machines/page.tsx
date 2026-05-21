@@ -35,9 +35,9 @@ export default async function MachinesPage({
           <p className="text-muted-foreground">
             Browse and book makerspace equipment
           </p>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <div className="mt-1 text-xs text-muted-foreground">
             Showing <ReactiveMetric value={machines.length} className="font-semibold text-foreground" /> result{machines.length === 1 ? "" : "s"}
-          </p>
+          </div>
         </div>
         {session?.user.role === "ADMIN" && (
           <Link href="/admin/machines/new">
