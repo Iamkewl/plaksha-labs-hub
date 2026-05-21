@@ -130,6 +130,10 @@ if (hasMicrosoftEntraConfig) {
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
   secret: authSecret,
+  // Trust the deploy host (Vercel/proxied environments). Equivalent to setting
+  // AUTH_TRUST_HOST=true but explicit so it works even if the env var isn't
+  // read by NextAuth's runtime detection.
+  trustHost: true,
   session: { strategy: "jwt" },
   pages: {
     signIn: "/auth/signin",
