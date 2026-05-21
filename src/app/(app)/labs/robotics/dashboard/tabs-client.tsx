@@ -1,10 +1,8 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { MechanicalSection } from "@/components/robotics/MechanicalSection";
-import { ElectronicsSection } from "@/components/robotics/ElectronicsSection";
-import { SharedSection } from "@/components/robotics/SharedSection";
 
 const VALID_TABS = ["mechanical", "electronics", "shared"] as const;
 type TabValue = (typeof VALID_TABS)[number];
@@ -13,7 +11,17 @@ function isValidTab(value: string | null): value is TabValue {
   return VALID_TABS.includes(value as TabValue);
 }
 
-export function RoboticsDashboardTabs() {
+interface RoboticsDashboardTabsProps {
+  mechanical: ReactNode;
+  electronics: ReactNode;
+  shared: ReactNode;
+}
+
+export function RoboticsDashboardTabs({
+  mechanical,
+  electronics,
+  shared,
+}: RoboticsDashboardTabsProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
@@ -40,15 +48,15 @@ export function RoboticsDashboardTabs() {
       </TabsList>
 
       <TabsContent value="mechanical">
-        <MechanicalSection />
+        {mechanical}
       </TabsContent>
 
       <TabsContent value="electronics">
-        <ElectronicsSection />
+        {electronics}
       </TabsContent>
 
       <TabsContent value="shared">
-        <SharedSection />
+        {shared}
       </TabsContent>
     </Tabs>
   );

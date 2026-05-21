@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { checkRateLimit } from "@/lib/rate-limit";
 
-const publicPaths = ["/", "/makerspace-projects", "/auth/signin", "/api/auth"];
+const publicPaths = ["/", "/labs", "/makerspace-projects", "/auth/signin", "/api/auth"];
 
 export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;

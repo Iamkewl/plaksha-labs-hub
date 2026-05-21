@@ -1,19 +1,14 @@
 import type { Metadata } from "next";
-import { Epilogue, Manrope } from "next/font/google";
+import type { CSSProperties } from "react";
 import "@once-ui-system/core/css/styles.css";
 import "@once-ui-system/core/css/tokens.css";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 
-const epilogue = Epilogue({
-  subsets: ["latin"],
-  variable: "--font-display",
-});
-
-const manrope = Manrope({
-  subsets: ["latin"],
-  variable: "--font-body",
-});
+const fontVariables = {
+  "--font-display": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+  "--font-body": "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+} as CSSProperties;
 
 export const metadata: Metadata = {
   title: "Plaksha Makerspace Hub",
@@ -27,7 +22,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${epilogue.variable} ${manrope.variable} antialiased`}>
+      <body className="antialiased" style={fontVariables}>
         <Providers>{children}</Providers>
       </body>
     </html>
