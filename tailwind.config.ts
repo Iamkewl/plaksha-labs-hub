@@ -81,6 +81,67 @@ const config: Config = {
         /* expo ease-out — the canonical snap curve across the system */
         snap: "cubic-bezier(0.16, 1, 0.3, 1)",
       },
+      animation: {
+        /* Aurora orb drift — used in aurora-mesh utility class via CSS        */
+        "aurora-1": "aurora-1 28s ease-in-out infinite",
+        "aurora-2": "aurora-2 34s ease-in-out infinite",
+        "aurora-3": "aurora-3 40s ease-in-out infinite",
+        /* Shimmer sweep — skeleton placeholders                               */
+        shimmer: "shimmer 1.8s linear infinite",
+        /* Scroll-reveal — trigger class applied via JS                        */
+        "scroll-reveal": "scroll-reveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) both",
+        /* Ribbon sweep — decorative accent stripe on lab heroes               */
+        "ribbon-sweep": "ribbon-sweep 4s linear infinite",
+        /* Glow pulse — magnetic CTA button halo                               */
+        "glow-pulse": "glow-pulse 3s ease-in-out infinite",
+        /* Stagger in (explicit, mirrors CSS utility) */
+        "stagger-in": "stagger-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both",
+        /* Fade slide X */
+        "fade-slide-x": "fade-slide-x 0.34s cubic-bezier(0.16, 1, 0.3, 1) both",
+      },
+      keyframes: {
+        "aurora-1": {
+          "0%":   { transform: "translate(0%, 0%) scale(1)" },
+          "33%":  { transform: "translate(4%, -6%) scale(1.08)" },
+          "66%":  { transform: "translate(-3%, 4%) scale(0.95)" },
+          "100%": { transform: "translate(0%, 0%) scale(1)" },
+        },
+        "aurora-2": {
+          "0%":   { transform: "translate(0%, 0%) scale(1)" },
+          "40%":  { transform: "translate(-5%, 5%) scale(1.12)" },
+          "70%":  { transform: "translate(3%, -3%) scale(0.92)" },
+          "100%": { transform: "translate(0%, 0%) scale(1)" },
+        },
+        "aurora-3": {
+          "0%":   { transform: "translate(0%, 0%) scale(1.05)" },
+          "50%":  { transform: "translate(6%, 4%) scale(0.93)" },
+          "100%": { transform: "translate(0%, 0%) scale(1.05)" },
+        },
+        shimmer: {
+          from: { backgroundPosition: "-200% center" },
+          to:   { backgroundPosition:  "200% center" },
+        },
+        "scroll-reveal": {
+          from: { opacity: "0", transform: "translateY(20px)" },
+          to:   { opacity: "1", transform: "translateY(0)" },
+        },
+        "ribbon-sweep": {
+          "0%":   { backgroundPosition: "-200% 50%" },
+          "100%": { backgroundPosition:  "200% 50%" },
+        },
+        "glow-pulse": {
+          "0%, 100%": { opacity: "0.55", transform: "scale(1)" },
+          "50%":      { opacity: "0.80", transform: "scale(1.04)" },
+        },
+        "stagger-in": {
+          from: { opacity: "0", transform: "translateY(12px)" },
+          to:   { opacity: "1", transform: "translateY(0)" },
+        },
+        "fade-slide-x": {
+          from: { opacity: "0", transform: "translateX(-10px)" },
+          to:   { opacity: "1", transform: "translateX(0)" },
+        },
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
