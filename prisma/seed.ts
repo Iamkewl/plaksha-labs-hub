@@ -861,6 +861,134 @@ async function main() {
   }
   console.log("  Procurement requests created");
 
+  // ─── BOMs ────────────────────────────────────────────
+  // (a) APPROVED BOM v1 on Smart Campus Weather Station
+  // Guard: find the project seeded above (by name, since it was created not upserted)
+  const weatherProject = await prisma.project.findFirst({
+    where: { name: "Smart Campus Weather Station" },
+  });
+
+  if (weatherProject) {
+    // Materials needed: PLA White (materials[0]) and Arduino Uno R3 (materials[9])
+    const plaWhite = await prisma.material.findFirst({ where: { name: "PLA Filament (White)" } });
+    const arduinoUno = await prisma.material.findFirst({ where: { name: "Arduino Uno R3" } });
+
+    const existingWeatherBom = await prisma.bom.findFirst({
+      where: { projectId: weatherProject.id, version: 1 },
+    });
+
+    if (!existingWeatherBom && plaWhite && arduinoUno) {
+      // quantity: 2 kg PLA White + 3 Arduino Uno R3
+      const plaQty = 2;
+      const arduinoQty = 3;
+      const totalCost = plaWhite.costPerUnit * plaQty + arduinoUno.costPerUnit * arduinoQty;
+
+      await prisma.bom.create({
+        data: {
+          projectId: weatherProject.id,
+          version: 1,
+          status: "APPROVED",
+          totalCost,
+          approvedBy: admin.id,
+          approvedAt: new Date(),
+          submittedAt: new Date(),
+          notes: "Approved for Weather Station enclosure and microcontroller components.",
+          items: {
+            create: [
+              {
+                materialId: plaWhite.id,
+                quantity: plaQty,
+                costSnapshot: plaWhite.costPerUnit,
+                notes: "Enclosure housing parts",
+              },
+              {
+                materialId: arduinoUno.id,
+                quantity: arduinoQty,
+                costSnapshot: arduinoUno.costPerUnit,
+                notes: "Main controller + 2 spares",
+              },
+            ],
+          },
+        },
+      });
+      console.log(`  BOM v1 (APPROVED) created for "${weatherProject.name}"`);
+    } else {
+      console.log(`  BOM v1 for "${weatherProject.name}" already exists — skipped`);
+    }
+  }
+
+  // (b) Second project — no mentor, Sneha Reddy as LEAD, with its own APPROVED BOM
+  // This demos the "no-mentor → LEAD approves" fallback path.
+  const noMentorProjectName = "Autonomous Line-Follower Robot";
+
+  let noMentorProject = await prisma.project.findFirst({
+    where: { name: noMentorProjectName },
+  });
+
+  if (!noMentorProject) {
+    noMentorProject = await prisma.project.create({
+      data: {
+        name: noMentorProjectName,
+        description:
+          "A student-led project to design and build an autonomous line-follower robot using ESP32 and IR sensors. No faculty mentor assigned; LEAD member approves BOMs.",
+        mentorId: null,
+        labId: makerspace.id,
+        members: {
+          create: [
+            { userId: student2.id, role: "LEAD" }, // Sneha Reddy
+            { userId: student3.id, role: "MEMBER" }, // Vikram Singh
+          ],
+        },
+      },
+    });
+    console.log(`  Project "${noMentorProject.name}" created`);
+  }
+
+  const esp32 = await prisma.material.findFirst({ where: { name: "ESP32 DevKit" } });
+  const jumperWires = await prisma.material.findFirst({ where: { name: "Jumper Wires (M-M) Pack" } });
+
+  const existingNoMentorBom = await prisma.bom.findFirst({
+    where: { projectId: noMentorProject.id, version: 1 },
+  });
+
+  if (!existingNoMentorBom && esp32 && jumperWires) {
+    const esp32Qty = 2;
+    const wiresQty = 4;
+    const totalCostNoMentor = esp32.costPerUnit * esp32Qty + jumperWires.costPerUnit * wiresQty;
+
+    await prisma.bom.create({
+      data: {
+        projectId: noMentorProject.id,
+        version: 1,
+        status: "APPROVED",
+        totalCost: totalCostNoMentor,
+        approvedBy: student2.id, // Sneha Reddy (LEAD) approves — no-mentor fallback
+        approvedAt: new Date(),
+        submittedAt: new Date(),
+        notes: "Approved by project LEAD (no mentor assigned). ESP32 + wiring for line-follower.",
+        items: {
+          create: [
+            {
+              materialId: esp32.id,
+              quantity: esp32Qty,
+              costSnapshot: esp32.costPerUnit,
+              notes: "Primary + backup ESP32 controller",
+            },
+            {
+              materialId: jumperWires.id,
+              quantity: wiresQty,
+              costSnapshot: jumperWires.costPerUnit,
+              notes: "Sensor and motor wiring",
+            },
+          ],
+        },
+      },
+    });
+    console.log(`  BOM v1 (APPROVED, LEAD-approved) created for "${noMentorProject.name}"`);
+  } else {
+    console.log(`  BOM v1 for "${noMentorProjectName}" already exists — skipped`);
+  }
+
   console.log("\nSeed complete!");
   console.log("\n  Demo accounts:");
   console.log("  Admin:   admin@plaksha.edu.in");

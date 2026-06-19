@@ -465,12 +465,26 @@ export async function createMaterialAllocationRequest(rawData: unknown) {
       link: requestLink,
     });
   } else {
-    await createNotificationsForAdmins({
-      type: "MATERIAL_REQUEST_SUBMITTED",
-      title: "Material allocation request pending BOM review",
-      message: `${session.user.name ?? "A project member"} requested ${parsed.quantity} ${bomItem.material.unit} of ${bomItem.material.name}.`,
-      link: requestLink,
-    });
+    // No mentor: notify the project LEAD member(s) instead
+    const leads = bom.project.members.filter((m) => m.role === "LEAD");
+    if (leads.length > 0) {
+      for (const lead of leads) {
+        await createNotification({
+          userId: lead.userId,
+          type: "MATERIAL_REQUEST_SUBMITTED",
+          title: "Material allocation request pending review",
+          message: `${session.user.name ?? "A project member"} requested ${parsed.quantity} ${bomItem.material.unit} of ${bomItem.material.name}.`,
+          link: requestLink,
+        });
+      }
+    } else {
+      await createNotificationsForAdmins({
+        type: "MATERIAL_REQUEST_SUBMITTED",
+        title: "Material allocation request pending BOM review",
+        message: `${session.user.name ?? "A project member"} requested ${parsed.quantity} ${bomItem.material.unit} of ${bomItem.material.name}.`,
+        link: requestLink,
+      });
+    }
   }
 
   revalidatePath(requestLink);
@@ -492,7 +506,13 @@ export async function reviewMaterialRequestByBomApprover(rawData: unknown) {
       requester: { select: { id: true, name: true } },
       bom: {
         include: {
-          project: { select: { id: true, mentorId: true } },
+          project: {
+            select: {
+              id: true,
+              mentorId: true,
+              members: { where: { role: "LEAD" }, select: { userId: true } },
+            },
+          },
         },
       },
     },
@@ -500,10 +520,24 @@ export async function reviewMaterialRequestByBomApprover(rawData: unknown) {
 
   if (!request || !request.bom) throw new Error("Request not found");
 
-  const isProjectMentor = request.bom.project.mentorId === session.user.id;
   const isAdmin = session.user.role === "ADMIN";
-  if (!isProjectMentor && !isAdmin) {
-    throw new Error("Only the BOM mentor/admin can review this request");
+  const projectMentorId = request.bom.project.mentorId;
+  const leadUserIds = request.bom.project.members.map((m) => m.userId);
+
+  let isAuthorized = false;
+  if (isAdmin) {
+    isAuthorized = true;
+  } else if (projectMentorId) {
+    // Project has a mentor: only that mentor (with MENTOR role) may approve
+    isAuthorized =
+      session.user.id === projectMentorId && session.user.role === "MENTOR";
+  } else {
+    // No mentor: the project LEAD(s) act as first-stage approver
+    isAuthorized = leadUserIds.includes(session.user.id);
+  }
+
+  if (!isAuthorized) {
+    throw new Error("Only the project's mentor or lead can review this request");
   }
 
   if (!["PENDING_BOM_APPROVAL", "PENDING"].includes(request.status)) {
@@ -626,6 +660,14 @@ export async function issueMaterialRequest(rawData: unknown) {
   // Determine final status: ISSUED if fully delivered, PARTIALLY_ISSUED otherwise
   const totalIssued = (request.issuedQty ?? 0) + parsed.issuedQty;
   const targetQty = request.approvedQty ?? request.quantity;
+
+  // Guard: never issue more than approved quantity
+  if (totalIssued > targetQty + 1e-9) {
+    throw new Error(
+      `Cannot issue more than the approved quantity (${targetQty})`
+    );
+  }
+
   const finalStatus = totalIssued >= targetQty ? "ISSUED" : "PARTIALLY_ISSUED";
 
   await prisma.$transaction([
@@ -653,4 +695,49 @@ export async function issueMaterialRequest(rawData: unknown) {
 
   revalidatePath("/admin/material-requests");
   revalidatePath("/catalog/materials");
+}
+
+export async function getPendingBomReviews() {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  const userId = session.user.id;
+
+  // Fetch all PENDING_BOM_APPROVAL requests along with project membership info
+  const requests = await prisma.materialRequest.findMany({
+    where: {
+      status: "PENDING_BOM_APPROVAL",
+    },
+    include: {
+      material: { select: { name: true, unit: true } },
+      requester: { select: { name: true } },
+      bom: {
+        select: {
+          id: true,
+          version: true,
+          project: {
+            select: {
+              id: true,
+              name: true,
+              mentorId: true,
+              members: { where: { role: "LEAD" }, select: { userId: true } },
+            },
+          },
+        },
+      },
+    },
+    orderBy: { requestedAt: "asc" },
+  });
+
+  // Filter to only the requests this user is authorized to review:
+  // - project has a mentor AND it's the current user, OR
+  // - project has no mentor AND the current user is a LEAD member
+  return requests.filter((req) => {
+    if (!req.bom) return false;
+    const project = req.bom.project;
+    if (project.mentorId) {
+      return project.mentorId === userId;
+    }
+    return project.members.some((m) => m.userId === userId);
+  });
 }

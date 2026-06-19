@@ -30,7 +30,7 @@ import {
   MapPin,
 } from "lucide-react";
 import Link from "next/link";
-import { formatDateShort } from "@/lib/utils";
+import { formatDateShort, formatStatus } from "@/lib/utils";
 import { ReactiveMetric, ReactiveReveal } from "@/components/once-ui/reactive-elements";
 
 import { StatCard } from "@/components/dashboard/StatCard";
@@ -109,7 +109,7 @@ function StudentDashboardHub({ data, userName, activeCheckouts }: { data: Studen
             value={data.recentNotifications.filter((n) => !n.read).length}
             description="unread"
             icon={<Bell className="h-4 w-4 text-violet-500" />}
-            href="/dashboard"
+            href="/notifications"
           />
         </div>
       </ReactiveReveal>
@@ -170,7 +170,7 @@ function StudentDashboardHub({ data, userName, activeCheckouts }: { data: Studen
                       variant={b.status === "CONFIRMED" ? "default" : "outline"}
                       className="text-xs"
                     >
-                      {b.status}
+                      {formatStatus(b.status)}
                     </Badge>
                   </div>
                 ))}
@@ -387,7 +387,7 @@ function MentorDashboard({ data, userName }: { data: MentorData; userName?: stri
                       variant={s.status === "CONFIRMED" ? "default" : "secondary"}
                       className="text-xs"
                     >
-                      {s.status}
+                      {formatStatus(s.status)}
                     </Badge>
                   </div>
                 ))}
@@ -437,7 +437,7 @@ function MentorDashboard({ data, userName }: { data: MentorData; userName?: stri
                       </div>
                     </div>
                     <Badge variant="outline" className="text-xs">
-                      {s.status}
+                      {formatStatus(s.status)}
                     </Badge>
                   </div>
                 ))}
@@ -703,7 +703,7 @@ function AdminDashboard({ data, userName }: { data: AdminData; userName?: string
                       }
                       className="text-xs shrink-0"
                     >
-                      {b.status}
+                      {formatStatus(b.status)}
                     </Badge>
                   </div>
                 ))}

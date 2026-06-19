@@ -1,6 +1,7 @@
 // Server component — renders the lab banner above the tabbed dashboard.
 import type { ReactNode } from "react";
 import { Cpu, Wrench, Share2 } from "lucide-react";
+import { getLabStats } from "@/app/actions/labs";
 
 const DIVISION_CHIPS = [
   { label: "Mechanical", icon: Wrench, class: "border-amber-500/30 bg-amber-500/10 text-amber-300" },
@@ -8,11 +9,26 @@ const DIVISION_CHIPS = [
   { label: "Shared", icon: Share2, class: "border-primary/30 bg-primary/10 text-primary" },
 ] as const;
 
-export default function RoboticsDashboardLayout({
+export default async function RoboticsDashboardLayout({
   children,
 }: {
   children: ReactNode;
 }) {
+  let assets: string = "—";
+  let members: string = "—";
+  let procurement: string = "—";
+  let projects: string = "—";
+
+  try {
+    const stats = await getLabStats("robotics");
+    assets = String(stats.assets);
+    members = String(stats.members);
+    procurement = `${stats.procurementOpen} tickets`;
+    projects = String(stats.projectsOpen);
+  } catch {
+    // Fall back to em-dash placeholders — never show a fake number.
+  }
+
   return (
     <div className="space-y-6">
       {/* ── Lab Header Banner ─────────────────────────── */}
@@ -52,10 +68,10 @@ export default function RoboticsDashboardLayout({
 
         {/* Quick stats */}
         <div className="mt-4 flex flex-wrap gap-4">
-          <Stat label="Assets" value="6" />
-          <Stat label="Active Users" value="6" />
-          <Stat label="Procurement" value="6 tickets" />
-          <Stat label="Open Projects" value="6" />
+          <Stat label="Assets" value={assets} />
+          <Stat label="Active Users" value={members} />
+          <Stat label="Procurement" value={procurement} />
+          <Stat label="Open Projects" value={projects} />
         </div>
       </header>
 

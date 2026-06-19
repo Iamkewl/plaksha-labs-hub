@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { updateBookingStatus } from "@/app/actions/bookings";
 import { Check, X } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 interface BookingActionsProps {
   bookingId: string;
@@ -28,7 +29,11 @@ export function BookingActions({
       await updateBookingStatus({ bookingId, status: newStatus });
       router.refresh();
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Action failed");
+      toast({
+        variant: "destructive",
+        title: "Action failed",
+        description: err instanceof Error ? err.message : "Action failed",
+      });
     } finally {
       setLoading(false);
     }

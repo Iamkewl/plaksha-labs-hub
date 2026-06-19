@@ -1,10 +1,13 @@
 import { AdminSubNav } from "@/components/admin/AdminSubNav";
+import { requireRole } from "@/lib/auth-guard";
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  await requireRole("ADMIN");
+
   return (
     <>
       <AdminSubNav />

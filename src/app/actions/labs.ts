@@ -54,6 +54,52 @@ export async function getLabBySlug(slug: string) {
 }
 
 /**
+ * Return live stats for a single lab identified by slug.
+ * - assets: count of Asset rows owned by the lab.
+ * - members: count of LabRole rows for the lab.
+ * - procurementOpen: ProcurementRequest rows whose status is NEW or ORDERED
+ *   (i.e. not yet received, rejected, approved-and-closed, or cancelled).
+ * - projectsOpen: count of Project rows linked to the lab via Project.labId.
+ */
+export async function getLabStats(slug: string): Promise<{
+  assets: number;
+  members: number;
+  procurementOpen: number;
+  projectsOpen: number;
+}> {
+  const lab = await prisma.lab.findUnique({
+    where: { slug },
+    include: {
+      _count: {
+        select: {
+          assets: true,
+          roles: true,
+          projects: true,
+        },
+      },
+    },
+  });
+
+  if (!lab) {
+    throw new Error(`Lab with slug "${slug}" not found`);
+  }
+
+  const procurementOpen = await prisma.procurementRequest.count({
+    where: {
+      labId: lab.id,
+      status: { in: ["NEW", "ORDERED"] },
+    },
+  });
+
+  return {
+    assets: lab._count.assets,
+    members: lab._count.roles,
+    procurementOpen,
+    projectsOpen: lab._count.projects,
+  };
+}
+
+/**
  * Return all LabRole rows for a lab, joined with the user.
  * Requires an authenticated session (any role).
  */

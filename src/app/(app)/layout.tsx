@@ -1,6 +1,7 @@
 import { Sidebar } from "@/components/shell/Sidebar";
 import { MobileSidebar } from "@/components/shell/MobileSidebar";
 import { getUnreadNotificationCount } from "@/app/actions/notifications";
+import { Toaster } from "@/components/ui/toaster";
 
 export default async function AppLayout({
   children,
@@ -32,6 +33,7 @@ export default async function AppLayout({
           <div className="mx-auto w-full max-w-[1480px]">{children}</div>
         </main>
       </div>
+      <Toaster />
     </div>
   );
 }

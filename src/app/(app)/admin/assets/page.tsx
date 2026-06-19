@@ -1,6 +1,5 @@
 import { requireRole } from "@/lib/auth-guard";
 import { getAssets } from "@/app/actions/assets";
-import { PLACEHOLDER_ASSETS_ADMIN } from "@/lib/placeholder/admin";
 import { AssetsClient } from "@/components/admin/AssetsClient";
 
 export const dynamic = "force-dynamic";
@@ -16,7 +15,7 @@ export default async function AssetsPage() {
     kind: string;
     status: string;
     lastActivity: Date;
-  }> = PLACEHOLDER_ASSETS_ADMIN;
+  }> = [];
 
   try {
     const { assets: fromDb } = await getAssets({ page: 1 });
@@ -32,7 +31,7 @@ export default async function AssetsPage() {
       }));
     }
   } catch {
-    // DB unavailable — keep placeholder
+    // DB unavailable — show empty state
   }
 
   return <AssetsClient assets={assets} />;

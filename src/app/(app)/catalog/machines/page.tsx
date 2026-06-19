@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatStatus } from "@/lib/utils";
 import { Plus, Wrench } from "lucide-react";
 import { MachineFilters } from "./machine-filters";
 import { ReactiveMetric, ReactiveReveal } from "@/components/once-ui/reactive-elements";
@@ -87,7 +87,7 @@ export default async function MachinesPage({
                           statusColors[machine.status] ?? ""
                         }`}
                       >
-                        {machine.status.replace("_", " ")}
+                        {formatStatus(machine.status)}
                       </span>
                     </div>
                     <Badge variant="outline">{machine.category}</Badge>

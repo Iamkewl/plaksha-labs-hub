@@ -65,12 +65,13 @@ export default async function BomDetailPage({
   const isLead = member?.role === "LEAD";
   const isAdmin = session.user.role === "ADMIN";
   const isProjectMentor = bom.project.mentorId === session.user.id;
+  const hasMentor = !!bom.project.mentorId;
 
   const canSubmit = (isLead || isAdmin) && bom.status === "DRAFT";
   const canApprove = isAdmin;
   const canRequestMaterials =
     bom.status === "APPROVED" && (!!member || isProjectMentor || isAdmin);
-  const canReviewBomRequests = isProjectMentor || isAdmin;
+  const canReviewBomRequests = isAdmin || (hasMentor ? isProjectMentor : isLead);
 
   async function handleCreateAllocationRequest(formData: FormData) {
     "use server";

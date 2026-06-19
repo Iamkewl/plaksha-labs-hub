@@ -1,22 +1,45 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { BookingRow } from "@/components/dashboard/BookingRow";
 import { EmptyState } from "@/components/dashboard/EmptyState";
-import { PLACEHOLDER_BOOKINGS } from "@/lib/placeholder/dashboard";
+import { type PlaceholderBooking } from "@/lib/placeholder/dashboard";
 import { Plus, CalendarDays } from "lucide-react";
 import Link from "next/link";
+import { getBookings } from "@/app/actions/bookings";
 
-export default function DashboardBookingsPage() {
-  const now = new Date();
+export const dynamic = "force-dynamic";
 
-  const upcoming = PLACEHOLDER_BOOKINGS.filter(
-    (b) => new Date(b.endTime) >= now && b.status !== "CANCELLED"
-  );
+export default async function DashboardBookingsPage() {
+  let upcoming: PlaceholderBooking[] = [];
+  let past: PlaceholderBooking[] = [];
 
-  const past = PLACEHOLDER_BOOKINGS.filter(
-    (b) => new Date(b.endTime) < now || b.status === "CANCELLED"
-  );
+  try {
+    const { bookings } = await getBookings();
+    const now = new Date();
+
+    const allMapped: PlaceholderBooking[] = bookings.map((b) => ({
+      id: b.id,
+      machineId: b.machineId ?? null,
+      mentorId: b.mentorId ?? null,
+      machineName: b.machine?.name ?? null,
+      mentorName: b.mentor?.name ?? null,
+      location: b.machine?.location ?? null,
+      startTime: b.startTime,
+      endTime: b.endTime,
+      status: b.status as PlaceholderBooking["status"],
+      createdAt: b.createdAt,
+    }));
+
+    upcoming = allMapped.filter(
+      (b) => new Date(b.endTime) >= now && b.status !== "CANCELLED"
+    );
+    past = allMapped.filter(
+      (b) => new Date(b.endTime) < now || b.status === "CANCELLED"
+    );
+  } catch {
+    // DB error — fall through with empty arrays; never show fake data
+  }
 
   return (
     <div className="space-y-6">

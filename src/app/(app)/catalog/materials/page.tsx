@@ -1,5 +1,5 @@
 import { getMaterials, getLowStockMaterials, getMaterialCategories } from "@/app/actions/materials";
-import { auth } from "@/lib/auth";
+import { requireAuth } from "@/lib/auth-guard";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +14,7 @@ export default async function MaterialsPage({
 }: {
   searchParams: { category?: string; search?: string; filter?: string };
 }) {
-  const session = await auth();
+  const session = await requireAuth();
   const isLowStockFilter = searchParams.filter === "low-stock";
   const [materials, categories] = await Promise.all([
     isLowStockFilter
@@ -26,7 +26,7 @@ export default async function MaterialsPage({
     getMaterialCategories(),
   ]);
 
-  const isAdmin = session?.user.role === "ADMIN";
+  const isAdmin = session.user.role === "ADMIN";
 
   return (
     <div>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Search, User, ChevronDown } from "lucide-react";
+import { Search, User, ChevronDown, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MakerhubLogo } from "@/components/brand/MakerhubLogo";
 
@@ -23,6 +23,7 @@ const labLinks = [
 export function PublicNav() {
   const [scrolled, setScrolled] = useState(false);
   const [labsOpen, setLabsOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -132,13 +133,14 @@ export function PublicNav() {
           </Link>
         </div>
 
-        {/* Right: search + avatar */}
+        {/* Right: avatar + mobile hamburger */}
         <div className="flex items-center gap-2">
+          {/* Search button — hidden until feature ships */}
           <button
             type="button"
             aria-label="Search"
             title="Coming soon"
-            className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="hidden h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             <Search className="h-4 w-4" aria-hidden="true" />
           </button>
@@ -150,8 +152,87 @@ export function PublicNav() {
           >
             <User className="h-4 w-4" aria-hidden="true" />
           </Link>
+
+          {/* Mobile hamburger — visible below md */}
+          <button
+            type="button"
+            aria-label="Open menu"
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-nav-menu"
+            onClick={() => setMobileOpen((o) => !o)}
+            className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:hidden"
+          >
+            {mobileOpen ? (
+              <X className="h-4 w-4" aria-hidden="true" />
+            ) : (
+              <Menu className="h-4 w-4" aria-hidden="true" />
+            )}
+          </button>
         </div>
       </nav>
+
+      {/* Mobile nav menu */}
+      {mobileOpen && (
+        <div
+          id="mobile-nav-menu"
+          className="border-t border-border bg-white px-4 py-3 md:hidden"
+          role="menu"
+          aria-label="Mobile navigation"
+        >
+          <div className="flex flex-col gap-1">
+            <Link
+              href="/"
+              role="menuitem"
+              onClick={() => setMobileOpen(false)}
+              className="rounded-md px-3 py-2 text-sm font-medium text-foreground transition-colors duration-150 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              Home
+            </Link>
+            <Link
+              href="/labs"
+              role="menuitem"
+              onClick={() => setMobileOpen(false)}
+              className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              Explore Labs
+            </Link>
+            <Link
+              href="/labs/makerspace"
+              role="menuitem"
+              onClick={() => setMobileOpen(false)}
+              className="rounded-md px-3 py-2 pl-6 text-sm text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              Makerspace
+            </Link>
+            <Link
+              href="/labs/robotics"
+              role="menuitem"
+              onClick={() => setMobileOpen(false)}
+              className="rounded-md px-3 py-2 pl-6 text-sm text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              Robotics
+            </Link>
+            <Link
+              href="/projects"
+              role="menuitem"
+              onClick={() => setMobileOpen(false)}
+              className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              Projects
+            </Link>
+            <div className="mt-2 border-t border-border/60 pt-2">
+              <Link
+                href="/auth/signin"
+                role="menuitem"
+                onClick={() => setMobileOpen(false)}
+                className="block rounded-md px-3 py-2 text-sm font-medium text-primary transition-colors duration-150 hover:bg-primary/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                Sign in
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

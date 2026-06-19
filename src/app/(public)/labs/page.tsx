@@ -1,19 +1,12 @@
 import { PLACEHOLDER_LABS, type PlaceholderLab } from "@/lib/placeholder/labs";
-import { LabCard } from "@/components/labs/LabCard";
 import { getLabs } from "@/app/actions/labs";
-import { StaggerGrid } from "@/components/motion/StaggerGrid";
 import { ScrollReveal } from "@/components/motion/ScrollReveal";
+import { LabsFilterGrid } from "@/components/labs/LabsFilterGrid";
 
 export const metadata = {
   title: "Explore Labs — Plaksha Labs Hub",
   description: "Discover the Makerspace and Robotics Lab at Plaksha University.",
 };
-
-const FILTER_CHIPS = [
-  { label: "All", value: "all" },
-  { label: "Open now", value: "open" },
-  { label: "Has divisions", value: "divisions" },
-];
 
 /**
  * Map a Prisma Lab row to the PlaceholderLab shape expected by LabCard/LabHeader.
@@ -72,39 +65,8 @@ export default async function LabsPage() {
         </header>
       </ScrollReveal>
 
-      {/* Filter chips — static until client-side filtering lands */}
-      <div
-        className="mt-8 flex flex-wrap gap-2"
-        role="group"
-        aria-label="Filter labs (coming soon)"
-      >
-        {FILTER_CHIPS.map((chip) => (
-          <span
-            key={chip.value}
-            className="rounded-lg border border-border/50 bg-muted/20 px-3.5 py-1.5 text-sm text-muted-foreground cursor-default select-none"
-            aria-disabled="true"
-            title="Filters are coming soon"
-          >
-            {chip.label}
-          </span>
-        ))}
-      </div>
-
-      {/* Lab grid — StaggerGrid handles scroll-driven entrance with 60ms stagger */}
-      <section aria-labelledby="labs-list-heading" className="mt-10">
-        <h2 id="labs-list-heading" className="sr-only">
-          Available labs
-        </h2>
-        <StaggerGrid
-          className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
-          staggerDelay={60}
-          baseDelay={80}
-        >
-          {labs.map((lab) => (
-            <LabCard key={lab.slug} lab={lab} />
-          ))}
-        </StaggerGrid>
-      </section>
+      {/* Filter chips + lab grid — client component owns interactivity */}
+      <LabsFilterGrid labs={labs} />
 
       {/* Coming soon note */}
       <p className="mt-12 text-center text-sm text-muted-foreground/50">

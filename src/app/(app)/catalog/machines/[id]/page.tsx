@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatCurrency, formatDate, formatDateShort } from "@/lib/utils";
+import { formatCurrency, formatDate, formatDateShort, formatStatus } from "@/lib/utils";
 import {
   ArrowLeft,
   CalendarDays,
@@ -115,15 +115,23 @@ export default async function MachineDetailPage({
             </Link>
           )}
           {machine.status === "AVAILABLE" && (
-            <Link href={`/bookings/new?machineId=${machine.id}`}>
+            machine.requiresTraining && !isTrained ? (
               <Button
                 size="sm"
-                disabled={machine.requiresTraining && !isTrained}
+                disabled
+                title="Complete training before booking this machine"
               >
                 <CalendarDays className="mr-2 h-4 w-4" />
                 Book Now
               </Button>
-            </Link>
+            ) : (
+              <Link href={`/bookings/new?machineId=${machine.id}`}>
+                <Button size="sm">
+                  <CalendarDays className="mr-2 h-4 w-4" />
+                  Book Now
+                </Button>
+              </Link>
+            )
           )}
         </div>
       </ReactiveReveal>
@@ -399,7 +407,7 @@ export default async function MachineDetailPage({
                           }
                           className="text-xs"
                         >
-                          {b.status}
+                          {formatStatus(b.status)}
                         </Badge>
                       </div>
                       <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">

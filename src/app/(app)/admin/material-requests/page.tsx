@@ -17,6 +17,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
+import { formatStatus } from "@/lib/utils";
 import { RequestActions } from "./request-actions";
 import { ReactiveMetric, ReactiveReveal } from "@/components/once-ui/reactive-elements";
 
@@ -75,7 +76,7 @@ export default async function MaterialRequestsAdminPage({
                   : "hover:bg-muted text-muted-foreground"
               }`}
             >
-              {status.replaceAll("_", " ")}
+              {formatStatus(status)}
             </Link>
           );
         })}
@@ -86,7 +87,7 @@ export default async function MaterialRequestsAdminPage({
           <CardHeader>
             <CardTitle>
               {statusFilter
-                ? `${statusFilter.replaceAll("_", " ")} Requests`
+                ? `${formatStatus(statusFilter)} Requests`
                 : "All Requests"}
             </CardTitle>
             <div className="text-sm text-muted-foreground"><ReactiveMetric value={requests.length} /> request(s) found</div>
@@ -154,7 +155,7 @@ export default async function MaterialRequestsAdminPage({
                         </TableCell>
                         <TableCell>
                           <Badge variant={STATUS_COLORS[request.status] ?? "secondary"}>
-                            {request.status.replaceAll("_", " ")}
+                            {formatStatus(request.status)}
                           </Badge>
                         </TableCell>
                         <TableCell>

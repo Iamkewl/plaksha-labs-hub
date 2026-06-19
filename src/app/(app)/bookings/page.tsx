@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { CalendarDays, Clock, Plus } from "lucide-react";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatStatus } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { BookingActions } from "./booking-actions";
@@ -115,6 +115,7 @@ export default async function BookingsPage() {
               </Link>
             </div>
           ) : (
+            <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -156,7 +157,7 @@ export default async function BookingsPage() {
                     </TableCell>
                     <TableCell>
                       <Badge variant={statusColors[booking.status]}>
-                        {booking.status}
+                        {formatStatus(booking.status)}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -171,6 +172,7 @@ export default async function BookingsPage() {
                 ))}
               </TableBody>
             </Table>
+            </div>
           )}
         </CardContent>
         </Card>

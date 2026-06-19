@@ -4,13 +4,22 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Package, ShoppingCart, Wrench, AlertTriangle, Users, BookOpen, ArrowRight, Settings, ClipboardList } from "lucide-react";
 import Link from "next/link";
-import { PLACEHOLDER_ADMIN_STATS } from "@/lib/placeholder/admin";
 import { getAdminOverviewStats } from "@/app/actions/dashboard";
+
+const ZERO_STATS = {
+  openMaterialRequests: 0,
+  pendingProcurements: 0,
+  activeCheckouts: 0,
+  machinesInMaintenance: 0,
+  newUsersThisWeek: 0,
+  todaysBookings: 0,
+};
 
 export default async function AdminOverviewPage() {
   await requireRole("ADMIN");
 
-  let stats = PLACEHOLDER_ADMIN_STATS;
+  let stats = ZERO_STATS;
+  let dbError = false;
   try {
     const fromDb = await getAdminOverviewStats();
     stats = {
@@ -22,10 +31,25 @@ export default async function AdminOverviewPage() {
       todaysBookings: fromDb.todaysBookings,
     };
   } catch {
-    // DB unavailable — keep placeholder
+    dbError = true;
   }
   return (
     <div className="space-y-6">
+      {dbError && (
+        <div
+          role="alert"
+          className="flex items-start gap-3 rounded-lg border border-destructive/40 bg-destructive/8 px-4 py-3 text-sm text-destructive"
+        >
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+          <div>
+            <p className="font-semibold">Live data unavailable</p>
+            <p className="mt-0.5 text-destructive/80">
+              Could not reach the database. All metrics are showing as zero. Reload
+              the page or contact support if this persists.
+            </p>
+          </div>
+        </div>
+      )}
       <div className="space-y-1">
         <h1 className="text-3xl font-bold">Admin Overview</h1>
         <p className="text-muted-foreground">Manage labs, assets, users, and requests across the makerspace.</p>

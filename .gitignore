@@ -50,3 +50,12 @@ next-env.d.ts
 
 # Vercel env import file — contains the prototype URLs/secrets, do not push
 .env.vercel
+
+# Standalone Node runtime (downloaded for local builds - do not commit)
+/_node_runtime
+
+# Scratch / generated / design-reference (not part of the app)
+/graphify-out
+/HEXA25-ILGC-ALL STUFF-SEM2
+/chats
+/plaksha-makerspace-hurricane (1).html

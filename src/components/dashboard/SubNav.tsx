@@ -15,6 +15,7 @@ const NAV_ITEMS: SubNavItem[] = [
   { label: "Checkouts", href: "/dashboard/checkouts" },
   { label: "Projects", href: "/dashboard/projects" },
   { label: "Training", href: "/dashboard/training" },
+  { label: "Certifications", href: "/dashboard/certifications" },
 ];
 
 export function SubNav() {

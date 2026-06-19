@@ -1,4 +1,5 @@
 import { GraduationCap, Users, ShieldCheck } from "lucide-react";
+import Link from "next/link";
 import { RoleCard } from "@/components/public/RoleCard";
 
 /**
@@ -114,7 +115,7 @@ export function Hero() {
 
                 {/* Inline CTAs baked into the hero — higher conversion than a separate strip */}
                 <div className="mt-8 flex flex-wrap items-center gap-3">
-                  <a
+                  <Link
                     href="/labs"
                     className="
                       inline-flex items-center rounded-full
@@ -129,8 +130,8 @@ export function Hero() {
                     "
                   >
                     Explore Labs
-                  </a>
-                  <a
+                  </Link>
+                  <Link
                     href="/auth/signin"
                     className="
                       inline-flex items-center rounded-full
@@ -145,7 +146,7 @@ export function Hero() {
                     "
                   >
                     Sign in
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>

@@ -10,11 +10,7 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { QueueRow } from "@/components/admin/QueueRow";
-import { formatDateShort } from "@/lib/utils";
-import {
-  PLACEHOLDER_MATERIAL_REQUESTS_ADMIN,
-  PLACEHOLDER_PROCUREMENT_ADMIN,
-} from "@/lib/placeholder/admin";
+import { getMaterialRequests } from "@/app/actions/boms";
 import { getProcurementRequests } from "@/app/actions/procurement";
 import { Package, ShoppingCart } from "lucide-react";
 
@@ -23,8 +19,33 @@ export const dynamic = "force-dynamic";
 export default async function RequestsPage() {
   await requireRole("ADMIN");
 
-  // Material requests: kept as placeholder (existing MaterialRequest table — not in scope)
-  const materialRequests = PLACEHOLDER_MATERIAL_REQUESTS_ADMIN;
+  // Material requests: wired to real DB
+  type MatRow = {
+    id: string;
+    title: string;
+    requestedBy?: string;
+    quantity: number;
+    unit: string;
+    requestedAt: Date;
+    status: string;
+  };
+
+  let materialRequests: MatRow[] = [];
+
+  try {
+    const fromDb = await getMaterialRequests({ queue: "admin" });
+    materialRequests = fromDb.map((r) => ({
+      id: r.id,
+      title: r.material.name,
+      requestedBy: r.requester?.name ?? undefined,
+      quantity: Number(r.quantity),
+      unit: r.material.unit,
+      requestedAt: r.requestedAt,
+      status: r.status.toLowerCase().replace(/_/g, "-"),
+    }));
+  } catch {
+    // DB unavailable — show empty state
+  }
 
   // Procurement requests: wired to DB
   type ProcRow = {
@@ -37,31 +58,21 @@ export default async function RequestsPage() {
     status: string;
   };
 
-  let procurementRequests: ProcRow[] = PLACEHOLDER_PROCUREMENT_ADMIN.map((p) => ({
-    id: p.id,
-    itemName: p.itemName,
-    vendor: p.vendor,
-    quantity: p.quantity,
-    estimatedCost: p.estimatedCost,
-    requestedAt: p.requestedAt,
-    status: p.status,
-  }));
+  let procurementRequests: ProcRow[] = [];
 
   try {
     const fromDb = await getProcurementRequests();
-    if (fromDb.length) {
-      procurementRequests = fromDb.map((r) => ({
-        id: r.id,
-        itemName: r.itemName,
-        vendor: r.vendor ?? undefined,
-        quantity: r.quantity,
-        estimatedCost: undefined,
-        requestedAt: r.createdAt,
-        status: r.status.toLowerCase(),
-      }));
-    }
+    procurementRequests = fromDb.map((r) => ({
+      id: r.id,
+      itemName: r.itemName,
+      vendor: r.vendor ?? undefined,
+      quantity: r.quantity,
+      estimatedCost: undefined,
+      requestedAt: r.createdAt,
+      status: r.status.toLowerCase(),
+    }));
   } catch {
-    // DB unavailable — keep placeholder
+    // DB unavailable — show empty state
   }
 
   return (
@@ -116,7 +127,7 @@ export default async function RequestsPage() {
                         <QueueRow
                           key={req.id}
                           id={req.id}
-                          title={req.materialName}
+                          title={req.title}
                           requestedBy={req.requestedBy}
                           quantity={req.quantity}
                           unit={req.unit}

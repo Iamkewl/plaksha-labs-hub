@@ -5,6 +5,18 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { deleteAvailability, toggleAvailability } from "@/app/actions/availability";
 import { Pause, Play, Trash2 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface AvailabilityActionsProps {
   slotId: string;
@@ -14,6 +26,7 @@ interface AvailabilityActionsProps {
 export function AvailabilityActions({ slotId, isActive }: AvailabilityActionsProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   async function handleToggle() {
     setLoading(true);
@@ -21,20 +34,28 @@ export function AvailabilityActions({ slotId, isActive }: AvailabilityActionsPro
       await toggleAvailability(slotId);
       router.refresh();
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Failed");
+      toast({
+        variant: "destructive",
+        title: "Failed",
+        description: err instanceof Error ? err.message : "Failed",
+      });
     } finally {
       setLoading(false);
     }
   }
 
   async function handleDelete() {
-    if (!confirm("Delete this availability slot?")) return;
     setLoading(true);
+    setDeleteOpen(false);
     try {
       await deleteAvailability(slotId);
       router.refresh();
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Failed");
+      toast({
+        variant: "destructive",
+        title: "Failed",
+        description: err instanceof Error ? err.message : "Failed",
+      });
     } finally {
       setLoading(false);
     }
@@ -51,16 +72,35 @@ export function AvailabilityActions({ slotId, isActive }: AvailabilityActionsPro
       >
         {isActive ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
       </Button>
-      <Button
-        size="sm"
-        variant="ghost"
-        disabled={loading}
-        onClick={handleDelete}
-        title="Delete"
-        className="text-destructive hover:text-destructive"
-      >
-        <Trash2 className="h-3 w-3" />
-      </Button>
+
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogTrigger asChild>
+          <Button
+            size="sm"
+            variant="ghost"
+            disabled={loading}
+            title="Delete"
+            className="text-destructive hover:text-destructive"
+          >
+            <Trash2 className="h-3 w-3" />
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete availability slot?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently remove this slot. Students will no longer be
+              able to book it.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} disabled={loading}>
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

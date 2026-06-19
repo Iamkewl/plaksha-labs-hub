@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -224,16 +223,7 @@ export default function SignInPage() {
         )}
       </div>
 
-      {/* ── Footer link ──────────────────────────────────────────────────────── */}
-      <p className="stagger-in stagger-in-3 text-center text-sm text-muted-foreground">
-        Don&apos;t have an account?{" "}
-        <Link
-          href="/auth/signup"
-          className="font-medium text-primary underline-offset-4 hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-        >
-          Sign up
-        </Link>
-      </p>
+      {/* Sign-up link intentionally removed — accounts are provisioned by admins only */}
     </div>
   );
 }

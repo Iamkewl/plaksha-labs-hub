@@ -34,7 +34,7 @@ export default async function LabsPage() {
         name: lab.name,
         slug: lab.slug,
         location: lab.location ?? null,
-        divisionsCount: lab._count.assets > 0 ? lab.divisions.length : lab.divisions.length,
+        divisionsCount: lab.divisions.length,
         status: lab.isPublic ? "active" : "inactive",
       }));
     }
@@ -51,8 +51,9 @@ export default async function LabsPage() {
           <p className="text-muted-foreground">
             Manage makerspace labs and their divisions.
           </p>
+          <p className="text-xs text-muted-foreground mt-2">Lab management actions are coming soon.</p>
         </div>
-        <Button disabled>
+        <Button disabled title="Add Lab (coming soon)">
           <Plus className="mr-2 h-4 w-4" />
           Add Lab
         </Button>
@@ -104,10 +105,10 @@ export default async function LabsPage() {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right space-x-2">
-                        <Button size="sm" variant="ghost" disabled title="View lab">
+                        <Button size="sm" variant="ghost" disabled title="View lab (coming soon)">
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="ghost" disabled title="Edit lab">
+                        <Button size="sm" variant="ghost" disabled title="Edit lab (coming soon)">
                           <Edit className="h-4 w-4" />
                         </Button>
                       </TableCell>

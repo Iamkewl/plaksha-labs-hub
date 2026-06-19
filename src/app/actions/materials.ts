@@ -50,7 +50,7 @@ export async function getLowStockMaterials() {
   >`
     SELECT id, name, description, category, unit,
            "costPerUnit", "currentStock", "lowStockThreshold", "imageUrl"
-    FROM "Material"
+    FROM "materials"
     WHERE "currentStock" <= "lowStockThreshold"
     ORDER BY name ASC
   `;

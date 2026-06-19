@@ -67,6 +67,37 @@ export async function deleteTraining(id: string) {
   revalidatePath("/admin/training");
 }
 
+export async function getMyTrainings() {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  return prisma.training.findMany({
+    where: { userId: session.user.id },
+    include: {
+      machine: { select: { id: true, name: true, category: true } },
+    },
+    orderBy: { trainedAt: "desc" },
+  });
+}
+
+export async function getMyCertifications() {
+  const session = await auth();
+  if (!session?.user) throw new Error("Unauthorized");
+
+  return prisma.training.findMany({
+    where: { userId: session.user.id },
+    select: {
+      id: true,
+      trainedAt: true,
+      trainedBy: true,
+      certificate: true,
+      notes: true,
+      machine: { select: { id: true, name: true, category: true } },
+    },
+    orderBy: { trainedAt: "desc" },
+  });
+}
+
 export async function isUserTrained(userId: string, machineId: string) {
   const session = await auth();
   if (!session?.user) throw new Error("Unauthorized");

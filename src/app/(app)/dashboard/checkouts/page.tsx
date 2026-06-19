@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { CheckoutRow } from "@/components/dashboard/CheckoutRow";
 import { EmptyState } from "@/components/dashboard/EmptyState";
-import { PLACEHOLDER_CHECKOUTS, type PlaceholderCheckout } from "@/lib/placeholder/dashboard";
+import { type PlaceholderCheckout } from "@/lib/placeholder/dashboard";
 import { Package } from "lucide-react";
 import { getMyCheckouts } from "@/app/actions/checkouts";
 
@@ -39,11 +39,9 @@ export default async function DashboardCheckoutsPage() {
 
   try {
     const fromDb = await getMyCheckouts();
-    checkouts = fromDb.length
-      ? fromDb.map(dbCheckoutToPlaceholder)
-      : PLACEHOLDER_CHECKOUTS;
+    checkouts = fromDb.map(dbCheckoutToPlaceholder);
   } catch {
-    checkouts = PLACEHOLDER_CHECKOUTS;
+    checkouts = [];
   }
 
   const checkedOut = checkouts.filter((c) => c.returnedAt === null);

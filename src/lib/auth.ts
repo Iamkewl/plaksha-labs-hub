@@ -60,6 +60,10 @@ if (credentialsEnabled) {
         const email = rawEmail.trim().toLowerCase();
         if (!email || !rawPassword) return null;
 
+        if (!email.endsWith("@plaksha.edu.in")) {
+          return null;
+        }
+
         const user = await prisma.user.findUnique({
           where: { email },
           select: { id: true, name: true, email: true, role: true, hashedPassword: true },

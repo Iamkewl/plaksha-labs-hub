@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/table";
 import { ArrowLeft, FileText, Globe, Lock, Plus, UserMinus } from "lucide-react";
 import Link from "next/link";
-import { formatDate, formatCurrency } from "@/lib/utils";
+import { formatDate, formatCurrency, formatStatus } from "@/lib/utils";
 import { AddMemberForm } from "./add-member-form";
 import { ReactiveMetric, ReactiveReveal } from "@/components/once-ui/reactive-elements";
 
@@ -171,6 +171,7 @@ export default async function ProjectDetailPage({
                               size="icon"
                               className="h-7 w-7 text-destructive hover:text-destructive"
                               title="Remove member"
+                              aria-label="Remove member"
                             >
                               <UserMinus className="h-3.5 w-3.5" />
                             </Button>
@@ -239,7 +240,7 @@ export default async function ProjectDetailPage({
                       <TableCell className="font-medium">v{bom.version}</TableCell>
                       <TableCell>
                         <Badge variant={bomStatusColors[bom.status]}>
-                          {bom.status}
+                          {formatStatus(bom.status)}
                         </Badge>
                       </TableCell>
                       <TableCell>{formatCurrency(bom.totalCost)}</TableCell>
@@ -248,7 +249,7 @@ export default async function ProjectDetailPage({
                       </TableCell>
                       <TableCell>
                         <Link href={`/projects/${project.id}/bom/${bom.id}`}>
-                          <Button variant="ghost" size="sm">
+                          <Button variant="ghost" size="sm" aria-label={`View BOM v${bom.version}`}>
                             View
                           </Button>
                         </Link>

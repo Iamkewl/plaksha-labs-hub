@@ -1,5 +1,5 @@
 import { getMaterialById } from "@/app/actions/materials";
-import { auth } from "@/lib/auth";
+import { requireAuth } from "@/lib/auth-guard";
 import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,12 +14,12 @@ export default async function MaterialDetailPage({
 }: {
   params: { id: string };
 }) {
-  const session = await auth();
+  const session = await requireAuth();
   const material = await getMaterialById(params.id);
 
   if (!material) notFound();
 
-  const isAdmin = session?.user.role === "ADMIN";
+  const isAdmin = session.user.role === "ADMIN";
   const isLow = material.currentStock <= material.lowStockThreshold;
 
   return (

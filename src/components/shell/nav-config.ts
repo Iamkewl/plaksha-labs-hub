@@ -88,12 +88,6 @@ const roboticsItems: NavItem[] = [
     exact: true,
   },
   {
-    href: "/labs/robotics/dashboard",
-    label: "Inventory",
-    icon: Boxes,
-    exact: false,
-  },
-  {
     href: "/projects",
     label: "My Projects",
     icon: FolderOpen,
@@ -111,6 +105,12 @@ export const mentorItems: NavItem[] = [
     href: "/mentor/availability",
     label: "My Availability",
     icon: Clock,
+    roles: ["MENTOR", "ADMIN"],
+  },
+  {
+    href: "/mentor/material-requests",
+    label: "Material Reviews",
+    icon: ClipboardList,
     roles: ["MENTOR", "ADMIN"],
   },
 ];

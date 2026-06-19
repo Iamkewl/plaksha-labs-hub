@@ -2,14 +2,29 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TrainingRow } from "@/components/dashboard/TrainingRow";
 import { EmptyState } from "@/components/dashboard/EmptyState";
-import { PLACEHOLDER_TRAININGS } from "@/lib/placeholder/dashboard";
+import { type PlaceholderTraining } from "@/lib/placeholder/dashboard";
 import { GraduationCap } from "lucide-react";
 import Link from "next/link";
+import { getMyTrainings } from "@/app/actions/training";
 
-export default function DashboardTrainingPage() {
-  const completed = PLACEHOLDER_TRAININGS.filter((t) => t.status === "COMPLETED");
-  const required = PLACEHOLDER_TRAININGS.filter((t) => t.status === "REQUIRED");
-  const available = PLACEHOLDER_TRAININGS.filter((t) => t.status === "AVAILABLE");
+export const dynamic = "force-dynamic";
+
+export default async function DashboardTrainingPage() {
+  let completed: PlaceholderTraining[] = [];
+
+  try {
+    const trainings = await getMyTrainings();
+    completed = trainings.map((t) => ({
+      id: t.id,
+      machineId: t.machineId,
+      machineName: t.machine.name,
+      category: t.machine.category,
+      trainedAt: t.trainedAt,
+      status: "COMPLETED" as const,
+    }));
+  } catch {
+    // DB error — fall through with empty array; never show fake data
+  }
 
   return (
     <div className="space-y-6">
@@ -42,28 +57,6 @@ export default function DashboardTrainingPage() {
         </CardContent>
       </Card>
 
-      {/* Required for Upcoming Bookings */}
-      {required.length > 0 && (
-        <Card className="border-orange-200 bg-orange-50/30">
-          <CardHeader>
-            <CardTitle className="text-base text-orange-800 flex items-center gap-2">
-              <GraduationCap className="h-4 w-4" />
-              Required Training
-            </CardTitle>
-            <p className="text-sm text-orange-700/70 mt-1">
-              Complete these trainings to use the machines you&apos;ve booked
-            </p>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {required.map((training) => (
-                <TrainingRow key={training.id} training={training} />
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
       {/* Available Trainings */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
@@ -75,19 +68,11 @@ export default function DashboardTrainingPage() {
           </Link>
         </CardHeader>
         <CardContent>
-          {available.length === 0 ? (
-            <EmptyState
-              icon={GraduationCap}
-              title="No available trainings"
-              description="Check back later for new training opportunities"
-            />
-          ) : (
-            <div className="space-y-3">
-              {available.map((training) => (
-                <TrainingRow key={training.id} training={training} />
-              ))}
-            </div>
-          )}
+          <EmptyState
+            icon={GraduationCap}
+            title="No available trainings"
+            description="Check back later for new training opportunities"
+          />
         </CardContent>
       </Card>
     </div>

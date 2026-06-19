@@ -16,6 +16,7 @@ export function formatDate(date: Date | string): string {
   return new Intl.DateTimeFormat("en-IN", {
     dateStyle: "medium",
     timeStyle: "short",
+    timeZone: "Asia/Kolkata",
   }).format(new Date(date));
 }
 
@@ -31,6 +32,7 @@ export function formatDateShort(date: Date | string): string {
     hour: "numeric",
     minute: "2-digit",
     hour12: true,
+    timeZone: "Asia/Kolkata",
   });
 
   if (isToday) return `Today ${time}`;
@@ -44,5 +46,9 @@ export function formatDateShort(date: Date | string): string {
 
   if (isTomorrow) return `Tomorrow ${time}`;
 
-  return d.toLocaleDateString("en-IN", { month: "short", day: "numeric" }) + ` ${time}`;
+  return d.toLocaleDateString("en-IN", { month: "short", day: "numeric", timeZone: "Asia/Kolkata" }) + ` ${time}`;
+}
+
+export function formatStatus(s: string): string {
+  return s.toLowerCase().replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
