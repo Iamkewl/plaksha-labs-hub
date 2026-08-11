@@ -10,20 +10,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CalendarDays, Clock, Plus } from "lucide-react";
-import { formatDate, formatStatus } from "@/lib/utils";
+import { CalendarDays, Clock, FlaskConical, Plus } from "lucide-react";
+import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { BookingActions } from "./booking-actions";
 import { ReactiveMetric, ReactiveReveal } from "@/components/once-ui/reactive-elements";
-
-const statusColors: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
-  PENDING: "outline",
-  CONFIRMED: "default",
-  IN_PROGRESS: "secondary",
-  COMPLETED: "secondary",
-  CANCELLED: "destructive",
-};
 
 export default async function BookingsPage() {
   const session = await requireAuth();
@@ -106,14 +100,23 @@ export default async function BookingsPage() {
         </CardHeader>
         <CardContent>
           {upcoming.length === 0 ? (
-            <div className="py-8 text-center">
-              <p className="text-muted-foreground">No upcoming bookings</p>
-              <Link href="/bookings/new">
-                <Button variant="outline" className="mt-4">
-                  Book a machine or mentor session
-                </Button>
-              </Link>
-            </div>
+            <EmptyState
+              icon={CalendarDays}
+              title="No upcoming bookings"
+              description="Reserve a 3D printer, laser cutter, or mentor session to get started."
+              primaryAction={{
+                label: "Book a machine or mentor session",
+                href: "/bookings/new",
+                icon: Plus,
+              }}
+              secondaryAction={{
+                label: "Try the demo",
+                href: "/demo",
+                icon: FlaskConical,
+                variant: "outline",
+              }}
+              variant="ghost"
+            />
           ) : (
             <div className="overflow-x-auto">
             <Table>
@@ -156,9 +159,7 @@ export default async function BookingsPage() {
                       {booking.purpose ?? "—"}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={statusColors[booking.status]}>
-                        {formatStatus(booking.status)}
-                      </Badge>
+                      <StatusBadge status={booking.status} />
                     </TableCell>
                     <TableCell>
                       <BookingActions
@@ -210,9 +211,7 @@ export default async function BookingsPage() {
                       </TableCell>
                       <TableCell>{formatDate(booking.startTime)}</TableCell>
                       <TableCell>
-                        <Badge variant={statusColors[booking.status]}>
-                          {booking.status}
-                        </Badge>
+                        <StatusBadge status={booking.status} />
                       </TableCell>
                     </TableRow>
                   ))}

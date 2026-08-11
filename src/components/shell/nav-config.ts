@@ -16,6 +16,7 @@ import {
   PackageOpen,
   Bell,
   FlaskConical,
+  Beaker,
   Cpu,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -165,6 +166,11 @@ export const globalItems: NavItem[] = [
     label: "Explore Labs",
     icon: FlaskConical,
     exact: true,
+  },
+  {
+    href: "/demo",
+    label: "Try the Demo",
+    icon: Beaker,
   },
 ];
 

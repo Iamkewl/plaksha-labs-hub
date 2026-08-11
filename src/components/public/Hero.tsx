@@ -147,6 +147,24 @@ export function Hero() {
                   >
                     Sign in
                   </Link>
+                  <Link
+                    href="/demo"
+                    aria-label="Try the interactive demo — no signup required"
+                    className="
+                      inline-flex items-center gap-1.5 rounded-full
+                      border border-amber-300/60 bg-amber-300/15 px-6 py-2.5
+                      text-sm font-semibold text-amber-50
+                      backdrop-blur-sm
+                      transition-all duration-200
+                      hover:-translate-y-px hover:border-amber-300 hover:bg-amber-300/25 hover:shadow-xl
+                      focus-visible:outline-none focus-visible:ring-2
+                      focus-visible:ring-amber-200 focus-visible:ring-offset-2
+                      focus-visible:ring-offset-[hsl(182_80%_30%)]
+                    "
+                  >
+                    <span aria-hidden="true">⚗</span>
+                    Try the demo
+                  </Link>
                 </div>
               </div>
             </div>

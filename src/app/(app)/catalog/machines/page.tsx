@@ -4,8 +4,10 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { formatCurrency, formatStatus } from "@/lib/utils";
-import { Plus, Wrench } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { formatCurrency } from "@/lib/utils";
+import { FlaskConical, Plus, Wrench } from "lucide-react";
 import { MachineFilters } from "./machine-filters";
 import { ReactiveMetric, ReactiveReveal } from "@/components/once-ui/reactive-elements";
 
@@ -19,13 +21,6 @@ export default async function MachinesPage({
     getMachines(searchParams),
     getMachineCategories(),
   ]);
-
-  const statusColors: Record<string, string> = {
-    AVAILABLE: "bg-green-100 text-green-800",
-    IN_USE: "bg-blue-100 text-blue-800",
-    MAINTENANCE: "bg-yellow-100 text-yellow-800",
-    RETIRED: "bg-gray-100 text-gray-800",
-  };
 
   return (
     <div>
@@ -55,13 +50,17 @@ export default async function MachinesPage({
 
       {machines.length === 0 ? (
         <ReactiveReveal delay={0.08} translateY={0.45}>
-          <div className="mt-12 text-center">
-            <Wrench className="mx-auto h-12 w-12 text-muted-foreground" />
-            <h3 className="mt-4 text-lg font-medium">No machines found</h3>
-            <p className="text-sm text-muted-foreground">
-              Try adjusting your search or filters.
-            </p>
-          </div>
+          <EmptyState
+            className="mt-12"
+            icon={Wrench}
+            title="No machines found"
+            description="Try adjusting your search or filters. Want to peek at the catalog? Take a quick tour."
+            primaryAction={{
+              label: "Tour the demo catalog",
+              href: "/demo/catalog",
+              icon: FlaskConical,
+            }}
+          />
         </ReactiveReveal>
       ) : (
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -82,13 +81,7 @@ export default async function MachinesPage({
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <CardTitle className="text-lg">{machine.name}</CardTitle>
-                      <span
-                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                          statusColors[machine.status] ?? ""
-                        }`}
-                      >
-                        {formatStatus(machine.status)}
-                      </span>
+                      <StatusBadge status={machine.status} />
                     </div>
                     <Badge variant="outline">{machine.category}</Badge>
                   </CardHeader>

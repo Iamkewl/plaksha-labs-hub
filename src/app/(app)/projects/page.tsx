@@ -3,7 +3,8 @@ import { getProjects } from "@/app/actions/projects";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FolderKanban, Globe, Lock, Plus, Users } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
+import { FolderKanban, FlaskConical, Globe, Lock, Plus, Users } from "lucide-react";
 import Link from "next/link";
 import { ReactiveMetric, ReactiveReveal } from "@/components/once-ui/reactive-elements";
 
@@ -28,19 +29,29 @@ export default async function ProjectsPage() {
 
       {projects.length === 0 ? (
         <ReactiveReveal delay={0.08} translateY={0.45}>
-          <div className="mt-16 text-center">
-            <FolderKanban className="mx-auto h-12 w-12 text-muted-foreground" />
-            <p className="mt-4 text-lg font-medium">No projects yet</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Create your first project to start managing BOMs and material requests.
-            </p>
-            <Link href="/projects/new">
-              <Button className="mt-6">
-                <Plus className="mr-2 h-4 w-4" />
-                Create Project
-              </Button>
-            </Link>
-          </div>
+          <EmptyState
+            className="mt-16"
+            icon={FolderKanban}
+            title="No projects yet"
+            description="Create your first project to start managing BOMs, material requests, and team progress."
+            primaryAction={{
+              label: "Create your first project",
+              href: "/projects/new",
+              icon: Plus,
+            }}
+            secondaryAction={{
+              label: "Tour a sample project",
+              href: "/demo",
+              icon: FlaskConical,
+              variant: "outline",
+            }}
+            footer={
+              <>
+                Tip: try the demo to see a fully-populated project with team,
+                BOM, and milestones — no signup required.
+              </>
+            }
+          />
         </ReactiveReveal>
       ) : (
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

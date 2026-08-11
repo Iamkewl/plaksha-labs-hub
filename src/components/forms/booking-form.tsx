@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertTriangle, CheckCircle2, Clock, Wrench } from "lucide-react";
 import { createBooking } from "@/app/actions/bookings";
+import { toast } from "@/hooks/use-toast";
 
 interface Machine {
   id: string;
@@ -179,10 +180,20 @@ export function BookingForm({
 
     try {
       await createBooking(data);
+      toast({
+        title: "Booking requested",
+        description: `${machines.find((m) => m.id === selectedMachineId)?.name ?? "Mentor session"} · ${startDateTime.toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}`,
+      });
       router.push("/bookings");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create booking");
+      const message = err instanceof Error ? err.message : "Failed to create booking";
+      setError(message);
+      toast({
+        title: "Could not create booking",
+        description: message,
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }

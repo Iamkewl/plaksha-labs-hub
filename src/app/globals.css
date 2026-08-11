@@ -233,6 +233,14 @@
 }
 
 @layer utilities {
+  /* ── Demo Mode body offset ──────────────────────────────────────────────── */
+  /* When the user activates Demo Mode, the fixed DemoBanner pins itself  */
+  /* to the top of the viewport. Push the page down by 2.25rem (36px) so   */
+  /* the sticky PublicNav / AppSidebar still sit at the natural top.       */
+  body.demo-mode-active {
+    padding-top: 2.25rem;
+  }
+
   /* ── App canvas ─────────────────────────────────────────────────────────── */
   /* Clean light surface for authenticated app shell.                          */
   /* Sidebar provides the teal; main canvas stays neutral.                     */

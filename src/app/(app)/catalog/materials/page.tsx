@@ -4,8 +4,9 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { formatCurrency } from "@/lib/utils";
-import { Plus, Package, AlertTriangle } from "lucide-react";
+import { Plus, Package, AlertTriangle, FlaskConical } from "lucide-react";
 import { MaterialFilters } from "./material-filters";
 import { ReactiveMetric, ReactiveReveal } from "@/components/once-ui/reactive-elements";
 
@@ -56,13 +57,17 @@ export default async function MaterialsPage({
 
       {materials.length === 0 ? (
         <ReactiveReveal delay={0.08} translateY={0.45}>
-          <div className="mt-12 text-center">
-            <Package className="mx-auto h-12 w-12 text-muted-foreground" />
-            <h3 className="mt-4 text-lg font-medium">No materials found</h3>
-            <p className="text-sm text-muted-foreground">
-              Try adjusting your search or filters.
-            </p>
-          </div>
+          <EmptyState
+            className="mt-12"
+            icon={Package}
+            title="No materials found"
+            description="Try adjusting your search or filters. Want a quick look? Tour a sample inventory."
+            primaryAction={{
+              label: "Tour the demo inventory",
+              href: "/demo/inventory",
+              icon: FlaskConical,
+            }}
+          />
         </ReactiveReveal>
       ) : (
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
