@@ -10,6 +10,7 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SessionProvider } from "next-auth/react";
 import { useState, type ReactNode } from "react";
+import { DemoProvider } from "@/components/demo/DemoProvider";
 
 export function Providers({ children }: { children: ReactNode }) {
   const [queryClient] = useState(
@@ -43,7 +44,7 @@ export function Providers({ children }: { children: ReactNode }) {
             <IconProvider>
               <SessionProvider>
                 <QueryClientProvider client={queryClient}>
-                  {children}
+                  <DemoProvider>{children}</DemoProvider>
                 </QueryClientProvider>
               </SessionProvider>
             </IconProvider>

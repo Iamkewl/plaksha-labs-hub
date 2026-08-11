@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Search, User, ChevronDown, Menu, X } from "lucide-react";
+import { Beaker, Search, User, ChevronDown, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MakerhubLogo } from "@/components/brand/MakerhubLogo";
 
@@ -131,6 +131,13 @@ export function PublicNav() {
           >
             Projects
           </Link>
+          <Link
+            href="/demo"
+            className="ml-1 inline-flex items-center gap-1.5 rounded-md border border-amber-400/40 bg-amber-400/10 px-3 py-1.5 text-sm font-semibold text-amber-700 transition-colors duration-150 hover:border-amber-400/70 hover:bg-amber-400/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:text-amber-300"
+          >
+            <Beaker className="h-3.5 w-3.5" />
+            Try Demo
+          </Link>
         </div>
 
         {/* Right: avatar + mobile hamburger */}
@@ -219,6 +226,15 @@ export function PublicNav() {
               className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               Projects
+            </Link>
+            <Link
+              href="/demo"
+              role="menuitem"
+              onClick={() => setMobileOpen(false)}
+              className="mt-1 inline-flex items-center gap-1.5 rounded-md border border-amber-400/40 bg-amber-400/10 px-3 py-2 text-sm font-semibold text-amber-700 transition-colors duration-150 hover:bg-amber-400/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:text-amber-300"
+            >
+              <Beaker className="h-3.5 w-3.5" />
+              Try Demo
             </Link>
             <div className="mt-2 border-t border-border/60 pt-2">
               <Link
