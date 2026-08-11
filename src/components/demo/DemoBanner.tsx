@@ -5,6 +5,15 @@
  *
  * Slim top banner shown when the user is in Demo Mode. Communicates
  * that mutations are sandboxed and offers a one-click "Exit Demo" CTA.
+ *
+ * Implementation note:
+ *   The banner is rendered with `position: fixed` (NOT sticky) so it
+ *   always sits at the very top of the viewport, *above* any sticky
+ *   page nav (e.g. the public <PublicNav> at z-30).  z-60 places it
+ *   above all other app chrome while remaining below the floating
+ *   demo panel (z-50).  This avoids the trap of rendering the banner
+ *   inside <main>, where it would be limited to the main content
+ *   region and overlap with the page heading.
  */
 
 import Link from "next/link";
@@ -18,7 +27,7 @@ export function DemoBanner() {
     <div
       role="status"
       aria-live="polite"
-      className="sticky top-0 z-40 w-full border-b border-amber-400/30 bg-amber-400/95 text-amber-950 backdrop-blur-sm shadow-sm"
+      className="fixed inset-x-0 top-0 z-[60] w-full border-b border-amber-400/30 bg-amber-400/95 text-amber-950 shadow-sm backdrop-blur-sm"
     >
       <div className="mx-auto flex h-9 max-w-7xl items-center gap-3 px-4 text-xs sm:text-sm">
         <FlaskConical className="h-4 w-4 shrink-0" aria-hidden="true" />

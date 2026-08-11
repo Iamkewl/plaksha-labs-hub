@@ -4,6 +4,7 @@ import { createProject } from "@/app/actions/projects";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/forms/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -108,9 +109,11 @@ export default async function NewProjectPage() {
             </div>
 
             <div className="flex gap-3 pt-2">
-              <Button type="submit" className="flex-1">
-                Create Project
-              </Button>
+              <SubmitButton
+                label="Create Project"
+                pendingLabel="Creating…"
+                className="flex-1"
+              />
               <Link href="/projects">
                 <Button type="button" variant="outline">
                   Cancel

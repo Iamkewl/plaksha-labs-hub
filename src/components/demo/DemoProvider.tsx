@@ -35,6 +35,16 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     setMounted(true);
   }, []);
 
+  // Push the page down by the banner height while the demo is active
+  // so the fixed banner doesn't overlap the sticky public nav.
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    document.body.classList.toggle("demo-mode-active", isActive);
+    return () => {
+      document.body.classList.remove("demo-mode-active");
+    };
+  }, [isActive]);
+
   // Avoid hydration mismatches — render the floating UI only after mount.
   if (!mounted) {
     return <>{children}</>;
